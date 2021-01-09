@@ -7,7 +7,7 @@ from os import rename
 from pathlib import Path
 from re import search
 from sys import stdout
-
+from typing import List
 
 basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -42,7 +42,7 @@ def process_name(
 ) -> None:
     LOGGER.info(f"Processing {path.name}...")
     while True:
-        input_year = input("Input year ('q' to quit):")
+        input_year = input("Input year ('q' to quit): ")
         if input_year == "q":
             raise Quit()
         else:
@@ -51,29 +51,35 @@ def process_name(
                 year = int(match.group(1))
                 break
             else:
-                LOGGER.info(f"Year must match {pattern}; {input_year} does not")
-    title = input("Title = ('q' for quit)")
+                LOGGER.info(
+                    f"Year must match {pattern}; {input_year!r} does not",
+                )
+    title = input("Input title ('q' to quit): ")
     if title == "q":
         raise Quit()
-    input_subtitle = input("Subtitle = ")
-    if input_subtitle in {"", "q"}:
-        subtitle = None
+    new_name = f"{year} — {title}"
+    input_subtitle = input("Input subtitle (optional; 'q' to quit): ")
+    if input_subtitle == "":
+        pass
+    elif input_subtitle == "q":
+        raise Quit()
     else:
-        subtitle = input_subtitle
-    authors = []
+        new_name = "–".join([new_name, input_subtitle])
+    authors: List[str] = []
     while True:
-        input_author = input("Author(s) = (1 by 1)")
-        if input_author in {"", "q"}:
-            break
+        next_n = len(authors) + 1
+        input_author = input(f"Input author #{next_n} ('q' to quit):")
+        if input_author == "":
+            if authors:
+                joined_authors = ", ".join(authors)
+                new_name = " ".join([new_name, joined_authors])
+                break
+            else:
+                raise Quit()
+        elif input_author == "q":
+            raise Quit()
         else:
             authors.append(input_author)
-    new_name = f"{year} — {title}"
-    if subtitle is not None:
-        new_name = "–".join([new_name, subtitle])
-    if not authors:
-        raise Quit()
-    joined_authors = ", ".join(authors)
-    new_name = " ".join([new_name, joined_authors])
     while True:
         input_confirm = input(f"Confirm new name:\n{new_name}? ('y'/'n')")
         if input_confirm == "y":
