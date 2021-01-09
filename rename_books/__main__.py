@@ -91,6 +91,7 @@ def process_name(
         if input_confirm == "y":
             new_path = path.parent.joinpath(new_name).with_suffix(".pdf")
             rename(path, new_path)
+            LOGGER.info(f"Renamed:\n    {path}\n--> {new_path}")
         elif input_confirm == "n":
             raise Quit()
 
