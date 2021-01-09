@@ -8,6 +8,7 @@ from re import search
 from sys import stdout
 from typing import List
 
+
 basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
     format="{asctime}: {msg}",
@@ -51,20 +52,20 @@ def process_name(
     while True:
         if (input_title := input("Input title ('q' to quit): ")) == "q":
             raise Quit()
-        elif match := search(r"^(\w+)$", input_title):
+        elif match := search(r"^(.+)$", input_title):
             title = match.group(1)
             break
         else:
             LOGGER.info(f"{input_title!r} is an invalid title")
-    new_name = " — ".join([str(year), title])
+    new_name = f"{year} — {title}"
     while True:
         if (input_subtitle := input("Input subtitle ('q' to quit): ")) == "q":
             raise Quit()
         elif input_subtitle == "":
             break
-        elif match := search(r"^(\w+)$", input_subtitle):
+        elif match := search(r"^(.+)$", input_subtitle):
             subtitle = match.group(1)
-            new_name = "–".join([new_name, subtitle])
+            new_name = f"{new_name} – {subtitle}"
             break
         else:
             LOGGER.info(f"{input_subtitle!r} is an invalid subtitle")
@@ -72,23 +73,20 @@ def process_name(
     while True:
         next_n = len(authors) + 1
         if (
-            input_author := input(f"Input author #{next_n} ('q' to quit):")
-        ) == "":
+            input_author := input(f"Input author #{next_n} ('q' to quit): ")
+        ) == "q":
             raise Quit()
         elif input_author == "":
             if authors:
                 joined_authors = ", ".join(authors)
-                new_name = " ".join([new_name, joined_authors])
+                new_name = f"{new_name} ({joined_authors})"
                 break
-            else:
-                raise Quit()
-        elif match := search(r"^(\w+)$", input_author):
+        elif match := search(r"^(.+)$", input_author):
             authors.append(match.group(1))
-            break
         else:
             LOGGER.info(f"{input_author!r} is an invalid author")
     while True:
-        input_confirm = input(f"Confirm new name:\n{new_name}? ('y'/'n')")
+        input_confirm = input(f"Confirm new name:\n{new_name}? ('y'/'n') ")
         if input_confirm == "y":
             new_path = DIRECTORY.joinpath(new_name).with_suffix(".pdf")
             rename(path, new_path)
