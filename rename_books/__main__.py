@@ -53,7 +53,7 @@ def process_name(
         if (input_title := input("Input title ('q' to quit): ")) == "q":
             raise Quit()
         elif match := search(r"^(.+)$", input_title):
-            title = match.group(1)
+            title = match.group(1).strip()
             break
         else:
             LOGGER.info(f"{input_title!r} is an invalid title")
@@ -64,7 +64,7 @@ def process_name(
         elif input_subtitle == "":
             break
         elif match := search(r"^(.+)$", input_subtitle):
-            subtitle = match.group(1)
+            subtitle = match.group(1).strip()
             new_name = f"{new_name} – {subtitle}"
             break
         else:
@@ -82,13 +82,14 @@ def process_name(
                 new_name = f"{new_name} ({joined_authors})"
                 break
         elif match := search(r"^(.+)$", input_author):
-            authors.append(match.group(1))
+            author = match.group(1).strip()
+            authors.append(author)
         else:
             LOGGER.info(f"{input_author!r} is an invalid author")
     while True:
         input_confirm = input(f"Confirm new name:\n{new_name}? ('y'/'n') ")
         if input_confirm == "y":
-            new_path = DIRECTORY.joinpath(new_name).with_suffix(".pdf")
+            new_path = path.parent.joinpath(new_name).with_suffix(".pdf")
             rename(path, new_path)
         elif input_confirm == "n":
             raise Quit()
