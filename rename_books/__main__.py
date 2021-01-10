@@ -40,7 +40,8 @@ def drop_suffix(path: Path) -> Path:
 def process_name(
     path: Path,
 ) -> None:
-    LOGGER.info(f"Processing {path.name}...")
+    name = path.name
+    LOGGER.info(f"Processing {name}...")
     while True:
         if (input_year := input("Input year ('q' to quit): ")) == "q":
             raise Quit()
@@ -91,7 +92,8 @@ def process_name(
         if input_confirm == "y":
             new_path = path.parent.joinpath(new_name).with_suffix(".pdf")
             rename(path, new_path)
-            LOGGER.info(f"Renamed:\n    {path}\n--> {new_path}")
+            LOGGER.info(f"Renamed:\n    {name}\n--> {new_name}\n")
+            break
         elif input_confirm == "n":
             raise Quit()
 
