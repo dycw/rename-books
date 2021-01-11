@@ -23,13 +23,13 @@ DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
 
 
 def main() -> None:
-    for path in DIRECTORY.iterdir():
-        if (
-            path.is_file()
-            and path.suffix == ".pdf"
-            and not search(r"^\d+ — .+( – .+)$", drop_suffix(path).name)
-        ):
-            with suppress(Quit):
+    with suppress(Quit):
+        for path in DIRECTORY.iterdir():
+            if (
+                path.is_file()
+                and path.suffix == ".pdf"
+                and not search(r"^\d+ — .+( – .+)$", drop_suffix(path).name)
+            ):
                 process_name(path)
 
 
@@ -41,7 +41,7 @@ def process_name(
     path: Path,
 ) -> None:
     name = path.name
-    LOGGER.info(f"Processing {name}...")
+    LOGGER.info(f"Processing:\n    {name}")
     while True:
         if (input_year := input("Input year ('q' to quit): ")) == "q":
             raise Quit()
