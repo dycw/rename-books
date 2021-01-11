@@ -8,6 +8,7 @@ from re import search
 from sys import stdout
 from typing import List
 
+from rename_books.utilities import change_name
 
 basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -95,7 +96,7 @@ def process_name(
     while True:
         input_confirm = input(f"Confirm new name:\n{new_name}? ('y'/'n') ")
         if input_confirm == "y":
-            new_path = path.parent.joinpath(new_name).with_suffix(".pdf")
+            new_path = change_name(path, new_name)
             rename(path, new_path)
             LOGGER.info(f"Renamed:\n    {name}\n--> {new_name}\n")
             break
