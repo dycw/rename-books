@@ -59,15 +59,20 @@ def process_name(
         else:
             LOGGER.info(f"{input_title!r} is an invalid title")
     new_name = f"{year} — {title}"
+    subtitles: List[str] = []
     while True:
-        if (input_subtitle := input("Input subtitle ('q' to quit): ")) == "q":
+        next_n = len(subtitles) + 1
+        if (
+            input_subtitle := input(f"Input subtitle #{next_n} ('q' to quit): ")
+        ) == "q":
             raise Quit()
         elif input_subtitle == "":
-            break
+            if subtitles:
+                new_name = " – ".join([new_name] + subtitles)
+                break
         elif match := search(r"^(.+)$", input_subtitle):
             subtitle = match.group(1).strip()
-            new_name = f"{new_name} – {subtitle}"
-            break
+            subtitles.append(subtitle)
         else:
             LOGGER.info(f"{input_subtitle!r} is an invalid subtitle")
     authors: List[str] = []
