@@ -8,6 +8,7 @@ from re import search
 from sys import stdout
 from typing import List
 
+from rename_books.utilities import change_name
 
 basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -23,13 +24,13 @@ DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
 
 
 def main() -> None:
-    for path in DIRECTORY.iterdir():
-        if (
-            path.is_file()
-            and path.suffix == ".pdf"
-            and not search(r"^\d+ — .+( – .+)$", drop_suffix(path).name)
-        ):
-            with suppress(Quit):
+    with suppress(Quit):
+        for path in DIRECTORY.iterdir():
+            if (
+                path.is_file()
+                and path.suffix == ".pdf"
+                and not search(r"^\d+ — .+( – .+)$", drop_suffix(path).name)
+            ):
                 process_name(path)
 
 
@@ -41,7 +42,7 @@ def process_name(
     path: Path,
 ) -> None:
     name = path.name
-    LOGGER.info(f"Processing {name}...")
+    LOGGER.info(f"Processing:\n    {name}")
     while True:
         if (input_year := input("Input year ('q' to quit): ")) == "q":
             raise Quit()
@@ -59,15 +60,20 @@ def process_name(
         else:
             LOGGER.info(f"{input_title!r} is an invalid title")
     new_name = f"{year} — {title}"
+    subtitles: List[str] = []
     while True:
-        if (input_subtitle := input("Input subtitle ('q' to quit): ")) == "q":
+        next_n = len(subtitles) + 1
+        if (
+            input_subtitle := input(f"Input subtitle #{next_n} ('q' to quit): ")
+        ) == "q":
             raise Quit()
         elif input_subtitle == "":
-            break
+            if subtitles:
+                new_name = " – ".join([new_name] + subtitles)
+                break
         elif match := search(r"^(.+)$", input_subtitle):
             subtitle = match.group(1).strip()
-            new_name = f"{new_name} – {subtitle}"
-            break
+            subtitles.append(subtitle)
         else:
             LOGGER.info(f"{input_subtitle!r} is an invalid subtitle")
     authors: List[str] = []
@@ -90,7 +96,7 @@ def process_name(
     while True:
         input_confirm = input(f"Confirm new name:\n{new_name}? ('y'/'n') ")
         if input_confirm == "y":
-            new_path = path.parent.joinpath(new_name).with_suffix(".pdf")
+            new_path = change_name(path, new_name)
             rename(path, new_path)
             LOGGER.info(f"Renamed:\n    {name}\n--> {new_name}\n")
             break
