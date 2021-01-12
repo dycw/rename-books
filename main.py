@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from contextlib import suppress
 from logging import basicConfig
 from logging import getLogger
@@ -8,7 +9,6 @@ from re import search
 from sys import stdout
 from typing import List
 
-from rename_books.utilities import change_name
 
 basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -17,25 +17,8 @@ basicConfig(
     stream=stdout,
     style="{",
 )
-LOGGER = getLogger(__name__)
-
-
 DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
-
-
-def main() -> None:
-    with suppress(Quit):
-        for path in DIRECTORY.iterdir():
-            if (
-                path.is_file()
-                and path.suffix == ".pdf"
-                and not search(r"^\d+ — .+( – .+)$", drop_suffix(path).name)
-            ):
-                process_name(path)
-
-
-def drop_suffix(path: Path) -> Path:
-    return path.with_suffix("")
+LOGGER = getLogger(__name__)
 
 
 def process_name(
@@ -70,7 +53,7 @@ def process_name(
         elif input_subtitle == "":
             if subtitles:
                 new_name = " – ".join([new_name] + subtitles)
-                break
+            break
         elif match := search(r"^(.+)$", input_subtitle):
             subtitle = match.group(1).strip()
             subtitles.append(subtitle)
@@ -108,5 +91,26 @@ class Quit(RuntimeError):
     pass
 
 
+def change_name(path: Path, name: str) -> Path:
+    new_path = path.with_name(name)
+    suffix = "".join([new_path.suffix, path.suffix])
+    return new_path.with_suffix(suffix)
+
+
+def change_suffix(path: Path, *suffixes: str) -> Path:
+    return path.with_suffix("".join(suffixes))
+
+
 if __name__ == "__main__":
-    main()
+    with suppress(Quit):
+        for path in DIRECTORY.iterdir():
+            if path.is_file() and path.suffix == ".pdf":
+                path_wo = path.with_suffix("")
+                if (
+                    not search(
+                        r"^\d+ — .+( – .+)?\(.+\)$",
+                        change_suffix(path_wo).name,
+                    )
+                    and not change_suffix(path, ".pdf", ".part").exists()
+                ):
+                    process_name(path)
