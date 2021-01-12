@@ -108,7 +108,7 @@ if __name__ == "__main__":
                 path_wo = path.with_suffix("")
                 if (
                     not search(
-                        r"^\d+ — .+( – .+)$",
+                        r"^\d+ — .+( – .+)?\(.+\)$",
                         change_suffix(path_wo).name,
                     )
                     and not change_suffix(path, ".pdf", ".part").exists()
