@@ -99,9 +99,10 @@ def change_name(path: Path, name: str) -> Path:
 if __name__ == "__main__":
     with suppress(Quit):
         for path in DIRECTORY.iterdir():
-            if (
-                path.is_file()
-                and path.suffix == ".pdf"
-                and not search(r"^\d+ — .+( – .+)$", path.with_suffix("").name)
-            ):
-                process_name(path)
+            if path.is_file() and path.suffix == ".pdf":
+                path_wo = path.with_suffix("")
+                if (
+                    not search(r"^\d+ — .+( – .+)$", path_wo.name)
+                    and not path_wo.with_suffix(".pdf.part").exists()
+                ):
+                    process_name(path)
