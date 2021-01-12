@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from contextlib import suppress
 from logging import basicConfig
 from logging import getLogger
@@ -52,7 +53,7 @@ def process_name(
         elif input_subtitle == "":
             if subtitles:
                 new_name = " – ".join([new_name] + subtitles)
-                break
+            break
         elif match := search(r"^(.+)$", input_subtitle):
             subtitle = match.group(1).strip()
             subtitles.append(subtitle)
@@ -96,13 +97,20 @@ def change_name(path: Path, name: str) -> Path:
     return new_path.with_suffix(suffix)
 
 
+def change_suffix(path: Path, *suffixes: str) -> Path:
+    return path.with_suffix("".join(suffixes))
+
+
 if __name__ == "__main__":
     with suppress(Quit):
         for path in DIRECTORY.iterdir():
             if path.is_file() and path.suffix == ".pdf":
                 path_wo = path.with_suffix("")
                 if (
-                    not search(r"^\d+ — .+( – .+)$", path_wo.name)
-                    and not path_wo.with_suffix(".pdf.part").exists()
+                    not search(
+                        r"^\d+ — .+( – .+)$",
+                        change_suffix(path_wo).name,
+                    )
+                    and not change_suffix(path, ".pdf", ".part").exists()
                 ):
                     process_name(path)
