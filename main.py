@@ -103,14 +103,20 @@ def change_suffix(path: Path, *suffixes: str) -> Path:
 
 if __name__ == "__main__":
     with suppress(Quit):
-        for path in DIRECTORY.iterdir():
-            if path.is_file() and path.suffix == ".pdf":
-                path_wo = path.with_suffix("")
-                if (
-                    not search(
-                        r"^\d+ — .+( – .+)?\(.+\)$",
-                        change_suffix(path_wo).name,
-                    )
+        while True:
+            try:
+                path = next(
+                    path
+                    for path in DIRECTORY.iterdir()
+                    if path.is_file()
+                    and path.suffix == ".pdf"
                     and not change_suffix(path, ".pdf", ".part").exists()
-                ):
-                    process_name(path)
+                    and not search(
+                        r"^\d+ — .+( – .+)?\(.+\)$",
+                        change_suffix(path).name,
+                    )
+                )
+            except StopIteration:
+                break
+            else:
+                process_name(path)
