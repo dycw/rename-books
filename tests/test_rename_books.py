@@ -9,6 +9,7 @@ from pytest import mark
 from main import change_name
 from main import change_suffix
 
+
 T = TypeVar("T")
 
 
@@ -64,6 +65,3 @@ def test_change_name(path: Path, name: str, expected: Path) -> None:
 )
 def test_change_suffix(path: Path, suffixes: List[str], expected: Path) -> None:
     assert change_suffix(path, *suffixes) == expected
-
-
-# CSS Master by Tiffany B Brown (z-lib.org).pdf
