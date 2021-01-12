@@ -5,7 +5,7 @@ from typing import TypeVar
 
 from pytest import mark
 
-from rename_books.utilities import change_name
+from main import change_name
 
 
 T = TypeVar("T")
