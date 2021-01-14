@@ -1,0 +1,50 @@
+[nitpick]
+minimum_version = "0.23.1"
+
+["pre-commit-config.yaml"]
+[["pre-commit-config.yaml".repos]]
+yaml = "- hooks:\n  - id: nitpick\n  repo: https://github.com/andreoliwa/nitpick\n  rev: v0.23.1\n- hooks:\n  - id: prettier\n  repo: https://github.com/pre-commit/mirrors-prettier\n  rev: v2.2.1\n- hooks:\n  - id: check-case-conflict\n  - id: check-executables-have-shebangs\n  - id: check-merge-conflict\n  - id: check-symlinks\n  - id: check-vcs-permalinks\n  - id: destroyed-symlinks\n  - id: detect-private-key\n  - id: end-of-file-fixer\n  - id: fix-byte-order-marker\n  - args:\n    - --fix=lf\n    id: mixed-line-ending\n  - id: no-commit-to-branch\n  - id: trailing-whitespace\n  repo: https://github.com/pre-commit/pre-commit-hooks\n  rev: v3.4.0\n- hooks:\n  - args:\n    - --py36-plus\n    id: add-trailing-comma\n  repo: https://github.com/asottile/add-trailing-comma\n  rev: v2.0.2\n- hooks:\n  - args:\n    - --py38-plus\n    id: pyupgrade\n  repo: https://github.com/asottile/pyupgrade\n  rev: v2.7.4\n- hooks:\n  - args:\n    - --py37-plus\n    id: reorder-python-imports\n  repo: https://github.com/asottile/reorder_python_imports\n  rev: v2.3.6\n- hooks:\n  - args:\n    - --in-place\n    - --remove-all-unused-imports\n    - --remove-duplicate-keys\n    - --remove-unused-variable\n    id: autoflake\n  repo: https://github.com/humitos/mirrors-autoflake\n  rev: v1.1\n- hooks:\n  - id: black\n  repo: https://github.com/psf/black\n  rev: 20.8b1\n- hooks:\n  - id: mypy\n  repo: https://github.com/pre-commit/mirrors-mypy\n  rev: v0.790\n- hooks:\n  - additional_dependencies: &id001\n    - dlint\n    - flake8-absolute-import\n    - flake8-annotations\n    - flake8-bandit\n    - flake8-bugbear\n    - flake8-builtins\n    - flake8-commas\n    - flake8-comprehensions\n    - flake8-debugger\n    - flake8-eradicate\n    - flake8-executable\n    - flake8-fixme\n    - flake8-future-import\n    - flake8-implicit-str-concat\n    - flake8-mutable\n    - flake8-print\n    - flake8-simplify\n    - flake8-string-format\n    - flake8-todo\n    - flake8-typing-imports\n    - flake8-unused-arguments\n    - pep8-naming\n    - flake8-fine-pytest\n    - flake8-pytest-style\n    id: yesqa\n  repo: https://github.com/asottile/yesqa\n  rev: v1.2.2\n- hooks:\n  - additional_dependencies: *id001\n    id: flake8\n  repo: https://github.com/PyCQA/flake8\n  rev: 3.8.4\n"
+
+["setup.cfg".flake8]
+max-line-length = 88
+min-python-version = 3.8
+unused-arguments-ignore-abstract-functions = true
+per-file-ignores = "tests/*.py:S101"
+ignore = "ANN101,ANN102,S322,A003,B008,FI10,FI11,FI12,FI13,FI14,FI15,FI16,FI17,FI18,SIM106,P101,N802,N803,N806,E203,W503,E501,FP003,FP004,FP005,PT013,PT019"
+
+["setup.cfg".mypy]
+disallow_untyped_decorators = true
+disallow_incomplete_defs = true
+follow_imports = "silent"
+ignore_missing_imports = true
+platform = "linux"
+python_version = 3.9
+warn_no_return = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unused_configs = true
+
+[nitpick.files.absent]
+".flake8" = "Fold into \"setup.cfg\""
+"mypy.ini" = "Fold into \"setup.cfg\""
+"pytest.ini" = "Fold into \"setup.cfg\""
+
+[nitpick.files.present]
+".bumpversion.cfg" = "Create \".bumpversion.cfg\""
+".github/workflows/pre-commit.yml" = "Create \".github/workflows/pre-commit.yml\""
+".github/workflows/tag.yml" = "Create \".github/workflows/tag.yml\""
+".gitignore" = "Create \".gitignore\""
+".pre-commit-config.yaml" = "Create \".pre-commit-config.yaml\""
+"environment.yml" = "Create \"environment.yml\""
+"pyproject.toml" = "Create \"pyproject.toml\""
+".github/workflows/pytest.yml" = "Create \".github/workflows/pytest.yml\""
+"setup.cfg" = "Create \"setup.cfg\""
+
+["pyproject.toml".tool.black]
+line-length = 80
+target-version = [ "py38",]
+
+["pyproject.toml".tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = "tests"
+addopts = "-rsxX -v --color=yes --durations=5"
