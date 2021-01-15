@@ -62,9 +62,7 @@ def process_name(
     authors: List[str] = []
     while True:
         next_n = len(authors) + 1
-        if (
-            input_author := input(f"Input author #{next_n} ('q' to quit): ")
-        ) == "q":
+        if (input_author := input(f"Input author #{next_n} ('q' to quit): ")) == "q":
             raise Quit()
         elif input_author == "":
             if authors:
