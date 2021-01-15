@@ -7,7 +7,6 @@ on:
 
 jobs:
   pytest:
-    name: pre-commit (${{ matrix.os }}, ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
