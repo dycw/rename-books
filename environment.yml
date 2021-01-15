@@ -1,15 +1,7 @@
 name: rename-books
 
-channels:
-  - conda-forge
-
 dependencies:
   - python = 3.9
-
-  # dev
-  - bump2version = 1.0
-  - pre-commit = 2.9
-
-  # pytest
-  - pytest = 6.2
-  - pytest-xdist = 2.2
+  - pip
+  - pip:
+      - -r .pre-commit-hooks/python/requirements.txt

@@ -7,22 +7,13 @@ on:
 
 jobs:
   pytest:
-    name: pytest (${{ matrix.os }}, ${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash -l {0}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: [3.9]
+    name: pre-commit (${{ matrix.os }}, ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/setup-python@v2
         with:
-          activate-environment: rename-books
-          environment-file: environment.yml
-          python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
+          python-version: 3.9
       - run: |
-          pytest -nauto -v tests
+          pip install pytest pytest-xdist
+          pytest -n auto
