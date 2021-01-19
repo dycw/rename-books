@@ -8,6 +8,7 @@ from pathlib import Path
 from re import search
 from sys import stdout
 from typing import List
+from typing import Set
 
 
 basicConfig(
@@ -21,13 +22,13 @@ DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
 LOGGER = getLogger(__name__)
 
 
-def process_name(
-    path: Path,
-) -> None:
+def process_name(path: Path) -> None:
     name = path.name
     LOGGER.info(f"Processing:\n    {name}")
     while True:
-        if (input_year := input("Input year ('q' to quit): ")) == "q":
+        if (input_year := input("Input year (or 's'/'q'): ")) == "s":
+            raise Skip()
+        elif input_year == "q":
             raise Quit()
         elif match := search(r"^(\d+)$", input_year):
             year = int(match.group(1))
@@ -35,7 +36,9 @@ def process_name(
         else:
             LOGGER.info(f"{input_year!r} is an invalid year")
     while True:
-        if (input_title := input("Input title ('q' to quit): ")) == "q":
+        if (input_title := input("Input title (or 's'/'q'): ")) == "s":
+            raise Skip()
+        elif input_title == "q":
             raise Quit()
         elif match := search(r"^(.+)$", input_title):
             title = match.group(1).strip()
@@ -46,9 +49,9 @@ def process_name(
     subtitles: List[str] = []
     while True:
         next_n = len(subtitles) + 1
-        if (
-            input_subtitle := input(f"Input subtitle #{next_n} ('q' to quit): ")
-        ) == "q":
+        if (input_subtitle := input(f"Input subtitle #{next_n} (or 's'/'q'): ")) == "s":
+            raise Skip()
+        elif input_subtitle == "q":
             raise Quit()
         elif input_subtitle == "":
             if subtitles:
@@ -62,7 +65,9 @@ def process_name(
     authors: List[str] = []
     while True:
         next_n = len(authors) + 1
-        if (input_author := input(f"Input author #{next_n} ('q' to quit): ")) == "q":
+        if (input_author := input(f"Input author #{next_n} (or 's'/'q'): ")) == "s":
+            raise Skip()
+        elif input_author == "q":
             raise Quit()
         elif input_author == "":
             if authors:
@@ -85,6 +90,10 @@ def process_name(
             raise Quit()
 
 
+class Skip(RuntimeError):
+    pass
+
+
 class Quit(RuntimeError):
     pass
 
@@ -100,6 +109,7 @@ def change_suffix(path: Path, *suffixes: str) -> Path:
 
 
 if __name__ == "__main__":
+    skips: Set[Path] = set()
     with suppress(Quit):
         while True:
             try:
@@ -113,8 +123,12 @@ if __name__ == "__main__":
                         r"^\d+ — .+( – .+)?\(.+\)$",
                         change_suffix(path).name,
                     )
+                    and path not in skips
                 )
             except StopIteration:
                 break
             else:
-                process_name(path)
+                try:
+                    process_name(path)
+                except Skip:
+                    skips.add(path)
