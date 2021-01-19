@@ -2,6 +2,4 @@ name: rename-books
 
 dependencies:
   - python = 3.9
-  - pip
-  - pip:
-      - --requirement=.pre-commit-hooks/python/requirements.txt
+  - bump2version
