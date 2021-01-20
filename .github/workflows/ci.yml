@@ -1,4 +1,4 @@
-name: pytest
+name: ci
 
 on:
   pull_request:
@@ -6,6 +6,15 @@ on:
       - master
 
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - uses: pre-commit/action@v2.0.0
+
   pytest:
     runs-on: ubuntu-latest
     steps:
@@ -15,4 +24,5 @@ jobs:
           python-version: 3.9
       - run: |
           pip install pytest pytest-xdist
+      - run: |
           pytest -n auto
