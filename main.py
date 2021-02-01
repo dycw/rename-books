@@ -114,7 +114,7 @@ if __name__ == "__main__":
             try:
                 path = next(
                     path
-                    for path in DIRECTORY.iterdir()
+                    for path in sorted(DIRECTORY.iterdir())
                     if path.is_file()
                     and path.suffix == ".pdf"
                     and not change_suffix(path, ".pdf", ".part").exists()
