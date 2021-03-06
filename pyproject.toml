@@ -24,13 +24,14 @@ virtual_env = ".venv/bin/python"
 
 [tool.poetry]
 name = "rename-books"
-version = "0.0.24"
+version = "0.0.25"
 description = "Script to rename e-books"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+loguru = "^0.5"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2"
