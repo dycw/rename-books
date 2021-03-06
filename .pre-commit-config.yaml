@@ -56,12 +56,6 @@ repos:
     rev: 0.1.9
     hooks:
       - id: check-settings
-  - repo: https://github.com/jumanjihouse/pre-commit-hooks
-    rev: 2.1.5
-    hooks:
-      - id: script-must-have-extension
-        exclude: .(ba|z)sh_?(profile|rc)
-      - id: script-must-not-have-extension
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.4.0
     hooks:
