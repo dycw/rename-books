@@ -1,17 +1,12 @@
 from contextlib import suppress
-from logging import INFO
-from logging import basicConfig
-from logging import info
 from os import rename
 from pathlib import Path
 from re import search
-from sys import stdout
+
+from loguru import logger
 
 from rename_books.utilities import change_name
 from rename_books.utilities import change_suffix
-
-
-basicConfig(level=INFO, stream=stdout)
 
 
 DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
@@ -44,7 +39,7 @@ def main() -> None:
 
 def process_name(path: Path) -> None:
     name = path.name
-    info(f"Processing:\n    {name}")
+    logger.info(f"Processing:\n    {name}")
     while True:
         if (input_year := input("Input year (or 's'/'q'): ")) == "s":
             raise Skip()
@@ -54,7 +49,7 @@ def process_name(path: Path) -> None:
             year = int(match.group(1))
             break
         else:
-            info(f"{input_year!r} is an invalid year")
+            logger.info(f"{input_year!r} is an invalid year")
     while True:
         if (input_title := input("Input title (or 's'/'q'): ")) == "s":
             raise Skip()
@@ -64,7 +59,7 @@ def process_name(path: Path) -> None:
             title = match.group(1).strip()
             break
         else:
-            info(f"{input_title!r} is an invalid title")
+            logger.info(f"{input_title!r} is an invalid title")
     new_name = f"{year} — {title}"
     subtitles: list[str] = []
     while True:
@@ -83,7 +78,7 @@ def process_name(path: Path) -> None:
             subtitle = match.group(1).strip()
             subtitles.append(subtitle)
         else:
-            info(f"{input_subtitle!r} is an invalid subtitle")
+            logger.info(f"{input_subtitle!r} is an invalid subtitle")
     authors: list[str] = []
     while True:
         next_n = len(authors) + 1
@@ -102,13 +97,13 @@ def process_name(path: Path) -> None:
             author = match.group(1).strip()
             authors.append(author)
         else:
-            info(f"{input_author!r} is an invalid author")
+            logger.info(f"{input_author!r} is an invalid author")
     while True:
         input_confirm = input(f"Confirm new name:\n{new_name}? ('y'/'n') ")
         if input_confirm == "y":
             new_path = change_name(path, new_name)
             rename(path, new_path)
-            info(f"Renamed:\n    {name}\n--> {new_name}\n")
+            logger.info(f"Renamed:\n    {name}\n--> {new_name}\n")
             break
         elif input_confirm == "n":
             raise Quit()
