@@ -11,14 +11,35 @@ from rename_books.utilities import change_name
 from rename_books.utilities import change_suffix
 
 
-basicConfig(
-    datefmt="%Y-%m-%d %H:%M:%S",
-    format="{asctime}: {msg}",
-    level=INFO,
-    stream=stdout,
-    style="{",
-)
+basicConfig(level=INFO, stream=stdout)
+
+
 DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
+
+
+def main() -> None:
+    skips: set[Path] = set()
+    with suppress(Quit):
+        while True:
+            try:
+                path = next(
+                    path
+                    for path in sorted(DIRECTORY.iterdir())
+                    if path.is_file()
+                    and path.suffix == ".pdf"
+                    and not change_suffix(path, ".pdf", ".part").exists()
+                    and not search(
+                        r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name
+                    )
+                    and path not in skips
+                )
+            except StopIteration:
+                break
+            else:
+                try:
+                    process_name(path)
+                except Skip:
+                    skips.add(path)
 
 
 def process_name(path: Path) -> None:
@@ -102,25 +123,4 @@ class Quit(RuntimeError):
 
 
 if __name__ == "__main__":
-    skips: set[Path] = set()
-    with suppress(Quit):
-        while True:
-            try:
-                path = next(
-                    path
-                    for path in sorted(DIRECTORY.iterdir())
-                    if path.is_file()
-                    and path.suffix == ".pdf"
-                    and not change_suffix(path, ".pdf", ".part").exists()
-                    and not search(
-                        r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name
-                    )
-                    and path not in skips
-                )
-            except StopIteration:
-                break
-            else:
-                try:
-                    process_name(path)
-                except Skip:
-                    skips.add(path)
+    main()
