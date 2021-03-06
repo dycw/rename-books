@@ -105,8 +105,7 @@ if __name__ == "__main__":
                     and path.suffix == ".pdf"
                     and not change_suffix(path, ".pdf", ".part").exists()
                     and not search(
-                        r"^\d+ — .+( – .+)?\(.+\)$",
-                        change_suffix(path).name,
+                        r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name
                     )
                     and path not in skips
                 )

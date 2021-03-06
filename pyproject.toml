@@ -39,6 +39,7 @@ pytest-xdist = "^2"
 
 [tool.poetry.scripts]
 rename-books = "rename_books:main"
+rename-books-vsi = "rename_books.vsi:main"
 
 
 [tool.pytest.ini_options]
