@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 from contextlib import suppress
-from logging import basicConfig
 from logging import INFO
+from logging import basicConfig
 from logging import info
 from os import rename
 from pathlib import Path
 from re import search
 from sys import stdout
-from typing import List
-from typing import Set
 
 
 basicConfig(
@@ -45,26 +43,14 @@ def process_name(path: Path) -> None:
         else:
             info(f"{input_title!r} is an invalid title")
     new_name = f"{year} — {title}"
-    subtitles: List[str] = []
-    while True:
-        next_n = len(subtitles) + 1
-        if (input_subtitle := input(f"Input subtitle #{next_n} (or 's'/'q'): ")) == "s":
-            raise Skip()
-        elif input_subtitle == "q":
-            raise Quit()
-        elif input_subtitle == "":
-            if subtitles:
-                new_name = " – ".join([new_name] + subtitles)
-            break
-        elif match := search(r"^(.+)$", input_subtitle):
-            subtitle = match.group(1).strip()
-            subtitles.append(subtitle)
-        else:
-            info(f"{input_subtitle!r} is an invalid subtitle")
-    authors: List[str] = []
+    subtitles: list[str] = ["A very short introduction"]
+    new_name = " – ".join([new_name] + subtitles)
+    authors: list[str] = []
     while True:
         next_n = len(authors) + 1
-        if (input_author := input(f"Input author #{next_n} (or 's'/'q'): ")) == "s":
+        if (
+            input_author := input(f"Input author #{next_n} (or 's'/'q'): ")
+        ) == "s":
             raise Skip()
         elif input_author == "q":
             raise Quit()
@@ -108,7 +94,7 @@ def change_suffix(path: Path, *suffixes: str) -> Path:
 
 
 if __name__ == "__main__":
-    skips: Set[Path] = set()
+    skips: set[Path] = set()
     with suppress(Quit):
         while True:
             try:
@@ -119,8 +105,7 @@ if __name__ == "__main__":
                     and path.suffix == ".pdf"
                     and not change_suffix(path, ".pdf", ".part").exists()
                     and not search(
-                        r"^\d+ — .+( – .+)?\(.+\)$",
-                        change_suffix(path).name,
+                        r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name
                     )
                     and path not in skips
                 )

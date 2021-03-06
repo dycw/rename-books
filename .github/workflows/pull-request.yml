@@ -11,20 +11,28 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+      - uses: ruby/setup-ruby@v1
         with:
-          python-version: 3.9
+          ruby-version: 3.0
       - uses: pre-commit/action@v2.0.0
 
   pytest:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -l {0}
     steps:
       - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/setup-python@v2
+      - uses: snok/install-poetry@v1.1.2
         with:
-          activate-environment: rename-books
-          environment-file: environment.yml
-      - run: |
-          pytest -n auto
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      - id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: pytest
+        run: |
+          source .venv/bin/activate
+          pytest -nauto
