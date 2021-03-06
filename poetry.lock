@@ -284,7 +284,7 @@ dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "edfe979d66e1ec3a9c8b650cb9eb9e1f519351f6be0828bf274454746a9a53f6"
+content-hash = "a64415fcd9f5734bce616a59e8ee3e53e4bdecefcb2435c5ecad235e1406b886"
 
 [metadata.files]
 apipkg = [
