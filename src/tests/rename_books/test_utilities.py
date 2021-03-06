@@ -2,8 +2,8 @@ from pathlib import Path
 
 from pytest import mark
 
-from rename_books import change_name
-from rename_books import change_suffix
+from rename_books.utilities import change_name
+from rename_books.utilities import change_suffix
 
 
 @mark.parametrize(

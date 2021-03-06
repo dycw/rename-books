@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from contextlib import suppress
 from logging import INFO
 from logging import basicConfig
@@ -7,6 +6,9 @@ from os import rename
 from pathlib import Path
 from re import search
 from sys import stdout
+
+from rename_books.utilities import change_name
+from rename_books.utilities import change_suffix
 
 
 basicConfig(
@@ -97,16 +99,6 @@ class Skip(RuntimeError):
 
 class Quit(RuntimeError):
     pass
-
-
-def change_name(path: Path, name: str) -> Path:
-    new_path = path.with_name(name)
-    suffix = "".join([new_path.suffix, path.suffix])
-    return new_path.with_suffix(suffix)
-
-
-def change_suffix(path: Path, *suffixes: str) -> Path:
-    return path.with_suffix("".join(suffixes))
 
 
 if __name__ == "__main__":
