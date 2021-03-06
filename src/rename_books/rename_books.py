@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from contextlib import suppress
 from logging import INFO
 from logging import basicConfig
@@ -8,15 +7,39 @@ from pathlib import Path
 from re import search
 from sys import stdout
 
+from rename_books.utilities import change_name
+from rename_books.utilities import change_suffix
 
-basicConfig(
-    datefmt="%Y-%m-%d %H:%M:%S",
-    format="{asctime}: {msg}",
-    level=INFO,
-    stream=stdout,
-    style="{",
-)
+
+basicConfig(level=INFO, stream=stdout)
+
+
 DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
+
+
+def main() -> None:
+    skips: set[Path] = set()
+    with suppress(Quit):
+        while True:
+            try:
+                path = next(
+                    path
+                    for path in sorted(DIRECTORY.iterdir())
+                    if path.is_file()
+                    and path.suffix == ".pdf"
+                    and not change_suffix(path, ".pdf", ".part").exists()
+                    and not search(
+                        r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name
+                    )
+                    and path not in skips
+                )
+            except StopIteration:
+                break
+            else:
+                try:
+                    process_name(path)
+                except Skip:
+                    skips.add(path)
 
 
 def process_name(path: Path) -> None:
@@ -43,8 +66,24 @@ def process_name(path: Path) -> None:
         else:
             info(f"{input_title!r} is an invalid title")
     new_name = f"{year} — {title}"
-    subtitles: list[str] = ["A very short introduction"]
-    new_name = " – ".join([new_name] + subtitles)
+    subtitles: list[str] = []
+    while True:
+        next_n = len(subtitles) + 1
+        if (
+            input_subtitle := input(f"Input subtitle #{next_n} (or 's'/'q'): ")
+        ) == "s":
+            raise Skip()
+        elif input_subtitle == "q":
+            raise Quit()
+        elif input_subtitle == "":
+            if subtitles:
+                new_name = " – ".join([new_name] + subtitles)
+            break
+        elif match := search(r"^(.+)$", input_subtitle):
+            subtitle = match.group(1).strip()
+            subtitles.append(subtitle)
+        else:
+            info(f"{input_subtitle!r} is an invalid subtitle")
     authors: list[str] = []
     while True:
         next_n = len(authors) + 1
@@ -83,36 +122,5 @@ class Quit(RuntimeError):
     pass
 
 
-def change_name(path: Path, name: str) -> Path:
-    new_path = path.with_name(name)
-    suffix = "".join([new_path.suffix, path.suffix])
-    return new_path.with_suffix(suffix)
-
-
-def change_suffix(path: Path, *suffixes: str) -> Path:
-    return path.with_suffix("".join(suffixes))
-
-
 if __name__ == "__main__":
-    skips: set[Path] = set()
-    with suppress(Quit):
-        while True:
-            try:
-                path = next(
-                    path
-                    for path in sorted(DIRECTORY.iterdir())
-                    if path.is_file()
-                    and path.suffix == ".pdf"
-                    and not change_suffix(path, ".pdf", ".part").exists()
-                    and not search(
-                        r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name
-                    )
-                    and path not in skips
-                )
-            except StopIteration:
-                break
-            else:
-                try:
-                    process_name(path)
-                except Skip:
-                    skips.add(path)
+    main()
