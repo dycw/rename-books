@@ -1,13 +1,11 @@
 from pathlib import Path
 from typing import Callable
-from typing import cast
-from typing import List
 from typing import TypeVar
-
-from pytest import mark
+from typing import cast
 
 from main import change_name
 from main import change_suffix
+from pytest import mark
 
 
 T = TypeVar("T")
@@ -63,5 +61,5 @@ def test_change_name(path: Path, name: str, expected: Path) -> None:
         ],
     ),
 )
-def test_change_suffix(path: Path, suffixes: List[str], expected: Path) -> None:
+def test_change_suffix(path: Path, suffixes: list[str], expected: Path) -> None:
     assert change_suffix(path, *suffixes) == expected
