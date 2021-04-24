@@ -13,11 +13,10 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.0
+    rev: 3.9.1
     hooks:
       - id: flake8
         additional_dependencies:
-          - dlint
           - flake8-absolute-import
           - flake8-annotations
           - flake8-bandit
@@ -28,37 +27,36 @@ repos:
           - flake8-eradicate
           - flake8-executable
           - flake8-fine-pytest
-          - flake8-fixme
           - flake8-implicit-str-concat
           - flake8-mutable
           - flake8-print
           - flake8-pytest-style
           - flake8-simplify
           - flake8-string-format
-          - flake8-todo
-          - flake8-typing-imports
           - flake8-unused-arguments
           - pep8-naming
   - repo: https://github.com/markdownlint/markdownlint
     rev: v0.11.0
     hooks:
       - id: markdownlint
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.8.0
-    hooks:
-      - id: isort
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.2.1
     hooks:
       - id: prettier
   - repo: https://github.com/pre-commit/pre-commit
-    rev: v2.11.1
+    rev: v2.12.1
     hooks:
       - id: validate_manifest
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.2.19
+    rev: 0.2.27
     hooks:
       - id: check-settings
+      # - id: shfmt
+  - repo: https://github.com/jumanjihouse/pre-commit-hooks
+    rev: 2.1.5
+    hooks:
+      - id: script-must-have-extension
+      - id: script-must-not-have-extension
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.4.0
     hooks:
@@ -76,17 +74,24 @@ repos:
       - id: no-commit-to-branch
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.11.0
+    rev: v2.13.0
     hooks:
       - id: pyupgrade
         args:
           - --py39-plus
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.8.0
+    hooks:
+      - id: isort
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.7.2.1
+    hooks:
+      - id: shellcheck
   - repo: https://github.com/asottile/yesqa
     rev: v1.2.2
     hooks:
       - id: yesqa
         additional_dependencies:
-          - dlint
           - flake8-absolute-import
           - flake8-annotations
           - flake8-bandit
@@ -97,15 +102,12 @@ repos:
           - flake8-eradicate
           - flake8-executable
           - flake8-fine-pytest
-          - flake8-fixme
           - flake8-implicit-str-concat
           - flake8-mutable
           - flake8-print
           - flake8-pytest-style
           - flake8-simplify
           - flake8-string-format
-          - flake8-todo
-          - flake8-typing-imports
           - flake8-unused-arguments
           - pep8-naming
   - repo: meta
