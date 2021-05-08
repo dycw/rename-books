@@ -30,7 +30,7 @@ def main(*, subtitles: list[str] | None = None) -> None:
             break
         else:
             try:
-                process_name(path, subtitles=subtitles)
+                _process_file(path, subtitles=subtitles)
             except Skip:
                 skips.add(path)
 
@@ -49,7 +49,7 @@ def _yield_next_file(*, skips: set[Path] | None = None) -> Path:
     return next(iter(sorted(paths)))
 
 
-def process_name(path: Path, *, subtitles: list[str] | None = None) -> None:
+def _process_file(path: Path, *, subtitles: list[str] | None = None) -> None:
     name = path.name
     logger.info(f"Processing {name!r}")
     data = _confirm_data(_get_data(subtitles=subtitles))
@@ -118,11 +118,11 @@ def _confirm_data(data: _Data) -> _Data:
             return data
         elif choice == "1":
             data = replace(data, year=_get_year())
-        elif choice == "1":
+        elif choice == "2":
             data = replace(data, title=_get_title())
-        elif choice == "1":
+        elif choice == "3":
             data = replace(data, subtitles=_get_subtitles())
-        elif choice == "1":
+        elif choice == "4":
             data = replace(data, author=_get_authors())
         else:
             raise RuntimeError(f"{choice=}")
