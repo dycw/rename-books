@@ -2,6 +2,7 @@ from contextlib import suppress
 from os import rename
 from pathlib import Path
 from re import search
+from sys import stdout
 
 from loguru import logger
 
@@ -9,6 +10,8 @@ from rename_books.utilities import change_name
 from rename_books.utilities import change_suffix
 
 
+logger.remove()
+logger.add(stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>")
 DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
 
 
