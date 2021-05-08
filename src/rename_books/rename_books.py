@@ -1,9 +1,12 @@
-from contextlib import suppress
+from __future__ import annotations
+
+from dataclasses import dataclass
+from dataclasses import replace
 from os import rename
 from pathlib import Path
+from re import findall
 from re import search
 from sys import stdout
-from typing import Optional
 
 from loguru import logger
 
@@ -16,112 +19,159 @@ logger.add(stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>")
 DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
 
 
-def main(*, subtitles: Optional[list[str]] = None) -> None:
+def main(*, subtitles: list[str] | None = None) -> None:
     skips: set[Path] = set()
-    with suppress(Quit):
-        while True:
+    while True:
+        try:
+            path = _yield_next_file(skips=skips)
+        except StopIteration:
+            break
+        else:
             try:
-                path = next(
-                    path
-                    for path in sorted(DIRECTORY.iterdir())
-                    if path.is_file()
-                    and path.suffix == ".pdf"
-                    and not change_suffix(path, ".pdf", ".part").exists()
-                    and not search(
-                        r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name
-                    )
-                    and path not in skips
-                )
-            except StopIteration:
-                break
+                process_name(path, subtitles=subtitles)
+            except Skip:
+                skips.add(path)
+
+
+class Skip(Exception):
+    pass
+
+
+def _yield_next_file(*, skips: set[Path] | None = None) -> Path:
+    paths = (
+        path
+        for path in DIRECTORY.iterdir()
+        if path.is_file()
+        and path.suffix == ".pdf"
+        and not change_suffix(path, ".pdf", ".part").exists()
+        and not search(r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name)
+    )
+    if skips is not None:
+        paths = (path for path in paths if path not in skips)
+    return next(iter(sorted(paths)))
+
+
+def process_name(path: Path, *, subtitles: list[str] | None = None) -> None:
+    name = path.name
+    logger.info(f"Processing {name!r}")
+    data = _confirm_data(_get_data(subtitles=subtitles))
+    new_name = data.to_name()
+    rename(path, change_name(path, new_name))
+    logger.info(f"Renamed:\n    {name}\n--> {new_name}")
+
+
+@dataclass
+class _Data:
+    year: int
+    title: str
+    subtitles: list[str]
+    authors: list[str]
+
+    def to_name(self) -> str:
+        name = f"{self.year} — {self.title}"
+        if subtitles := self.subtitles:
+            joined = ", ".join(subtitles)
+            name = f"{name} – {joined}"
+        authors = ", ".join(self.authors)
+        return f"{name} ({authors})"
+
+
+def _get_data(*, subtitles: list[str] | None = None) -> _Data:
+    return _Data(
+        year=_get_year(),
+        title=_get_title(),
+        subtitles=_get_subtitles() if subtitles is None else subtitles,
+        authors=_get_authors(),
+    )
+
+
+def _get_year() -> int:
+    while True:
+        text = _get_input("Input year", pattern=r"^(\d+)$")
+        return int(text)
+
+
+def _get_title() -> str:
+    return _get_input("Input title")
+
+
+def _get_subtitles() -> list[str]:
+    return _get_list_of_inputs("Input subtitle")
+
+
+def _get_authors() -> list[str]:
+    return _get_list_of_inputs("Input author", name_if_empty_error="'Authors'")
+
+
+def _get_input(
+    question: str,
+    *,
+    extra_choices: dict[str, str] | None = None,
+    pattern: str = None,
+) -> str:
+    choices = {"s": "skip"}
+    if extra_choices is not None:
+        choices.update(extra_choices)
+    choices_str = ", ".join(f"{k}:{v}" for k, v in choices.items())
+    prompt = f"{question} ({choices_str}): "
+    while True:
+        if (response := input(prompt)) == "s":
+            raise Skip()
+        else:
+            if pattern is None:
+                return response.strip()
             else:
                 try:
-                    process_name(path, subtitles=subtitles)
-                except Skip:
-                    skips.add(path)
+                    (match,) = findall(pattern, response)
+                except ValueError:
+                    logger.error(f"{response!r} is an invalid value")
+                else:
+                    return match
 
 
-def process_name(path: Path, *, subtitles: Optional[list[str]] = None) -> None:
-    name = path.name
-    logger.info(f"Processing {name}")
+def _get_list_of_inputs(
+    question: str, *, name_if_empty_error: str | None = None
+) -> list[str]:
+    out = []
     while True:
-        if (input_year := input("Input year (or 's'/'q'): ")) == "s":
-            raise Skip()
-        elif input_year == "q":
-            raise Quit()
-        elif match := search(r"^(\d+)$", input_year):
-            year = int(match.group(1))
-            break
+        enum_question = f"{question} (#{len(out)+1})"
+        response = _get_input(enum_question, extra_choices={"": "finish"})
+        if response:
+            out.append(response)
         else:
-            logger.info(f"{input_year!r} is an invalid year")
-    while True:
-        if (input_title := input("Input title (or 's'/'q'): ")) == "s":
-            raise Skip()
-        elif input_title == "q":
-            raise Quit()
-        elif match := search(r"^(.+)$", input_title):
-            title = match.group(1).strip()
-            break
-        else:
-            logger.info(f"{input_title!r} is an invalid title")
-    new_name = f"{year} — {title}"
-    if subtitles is None:
-        subtitles = []
-        while True:
-            next_n = len(subtitles) + 1
-            if (
-                input_subtitle := input(
-                    f"Input subtitle #{next_n} (or 's'/'q'): "
-                )
-            ) == "s":
-                raise Skip()
-            elif input_subtitle == "q":
-                raise Quit()
-            elif input_subtitle == "":
-                if subtitles:
-                    new_name = " – ".join([new_name] + subtitles)
-                break
-            elif match := search(r"^(.+)$", input_subtitle):
-                subtitle = match.group(1).strip()
-                subtitles.append(subtitle)
+            if name_if_empty_error is None:
+                return out
             else:
-                logger.info(f"{input_subtitle!r} is an invalid subtitle")
-    authors: list[str] = []
+                logger.error(
+                    f"{name_if_empty_error!r} is not allowed to be empty"
+                )
+
+
+def _confirm_data(data: _Data) -> _Data:
     while True:
-        next_n = len(authors) + 1
-        if (
-            input_author := input(f"Input author #{next_n} (or 's'/'q'): ")
-        ) == "s":
-            raise Skip()
-        elif input_author == "q":
-            raise Quit()
-        elif input_author == "":
-            if authors:
-                joined_authors = ", ".join(authors)
-                new_name = f"{new_name} ({joined_authors})"
-                break
-        elif match := search(r"^(.+)$", input_author):
-            author = match.group(1).strip()
-            authors.append(author)
+        choice = _get_input(
+            f"Confirm data: {data}",
+            extra_choices={
+                "": "confirm",
+                "1": "year",
+                "2": "title",
+                "3": "subtitles",
+                "4": "authors",
+            },
+            pattern=r"^([1-4])$",
+        )
+        if choice == "":
+            return data
+        elif choice == "1":
+            data = replace(data, year=_get_year())
+        elif choice == "1":
+            data = replace(data, title=_get_title())
+        elif choice == "1":
+            data = replace(data, subtitles=_get_subtitles())
+        elif choice == "1":
+            data = replace(data, author=_get_authors())
         else:
-            logger.info(f"{input_author!r} is an invalid author")
-    while True:
-        input_confirm = input(f"Confirm new name:\n{new_name}? ('y'/'n') ")
-        if input_confirm == "y":
-            new_path = change_name(path, new_name)
-            rename(path, new_path)
-            logger.info(f"Renamed:\n    {name}\n--> {new_name}")
-            break
-        elif input_confirm == "n":
-            raise Quit()
-
-
-class Skip(RuntimeError):
-    pass
-
-
-class Quit(RuntimeError):
-    pass
+            raise RuntimeError(f"{choice=}")
 
 
 if __name__ == "__main__":

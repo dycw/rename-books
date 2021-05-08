@@ -1,14 +1,11 @@
-from pathlib import Path
+from __future__ import annotations
 
-from rename_books.rename_books import main
-
-
-DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
+from rename_books.rename_books import main as _main
 
 
-def main_vsi() -> None:
-    main(subtitles=["A very short introduction"])
+def main() -> None:
+    _main(subtitles=["A very short introduction"])
 
 
 if __name__ == "__main__":
-    main_vsi()
+    main()
