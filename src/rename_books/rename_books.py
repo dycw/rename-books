@@ -94,25 +94,33 @@ def _get_title() -> str:
 
 
 def _get_subtitles() -> list[str]:
-    return get_list_of_inputs("Input subtitle")
+    return get_list_of_inputs("Input subtitle(s)")
 
 
 def _get_authors() -> list[str]:
-    return get_list_of_inputs("Input author", name_if_empty_error="'Authors'")
+    return get_list_of_inputs(
+        "Input author(s)", name_if_empty_error="'Authors'"
+    )
 
 
 def _confirm_data(data: _Data) -> _Data:
     while True:
         choice = get_input(
-            f"Confirm data: {data}",
+            f"""\
+Confirm data:
+    year={data.year}
+    title={data.title}
+    subtitles={data.subtitles}
+    authors={data.authors}
+""",
             extra_choices={
-                "": "confirm",
                 "1": "year",
                 "2": "title",
                 "3": "subtitles",
                 "4": "authors",
+                "Enter": "confirm",
             },
-            pattern=r"^([1-4])$",
+            pattern=r"^([1-4]?)$",
         )
         if choice == "":
             return data

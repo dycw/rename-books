@@ -50,13 +50,16 @@ def get_list_of_inputs(
     out = []
     while True:
         enum_question = f"{question} (#{len(out)+1})"
-        response = get_input(enum_question, extra_choices={"": "finish"})
+        response = get_input(enum_question, extra_choices={"Enter": "finish"})
         if response:
             out.append(response)
         else:
-            if name_if_empty_error is None:
+            if out:
                 return out
             else:
-                logger.error(
-                    f"{name_if_empty_error!r} is not allowed to be empty"
-                )
+                if name_if_empty_error is None:
+                    return out
+                else:
+                    logger.error(
+                        f"{name_if_empty_error!r} is not allowed to be empty"
+                    )
