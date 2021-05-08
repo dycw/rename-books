@@ -4,14 +4,16 @@ from dataclasses import dataclass
 from dataclasses import replace
 from os import rename
 from pathlib import Path
-from re import findall
 from re import search
 from sys import stdout
 
 from loguru import logger
 
+from rename_books.errors import Skip
 from rename_books.utilities import change_name
 from rename_books.utilities import change_suffix
+from rename_books.utilities import get_input
+from rename_books.utilities import get_list_of_inputs
 
 
 logger.remove()
@@ -31,10 +33,6 @@ def main(*, subtitles: list[str] | None = None) -> None:
                 process_name(path, subtitles=subtitles)
             except Skip:
                 skips.add(path)
-
-
-class Skip(Exception):
-    pass
 
 
 def _yield_next_file(*, skips: set[Path] | None = None) -> Path:
@@ -87,69 +85,25 @@ def _get_data(*, subtitles: list[str] | None = None) -> _Data:
 
 def _get_year() -> int:
     while True:
-        text = _get_input("Input year", pattern=r"^(\d+)$")
+        text = get_input("Input year", pattern=r"^(\d+)$")
         return int(text)
 
 
 def _get_title() -> str:
-    return _get_input("Input title")
+    return get_input("Input title")
 
 
 def _get_subtitles() -> list[str]:
-    return _get_list_of_inputs("Input subtitle")
+    return get_list_of_inputs("Input subtitle")
 
 
 def _get_authors() -> list[str]:
-    return _get_list_of_inputs("Input author", name_if_empty_error="'Authors'")
-
-
-def _get_input(
-    question: str,
-    *,
-    extra_choices: dict[str, str] | None = None,
-    pattern: str = None,
-) -> str:
-    choices = {"s": "skip"}
-    if extra_choices is not None:
-        choices.update(extra_choices)
-    choices_str = ", ".join(f"{k}:{v}" for k, v in choices.items())
-    prompt = f"{question} ({choices_str}): "
-    while True:
-        if (response := input(prompt)) == "s":
-            raise Skip()
-        else:
-            if pattern is None:
-                return response.strip()
-            else:
-                try:
-                    (match,) = findall(pattern, response)
-                except ValueError:
-                    logger.error(f"{response!r} is an invalid value")
-                else:
-                    return match
-
-
-def _get_list_of_inputs(
-    question: str, *, name_if_empty_error: str | None = None
-) -> list[str]:
-    out = []
-    while True:
-        enum_question = f"{question} (#{len(out)+1})"
-        response = _get_input(enum_question, extra_choices={"": "finish"})
-        if response:
-            out.append(response)
-        else:
-            if name_if_empty_error is None:
-                return out
-            else:
-                logger.error(
-                    f"{name_if_empty_error!r} is not allowed to be empty"
-                )
+    return get_list_of_inputs("Input author", name_if_empty_error="'Authors'")
 
 
 def _confirm_data(data: _Data) -> _Data:
     while True:
-        choice = _get_input(
+        choice = get_input(
             f"Confirm data: {data}",
             extra_choices={
                 "": "confirm",
