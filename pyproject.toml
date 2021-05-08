@@ -33,7 +33,7 @@ python = "^3.9"
 loguru = "^0.5.3"
 
 [tool.poetry.dev-dependencies]
-black = "^21.4b2"
+black = "^21.5b0"
 flake8 = "^3.9.1"
 flake8-absolute-import = "^1.0"
 flake8-annotations = "^2.6.2"
@@ -55,7 +55,7 @@ flake8-unused-arguments = "^0.0.6"
 isort = "^5.8.0"
 pep8-naming = "^0.11.1"
 pre-commit = "^2.12.1"
-pytest = "^6.2.3"
+pytest = "^6.2.4"
 pytest-randomly = "^3.7.0"
 pytest-xdist = "^2.2.1"
 
