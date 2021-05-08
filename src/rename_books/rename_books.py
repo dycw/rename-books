@@ -108,10 +108,10 @@ def _confirm_data(data: _Data) -> _Data:
         choice = get_input(
             f"""\
 Confirm data:
-    year={data.year}
-    title={data.title}
-    subtitles={data.subtitles}
-    authors={data.authors}
+    year      = {data.year}
+    title     = {data.title}
+    subtitles = {data.subtitles}
+    authors   = {data.authors}
 """,
             extra_choices={
                 "1": "year",
@@ -131,7 +131,7 @@ Confirm data:
         elif choice == "3":
             data = replace(data, subtitles=_get_subtitles())
         elif choice == "4":
-            data = replace(data, author=_get_authors())
+            data = replace(data, authors=_get_authors())
         else:
             raise RuntimeError(f"{choice=}")
 
