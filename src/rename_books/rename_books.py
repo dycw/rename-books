@@ -3,6 +3,7 @@ from os import rename
 from pathlib import Path
 from re import search
 from sys import stdout
+from typing import Optional
 
 from loguru import logger
 
@@ -15,7 +16,7 @@ logger.add(stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>")
 DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
 
 
-def main() -> None:
+def main(*, subtitles: Optional[list[str]] = None) -> None:
     skips: set[Path] = set()
     with suppress(Quit):
         while True:
@@ -35,14 +36,14 @@ def main() -> None:
                 break
             else:
                 try:
-                    process_name(path)
+                    process_name(path, subtitles=subtitles)
                 except Skip:
                     skips.add(path)
 
 
-def process_name(path: Path) -> None:
+def process_name(path: Path, *, subtitles: Optional[list[str]] = None) -> None:
     name = path.name
-    logger.info(f"Processing:\n    {name}")
+    logger.info(f"Processing {name}")
     while True:
         if (input_year := input("Input year (or 's'/'q'): ")) == "s":
             raise Skip()
@@ -64,24 +65,27 @@ def process_name(path: Path) -> None:
         else:
             logger.info(f"{input_title!r} is an invalid title")
     new_name = f"{year} — {title}"
-    subtitles: list[str] = []
-    while True:
-        next_n = len(subtitles) + 1
-        if (
-            input_subtitle := input(f"Input subtitle #{next_n} (or 's'/'q'): ")
-        ) == "s":
-            raise Skip()
-        elif input_subtitle == "q":
-            raise Quit()
-        elif input_subtitle == "":
-            if subtitles:
-                new_name = " – ".join([new_name] + subtitles)
-            break
-        elif match := search(r"^(.+)$", input_subtitle):
-            subtitle = match.group(1).strip()
-            subtitles.append(subtitle)
-        else:
-            logger.info(f"{input_subtitle!r} is an invalid subtitle")
+    if subtitles is None:
+        subtitles = []
+        while True:
+            next_n = len(subtitles) + 1
+            if (
+                input_subtitle := input(
+                    f"Input subtitle #{next_n} (or 's'/'q'): "
+                )
+            ) == "s":
+                raise Skip()
+            elif input_subtitle == "q":
+                raise Quit()
+            elif input_subtitle == "":
+                if subtitles:
+                    new_name = " – ".join([new_name] + subtitles)
+                break
+            elif match := search(r"^(.+)$", input_subtitle):
+                subtitle = match.group(1).strip()
+                subtitles.append(subtitle)
+            else:
+                logger.info(f"{input_subtitle!r} is an invalid subtitle")
     authors: list[str] = []
     while True:
         next_n = len(authors) + 1
@@ -106,7 +110,7 @@ def process_name(path: Path) -> None:
         if input_confirm == "y":
             new_path = change_name(path, new_name)
             rename(path, new_path)
-            logger.info(f"Renamed:\n    {name}\n--> {new_name}\n")
+            logger.info(f"Renamed:\n    {name}\n--> {new_name}")
             break
         elif input_confirm == "n":
             raise Quit()
