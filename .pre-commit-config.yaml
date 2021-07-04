@@ -19,14 +19,12 @@ repos:
         additional_dependencies:
           - flake8-absolute-import
           - flake8-annotations
-          - flake8-bandit
           - flake8-bugbear
           - flake8-builtins
           - flake8-comprehensions
           - flake8-debugger
           - flake8-eradicate
           - flake8-executable
-          - flake8-fine-pytest
           - flake8-future-import
           - flake8-implicit-str-concat
           - flake8-mutable
@@ -35,7 +33,6 @@ repos:
           - flake8-simplify
           - flake8-string-format
           - flake8-unused-arguments
-          - pep8-naming
   - repo: https://github.com/markdownlint/markdownlint
     rev: v0.11.0
     hooks:
@@ -95,14 +92,12 @@ repos:
         additional_dependencies:
           - flake8-absolute-import
           - flake8-annotations
-          - flake8-bandit
           - flake8-bugbear
           - flake8-builtins
           - flake8-comprehensions
           - flake8-debugger
           - flake8-eradicate
           - flake8-executable
-          - flake8-fine-pytest
           - flake8-future-import
           - flake8-implicit-str-concat
           - flake8-mutable
@@ -111,7 +106,6 @@ repos:
           - flake8-simplify
           - flake8-string-format
           - flake8-unused-arguments
-          - pep8-naming
   - repo: meta
     hooks:
       - id: check-useless-excludes
