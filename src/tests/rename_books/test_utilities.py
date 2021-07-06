@@ -52,6 +52,7 @@ def test_change_suffix(path: Path, suffixes: list[str], expected: Path) -> None:
 
 
 @mark.parametrize("func", [get_dropbox_path, get_temporary_path])
+@mark.xfail
 def test_get_path(func: Callable[[], Path]) -> None:
     path = func()
     assert isinstance(path, Path)
