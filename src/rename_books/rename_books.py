@@ -14,11 +14,12 @@ from rename_books.utilities import change_name
 from rename_books.utilities import change_suffix
 from rename_books.utilities import get_input
 from rename_books.utilities import get_list_of_inputs
+from rename_books.utilities import get_temporary_path
 
 
 logger.remove()
 logger.add(stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>")
-DIRECTORY = Path("/data/derek/Dropbox/Temporary/")
+DIRECTORY = get_temporary_path()
 
 
 def main(*, subtitles: list[str] | None = None) -> None:
