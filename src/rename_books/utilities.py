@@ -18,6 +18,17 @@ def change_suffix(path: Path, *suffixes: str) -> Path:
     return path.with_suffix("".join(suffixes))
 
 
+def get_dropbox_path() -> Path:
+    return next(
+        path
+        for path in [
+            Path("/data/derek/Dropbox"),
+            Path("/mnt/c/Users/Derek/Dropbox"),
+        ]
+        if path.exists()
+    )
+
+
 def get_input(
     question: str,
     *,
@@ -63,3 +74,7 @@ def get_list_of_inputs(
                     logger.error(
                         f"{name_if_empty_error!r} is not allowed to be empty"
                     )
+
+
+def get_temporary_path() -> Path:
+    return get_dropbox_path().joinpath("Temporary")

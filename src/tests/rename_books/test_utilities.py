@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Callable
 
 from pytest import mark
 
 from rename_books.utilities import change_name
 from rename_books.utilities import change_suffix
+from rename_books.utilities import get_dropbox_path
+from rename_books.utilities import get_temporary_path
 
 
 @mark.parametrize(
@@ -46,3 +49,10 @@ def test_change_name(path: Path, name: str, expected: Path) -> None:
 )
 def test_change_suffix(path: Path, suffixes: list[str], expected: Path) -> None:
     assert change_suffix(path, *suffixes) == expected
+
+
+@mark.parametrize("func", [get_dropbox_path, get_temporary_path])
+def test_get_path(func: Callable[[], Path]) -> None:
+    path = func()
+    assert isinstance(path, Path)
+    assert path.exists()
