@@ -124,8 +124,6 @@ repos:
     hooks:
       - id: bump-version
         args: [--setup-cfg]
-      - id: tag-commits-and-push-tags
-        args: [--setup-cfg]
   - repo: meta
     hooks:
       - id: check-useless-excludes
