@@ -53,7 +53,7 @@ def get_input(
                 try:
                     (match,) = findall(pattern, response)
                 except ValueError:
-                    logger.error("%r is an invalid value", response)
+                    logger.error("{!r} is an invalid value", response)
                 else:
                     return match
 
@@ -76,7 +76,7 @@ def get_list_of_inputs(
                     return out
                 else:
                     logger.error(
-                        "%r is not allowed to be empty", name_if_empty_error
+                        "{!r} is not allowed to be empty", name_if_empty_error
                     )
 
 
