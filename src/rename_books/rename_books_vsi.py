@@ -1,8 +1,9 @@
-from __future__ import annotations
+from beartype import beartype
 
 from rename_books.rename_books import main as _main
 
 
+@beartype
 def main() -> None:
     _main(subtitles=["A very short introduction"])
 

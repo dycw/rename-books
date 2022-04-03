@@ -1,23 +1,25 @@
-from __future__ import annotations
-
 from pathlib import Path
 from re import findall
 
+from beartype import beartype
 from loguru import logger
 
 from rename_books.errors import Skip
 
 
-def change_name(path: Path, name: str) -> Path:
+@beartype
+def change_name(path: Path, name: str, /) -> Path:
     new_path = path.with_name(name)
     suffix = "".join([new_path.suffix, path.suffix])
     return new_path.with_suffix(suffix)
 
 
-def change_suffix(path: Path, *suffixes: str) -> Path:
+@beartype
+def change_suffix(path: Path, /, *suffixes: str) -> Path:
     return path.with_suffix("".join(suffixes))
 
 
+@beartype
 def get_dropbox_path() -> Path:
     return next(
         path
@@ -29,11 +31,12 @@ def get_dropbox_path() -> Path:
     )
 
 
+@beartype
 def get_input(
     question: str,
     *,
     extra_choices: dict[str, str] | None = None,
-    pattern: str = None,
+    pattern: str | None = None,
 ) -> str:
     choices = {"s": "skip"}
     if extra_choices is not None:
@@ -50,15 +53,16 @@ def get_input(
                 try:
                     (match,) = findall(pattern, response)
                 except ValueError:
-                    logger.error(f"{response!r} is an invalid value")
+                    logger.error("%r is an invalid value", response)
                 else:
                     return match
 
 
+@beartype
 def get_list_of_inputs(
     question: str, *, name_if_empty_error: str | None = None
 ) -> list[str]:
-    out = []
+    out: list[str] = []
     while True:
         enum_question = f"{question} (#{len(out)+1})"
         response = get_input(enum_question, extra_choices={"Enter": "finish"})
@@ -72,7 +76,7 @@ def get_list_of_inputs(
                     return out
                 else:
                     logger.error(
-                        f"{name_if_empty_error!r} is not allowed to be empty"
+                        "%r is not allowed to be empty", name_if_empty_error
                     )
 
 
