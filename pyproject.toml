@@ -21,7 +21,7 @@ virtual_env = ".venv/bin/python"
 
 [tool.poetry]
 name = "rename-books"
-version = "0.2.2"
+version = "0.2.3"
 description = "Script to rename e-books"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 license = "MIT"
