@@ -54,11 +54,11 @@ def _yield_next_file(*, skips: set[Path] | None = None) -> Path:
 @beartype
 def _process_file(path: Path, *, subtitles: list[str] | None = None) -> None:
     name = path.name
-    logger.info("Processing {}", name)
+    logger.info("Processing {!r}", name)
     data = _confirm_data(_get_data(subtitles=subtitles))
     new_name = data.to_name()
     rename(path, change_name(path, new_name))
-    logger.info("Renamed:\n    {}\n--> {}", name, new_name)
+    logger.info("Renamed:\n    {!r}\n--> {!r}", name, new_name)
 
 
 @beartype
