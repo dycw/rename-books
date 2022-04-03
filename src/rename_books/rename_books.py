@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from dataclasses import replace
 from os import rename
@@ -7,6 +5,7 @@ from pathlib import Path
 from re import search
 from sys import stdout
 
+from beartype import beartype
 from loguru import logger
 
 from rename_books.errors import Skip
@@ -22,6 +21,7 @@ logger.add(stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>")
 DIRECTORY = get_temporary_path()
 
 
+@beartype
 def main(*, subtitles: list[str] | None = None) -> None:
     skips: set[Path] = set()
     while True:
@@ -36,6 +36,7 @@ def main(*, subtitles: list[str] | None = None) -> None:
                 skips.add(path)
 
 
+@beartype
 def _yield_next_file(*, skips: set[Path] | None = None) -> Path:
     paths = (
         path
@@ -50,15 +51,17 @@ def _yield_next_file(*, skips: set[Path] | None = None) -> Path:
     return next(iter(sorted(paths)))
 
 
+@beartype
 def _process_file(path: Path, *, subtitles: list[str] | None = None) -> None:
     name = path.name
-    logger.info(f"Processing {name!r}")
+    logger.info("Processing %s", name)
     data = _confirm_data(_get_data(subtitles=subtitles))
     new_name = data.to_name()
     rename(path, change_name(path, new_name))
-    logger.info(f"Renamed:\n    {name}\n--> {new_name}")
+    logger.info("Renamed:\n    %s\n--> %s", name, new_name)
 
 
+@beartype
 @dataclass
 class _Data:
     year: int
@@ -66,6 +69,7 @@ class _Data:
     subtitles: list[str]
     authors: list[str]
 
+    @beartype
     def to_name(self) -> str:
         name = f"{self.year} — {self.title}"
         if subtitles := self.subtitles:
@@ -75,6 +79,7 @@ class _Data:
         return f"{name} ({authors})"
 
 
+@beartype
 def _get_data(*, subtitles: list[str] | None = None) -> _Data:
     return _Data(
         year=_get_year(),
@@ -84,27 +89,32 @@ def _get_data(*, subtitles: list[str] | None = None) -> _Data:
     )
 
 
+@beartype
 def _get_year() -> int:
     while True:
         text = get_input("Input year", pattern=r"^(\d+)$")
         return int(text)
 
 
+@beartype
 def _get_title() -> str:
     return get_input("Input title")
 
 
+@beartype
 def _get_subtitles() -> list[str]:
     return get_list_of_inputs("Input subtitle(s)")
 
 
+@beartype
 def _get_authors() -> list[str]:
     return get_list_of_inputs(
         "Input author(s)", name_if_empty_error="'Authors'"
     )
 
 
-def _confirm_data(data: _Data) -> _Data:
+@beartype
+def _confirm_data(data: _Data, /) -> _Data:
     while True:
         choice = get_input(
             f"""\
