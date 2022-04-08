@@ -1,19 +1,25 @@
+from collections.abc import Iterator
 from dataclasses import dataclass
-from dataclasses import replace
+from itertools import count
+from itertools import takewhile
 from os import rename
 from pathlib import Path
+from re import findall
 from re import search
 from sys import stdout
+from typing import cast
 
 from beartype import beartype
 from loguru import logger
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.validation import Validator
+from tabulate import tabulate
 
-from rename_books.errors import Skip
 from rename_books.utilities import change_name
 from rename_books.utilities import change_suffix
-from rename_books.utilities import get_input
-from rename_books.utilities import get_list_of_inputs
 from rename_books.utilities import get_temporary_path
+from rename_books.utilities import is_non_empty
 
 
 logger.remove()
@@ -22,22 +28,17 @@ DIRECTORY = get_temporary_path()
 
 
 @beartype
-def main(*, subtitles: list[str] | None = None) -> None:
+def main() -> None:
     skips: set[Path] = set()
-    while True:
-        try:
-            path = _yield_next_file(skips=skips)
-        except StopIteration:
-            break
+    while (path := _get_next_file(skips=skips)) is not None:
+        if _get_process_decision(path):
+            _process_file(path)
         else:
-            try:
-                _process_file(path, subtitles=subtitles)
-            except Skip:
-                skips.add(path)
+            skips.add(path)
 
 
 @beartype
-def _yield_next_file(*, skips: set[Path] | None = None) -> Path:
+def _get_next_file(*, skips: set[Path] | None = None) -> Path | None:
     paths = (
         path
         for path in DIRECTORY.iterdir()
@@ -48,26 +49,161 @@ def _yield_next_file(*, skips: set[Path] | None = None) -> Path:
     )
     if skips is not None:
         paths = (path for path in paths if path not in skips)
-    return next(iter(sorted(paths)))
+    try:
+        return next(iter(sorted(paths)))
+    except StopIteration:
+        return None
 
 
 @beartype
-def _process_file(path: Path, *, subtitles: list[str] | None = None) -> None:
+def _get_process_decision(path: Path, /) -> bool:
+    completer = WordCompleter(["process", "skip"])
+
+    @beartype
+    def validator(text: str, /) -> bool:
+        return bool(search(r"(process|skip)", text))
+
+    result = prompt(
+        f"File = {path.name}\nProcess or skip? ",
+        completer=completer,
+        default="process",
+        mouse_support=True,
+        validator=Validator.from_callable(
+            validator, error_message="Enter 'process' or 'skip'"
+        ),
+        vi_mode=True,
+    ).strip()
+    return result == "process"
+
+
+@beartype
+def _process_file(path: Path, /) -> None:
+    year = _get_year()
+    if (defaults := _try_get_defaults(path)) is None:
+        def_title = def_authors = None
+    else:
+        def_title, def_authors = defaults
+    title = _get_title(default=def_title)
+    subtitles = _get_subtitles(
+        default=None if def_title is None else (def_title, title)
+    )
+    authors = _get_authors(default=def_authors)
+    data = _Data(year, title, subtitles, authors)
+    if _confirm_data(data):
+        _rename_file_to_data(path, data)
+    else:
+        _process_file(path)
+
+
+@beartype
+def _get_year() -> int:
+    @beartype
+    def validator(text: str, /) -> bool:
+        return bool(search(r"^(\d+)$", text))
+
+    text = prompt(
+        "Input year: ",
+        default="20",
+        mouse_support=True,
+        validator=Validator.from_callable(
+            validator, error_message="Enter a valid year"
+        ),
+        vi_mode=True,
+    ).strip()
+    return int(text)
+
+
+@beartype
+def _try_get_defaults(path: Path, /) -> tuple[str, list[str]] | None:
     name = path.name
-    logger.info("Processing {!r}", name)
-    data = _confirm_data(_get_data(subtitles=subtitles))
-    new_name = data.to_name()
-    rename(path, change_name(path, new_name))
-    logger.info("Renamed:\n    {!r}\n--> {!r}", name, new_name)
+    try:
+        ((title_text, authors_text),) = cast(
+            tuple[str, ...],
+            findall(r"^(.+)\s+\((.+)\)\s+\(z-lib\.org\)\.pdf$", name),
+        )
+    except ValueError:
+        return None
+    title = title_text.capitalize()
+    authors = [name.split(" ")[-1] for name in authors_text.split(",")]
+    return title, authors
 
 
 @beartype
-@dataclass
+def _get_title(*, default: str | None = None) -> str:
+    return prompt(
+        "Input title: ",
+        default="" if default is None else default,
+        mouse_support=True,
+        vi_mode=True,
+    ).strip()
+
+
+@beartype
+def _get_subtitles(*, default: tuple[str, str] | None = None) -> list[str]:
+    num_words: int = 0
+    if default is None:
+        def_title_words = []
+    else:
+        def_title, title = default
+        def_title_words = def_title.split(" ")
+        num_words += len(title.split(" "))
+
+    @beartype
+    def yield_inputs(num_words: int, /) -> Iterator[str]:
+        while True:
+            def_i = " ".join(def_title_words[num_words:]).capitalize()
+            yield (
+                subtitle := prompt(
+                    "Input subtitle(s): ",
+                    default=def_i,
+                    mouse_support=True,
+                    vi_mode=True,
+                ).strip()
+            )
+            num_words += len(subtitle.split(" "))
+
+    return list(takewhile(is_non_empty, yield_inputs(num_words)))
+
+
+@beartype
+def _get_authors(*, default: list[str] | None = None) -> list[str]:
+    @beartype
+    def yield_inputs() -> Iterator[str]:
+        for i in count():
+            if default is None:
+                def_i = ""
+            else:
+                try:
+                    def_i = default[i]
+                except IndexError:
+                    def_i = ""
+            yield prompt(
+                "Input author(s): ",
+                default=def_i,
+                mouse_support=True,
+                vi_mode=True,
+            ).strip()
+
+    return list(takewhile(is_non_empty, yield_inputs()))
+
+
+@beartype
+@dataclass(repr=False)
 class _Data:
     year: int
     title: str
     subtitles: list[str]
     authors: list[str]
+
+    @beartype
+    def __repr__(self) -> str:
+        data = [
+            ["year", self.year],
+            ["title", self.title],
+            ["subtitles", self.subtitles],
+            ["authors", self.authors],
+        ]
+        return tabulate(data)
 
     @beartype
     def to_name(self) -> str:
@@ -80,71 +216,31 @@ class _Data:
 
 
 @beartype
-def _get_data(*, subtitles: list[str] | None = None) -> _Data:
-    return _Data(
-        year=_get_year(),
-        title=_get_title(),
-        subtitles=_get_subtitles() if subtitles is None else subtitles,
-        authors=_get_authors(),
-    )
+def _confirm_data(data: _Data, /) -> bool:
+    completer = WordCompleter(["yes", "no"])
+
+    @beartype
+    def validator(text: str, /) -> bool:
+        return bool(search(r"(yes|no)", text))
+
+    result = prompt(
+        f"{data}\nConfirm? ",
+        completer=completer,
+        default="yes",
+        mouse_support=True,
+        validator=Validator.from_callable(
+            validator, error_message="Enter 'yes' or 'no'"
+        ),
+        vi_mode=True,
+    ).strip()
+    return result == "yes"
 
 
 @beartype
-def _get_year() -> int:
-    while True:
-        text = get_input("Input year", pattern=r"^(\d+)$")
-        return int(text)
-
-
-@beartype
-def _get_title() -> str:
-    return get_input("Input title")
-
-
-@beartype
-def _get_subtitles() -> list[str]:
-    return get_list_of_inputs("Input subtitle(s)")
-
-
-@beartype
-def _get_authors() -> list[str]:
-    return get_list_of_inputs(
-        "Input author(s)", name_if_empty_error="'Authors'"
-    )
-
-
-@beartype
-def _confirm_data(data: _Data, /) -> _Data:
-    while True:
-        choice = get_input(
-            f"""\
-Confirm data:
-    year      = {data.year}
-    title     = {data.title}
-    subtitles = {data.subtitles}
-    authors   = {data.authors}
-""",
-            extra_choices={
-                "1": "year",
-                "2": "title",
-                "3": "subtitles",
-                "4": "authors",
-                "Enter": "confirm",
-            },
-            pattern=r"^([1-4]?)$",
-        )
-        if choice == "":
-            return data
-        elif choice == "1":
-            data = replace(data, year=_get_year())
-        elif choice == "2":
-            data = replace(data, title=_get_title())
-        elif choice == "3":
-            data = replace(data, subtitles=_get_subtitles())
-        elif choice == "4":
-            data = replace(data, authors=_get_authors())
-        else:
-            raise RuntimeError(f"{choice=}")
+def _rename_file_to_data(path: Path, data: _Data, /) -> None:
+    new_name = data.to_name()
+    rename(path, change_name(path, new_name))
+    logger.info("Renamed:\n    {}\n--> {}", path.name, new_name)
 
 
 if __name__ == "__main__":

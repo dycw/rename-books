@@ -1,10 +1,6 @@
 from pathlib import Path
-from re import findall
 
 from beartype import beartype
-from loguru import logger
-
-from rename_books.errors import Skip
 
 
 @beartype
@@ -32,53 +28,10 @@ def get_dropbox_path() -> Path:
 
 
 @beartype
-def get_input(
-    question: str,
-    *,
-    extra_choices: dict[str, str] | None = None,
-    pattern: str | None = None,
-) -> str:
-    choices = {"s": "skip"}
-    if extra_choices is not None:
-        choices.update(extra_choices)
-    choices_str = ", ".join(f"{k}:{v}" for k, v in choices.items())
-    prompt = f"{question} ({choices_str}): "
-    while True:
-        if (response := input(prompt)) == "s":
-            raise Skip()
-        else:
-            if pattern is None:
-                return response.strip()
-            else:
-                try:
-                    (match,) = findall(pattern, response)
-                except ValueError:
-                    logger.error("{!r} is an invalid value", response)
-                else:
-                    return match
+def get_temporary_path() -> Path:
+    return get_dropbox_path().joinpath("Temporary")
 
 
 @beartype
-def get_list_of_inputs(
-    question: str, *, name_if_empty_error: str | None = None
-) -> list[str]:
-    out: list[str] = []
-    while True:
-        enum_question = f"{question} (#{len(out)+1})"
-        response = get_input(enum_question, extra_choices={"Enter": "finish"})
-        if response:
-            out.append(response)
-        else:
-            if out:
-                return out
-            else:
-                if name_if_empty_error is None:
-                    return out
-                else:
-                    logger.error(
-                        "{!r} is not allowed to be empty", name_if_empty_error
-                    )
-
-
-def get_temporary_path() -> Path:
-    return get_dropbox_path().joinpath("Temporary")
+def is_non_empty(text: str, /) -> bool:
+    return text != ""

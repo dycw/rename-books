@@ -21,7 +21,7 @@ virtual_env = ".venv/bin/python"
 
 [tool.poetry]
 name = "rename-books"
-version = "0.2.3"
+version = "0.3.0"
 description = "Script to rename e-books"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 license = "MIT"
@@ -30,13 +30,14 @@ license = "MIT"
 python = "^3.10"
 beartype = "^0.10.4"
 loguru = "^0.6.0"
+prompt-toolkit = "^3.0.29"
+tabulate = "^0.8.9"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3"
 click = "~8.0.4" # https://github.com/dask/distributed/issues/6013
 flake8 = "^4.0"
 isort = "^5.10"
-mypy = "^0.942"
 pre-commit = "^2.16"
 pyclean = "^2.0"
 pytest = "^7.1"
@@ -65,7 +66,6 @@ pytest-xdist = "^2.3"
 
 [tool.poetry.scripts]
 rename-books = "rename_books.rename_books:main"
-rename-books-vsi = "rename_books.rename_books_vsi:main"
 
 [tool.pytest.ini_options]
 addopts = ["-rsxX", "--color=auto", "--strict-markers"]
