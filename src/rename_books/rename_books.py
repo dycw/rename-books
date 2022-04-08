@@ -72,7 +72,7 @@ def _get_process_decision(path: Path, /) -> bool:
             validator, error_message="Enter 'process' or 'skip'"
         ),
         vi_mode=True,
-    )
+    ).strip()
     return result == "process"
 
 
@@ -109,7 +109,7 @@ def _get_year() -> int:
             validator, error_message="Enter a valid year"
         ),
         vi_mode=True,
-    )
+    ).strip()
     return int(text)
 
 
@@ -135,7 +135,7 @@ def _get_title(*, default: str | None = None) -> str:
         default="" if default is None else default,
         mouse_support=True,
         vi_mode=True,
-    )
+    ).strip()
 
 
 @beartype
@@ -158,7 +158,7 @@ def _get_subtitles(*, default: tuple[str, str] | None = None) -> list[str]:
                     default=def_i,
                     mouse_support=True,
                     vi_mode=True,
-                )
+                ).strip()
             )
             num_words += len(subtitle.split(" "))
 
@@ -182,7 +182,7 @@ def _get_authors(*, default: list[str] | None = None) -> list[str]:
                 default=def_i,
                 mouse_support=True,
                 vi_mode=True,
-            )
+            ).strip()
 
     return list(takewhile(is_non_empty, yield_inputs()))
 
@@ -232,7 +232,7 @@ def _confirm_data(data: _Data, /) -> bool:
             validator, error_message="Enter 'yes' or 'no'"
         ),
         vi_mode=True,
-    )
+    ).strip()
     return result == "yes"
 
 
