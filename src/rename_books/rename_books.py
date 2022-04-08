@@ -1,4 +1,3 @@
-import datetime as dt
 from collections.abc import Iterator
 from dataclasses import dataclass
 from itertools import count
@@ -32,7 +31,7 @@ DIRECTORY = get_temporary_path()
 def main() -> None:
     skips: set[Path] = set()
     while (path := _get_next_file(skips=skips)) is not None:
-        if _get_process_decision():
+        if _get_process_decision(path):
             _process_file(path)
         else:
             skips.add(path)
@@ -57,7 +56,7 @@ def _get_next_file(*, skips: set[Path] | None = None) -> Path | None:
 
 
 @beartype
-def _get_process_decision() -> bool:
+def _get_process_decision(path: Path, /) -> bool:
     completer = WordCompleter(["process", "skip"])
 
     @beartype
@@ -65,7 +64,7 @@ def _get_process_decision() -> bool:
         return bool(search(r"(process|skip)", text))
 
     result = prompt(
-        "Process or skip? ",
+        f"File = {path.name}\nProcess or skip? ",
         completer=completer,
         default="process",
         mouse_support=True,
@@ -79,15 +78,19 @@ def _get_process_decision() -> bool:
 
 @beartype
 def _process_file(path: Path, /) -> None:
-    logger.info("Processing {!r}", name := path.name)
     year = _get_year()
-    defaults = _try_get_defaults(name)
-    title = _get_title(default=None if defaults is None else defaults[0])
-    subtitles = _get_subtitles()
-    authors = _get_authors(default=None if defaults is None else defaults[1])
+    if (defaults := _try_get_defaults(path)) is None:
+        def_title = def_authors = None
+    else:
+        def_title, def_authors = defaults
+    title = _get_title(default=def_title)
+    subtitles = _get_subtitles(
+        default=None if def_title is None else (def_title, title)
+    )
+    authors = _get_authors(default=def_authors)
     data = _Data(year, title, subtitles, authors)
     if _confirm_data(data):
-        _rename(path, data)
+        _rename_file_to_data(path, data)
     else:
         _process_file(path)
 
@@ -100,7 +103,7 @@ def _get_year() -> int:
 
     text = prompt(
         "Input year: ",
-        default=str(dt.date.today().year),
+        default="20",
         mouse_support=True,
         validator=Validator.from_callable(
             validator, error_message="Enter a valid year"
@@ -111,7 +114,8 @@ def _get_year() -> int:
 
 
 @beartype
-def _try_get_defaults(name: str, /) -> tuple[str, list[str]] | None:
+def _try_get_defaults(path: Path, /) -> tuple[str, list[str]] | None:
+    name = path.name
     try:
         ((title_text, authors_text),) = cast(
             tuple[str, ...],
@@ -135,15 +139,30 @@ def _get_title(*, default: str | None = None) -> str:
 
 
 @beartype
-def _get_subtitles() -> list[str]:
-    @beartype
-    def yield_inputs() -> Iterator[str]:
-        while True:
-            yield prompt(
-                "Input subtitle(s): ", mouse_support=True, vi_mode=True
-            )
+def _get_subtitles(*, default: tuple[str, str] | None = None) -> list[str]:
+    num_words: int = 0
+    if default is None:
+        def_title_words = []
+    else:
+        def_title, title = default
+        def_title_words = def_title.split(" ")
+        num_words += len(title.split(" "))
 
-    return list(takewhile(is_non_empty, yield_inputs()))
+    @beartype
+    def yield_inputs(num_words: int, /) -> Iterator[str]:
+        while True:
+            def_i = " ".join(def_title_words[num_words:]).capitalize()
+            yield (
+                subtitle := prompt(
+                    "Input subtitle(s): ",
+                    default=def_i,
+                    mouse_support=True,
+                    vi_mode=True,
+                )
+            )
+            num_words += len(subtitle.split(" "))
+
+    return list(takewhile(is_non_empty, yield_inputs(num_words)))
 
 
 @beartype
@@ -218,10 +237,10 @@ def _confirm_data(data: _Data, /) -> bool:
 
 
 @beartype
-def _rename(path: Path, data: _Data, /) -> None:
+def _rename_file_to_data(path: Path, data: _Data, /) -> None:
     new_name = data.to_name()
     rename(path, change_name(path, new_name))
-    logger.info("Renamed:\n    {!r}\n--> {!r}", path.name, new_name)
+    logger.info("Renamed:\n    {}\n--> {}", path.name, new_name)
 
 
 if __name__ == "__main__":
