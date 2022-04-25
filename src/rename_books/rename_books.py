@@ -23,7 +23,9 @@ from rename_books.utilities import is_non_empty
 
 
 logger.remove()
-logger.add(stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>")
+_ = logger.add(
+    stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>"
+)
 DIRECTORY = get_temporary_path()
 
 
