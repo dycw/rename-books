@@ -20,8 +20,9 @@ def get_dropbox_path() -> Path:
     return next(
         path
         for path in [
-            Path("/data/derek/Dropbox"),
-            Path("/mnt/c/Users/Derek/Dropbox"),
+            Path("/data/derek/Dropbox"),  # DW-NUC
+            Path("/mnt/c/Users/Derek/Dropbox"),  # DW-Acer
+            Path("/mnt/c/Users/D/Dropbox"),  # DW-PC
         ]
         if path.exists()
     )
