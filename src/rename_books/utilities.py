@@ -20,6 +20,7 @@ def get_dropbox_path() -> Path:
     return next(
         path
         for path in [
+            Path.home().joinpath("Dropbox"),  # DW-PC-Ubuntu
             Path("/data/derek/Dropbox"),  # DW-NUC
             Path("/mnt/c/Users/Derek/Dropbox"),  # DW-Acer
             Path("/mnt/c/Users/D/Dropbox"),  # DW-PC
