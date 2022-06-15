@@ -103,9 +103,7 @@ def _try_get_defaults(path: Path, /) -> tuple[int, str, list[str]] | None:
     try:
         ((year_text, title_text, authors_text),) = cast(
             tuple[str, ...],
-            findall(
-                r"^\((\d+)\)\s+(.+)\s+\((.+)\)\s+\(z-lib\.org\)\.pdf$", name
-            ),
+            findall(r"^\((\d+)\)\s+(.+)\s+\((.+)\).*.pdf$", name),
         )
     except ValueError:
         return None
