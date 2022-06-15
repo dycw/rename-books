@@ -80,11 +80,11 @@ def _get_process_decision(path: Path, /) -> bool:
 
 @beartype
 def _process_file(path: Path, /) -> None:
-    year = _get_year()
     if (defaults := _try_get_defaults(path)) is None:
-        def_title = def_authors = None
+        def_year = def_title = def_authors = None
     else:
-        def_title, def_authors = defaults
+        def_year, def_title, def_authors = defaults
+    year = _get_year(default=def_year)
     title = _get_title(default=def_title)
     subtitles = _get_subtitles(
         default=None if def_title is None else (def_title, title)
@@ -98,14 +98,32 @@ def _process_file(path: Path, /) -> None:
 
 
 @beartype
-def _get_year() -> int:
+def _try_get_defaults(path: Path, /) -> tuple[int, str, list[str]] | None:
+    name = path.name
+    try:
+        ((year_text, title_text, authors_text),) = cast(
+            tuple[str, ...],
+            findall(
+                r"^\((\d+)\)\s+(.+)\s+\((.+)\)\s+\(z-lib\.org\)\.pdf$", name
+            ),
+        )
+    except ValueError:
+        return None
+    year = int(year_text)
+    title = title_text.capitalize()
+    authors = [name.split(" ")[-1] for name in authors_text.split(",")]
+    return year, title, authors
+
+
+@beartype
+def _get_year(*, default: int | None = None) -> int:
     @beartype
     def validator(text: str, /) -> bool:
         return bool(search(r"^(\d+)$", text))
 
     text = prompt(
         "Input year: ",
-        default="20",
+        default="20" if default is None else str(default),
         mouse_support=True,
         validator=Validator.from_callable(
             validator, error_message="Enter a valid year"
@@ -113,21 +131,6 @@ def _get_year() -> int:
         vi_mode=True,
     ).strip()
     return int(text)
-
-
-@beartype
-def _try_get_defaults(path: Path, /) -> tuple[str, list[str]] | None:
-    name = path.name
-    try:
-        ((title_text, authors_text),) = cast(
-            tuple[str, ...],
-            findall(r"^(.+)\s+\((.+)\)\s+\(z-lib\.org\)\.pdf$", name),
-        )
-    except ValueError:
-        return None
-    title = title_text.capitalize()
-    authors = [name.split(" ")[-1] for name in authors_text.split(",")]
-    return title, authors
 
 
 @beartype
