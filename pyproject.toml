@@ -38,7 +38,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "rename-books"
-version = "0.4.2"
+version = "0.4.3"
 description = "Script to rename e-books"
 authors = ["Derek Wan <d.wan@icloud.com>"]
 
