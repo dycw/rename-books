@@ -1,5 +1,6 @@
 from collections.abc import Iterator
 from dataclasses import dataclass
+from dataclasses import replace
 from itertools import count
 from itertools import takewhile
 from os import rename
@@ -7,6 +8,8 @@ from pathlib import Path
 from re import findall
 from re import search
 from sys import stdout
+from typing import Any
+from typing import Literal
 from typing import cast
 
 from beartype import beartype
@@ -86,15 +89,26 @@ def _process_file(path: Path, /) -> None:
         def_year, def_title, def_authors = defaults
     year = _get_year(default=def_year)
     title = _get_title(default=def_title)
-    subtitles = _get_subtitles(
+    subtitles = _get_subtitles_init(
         default=None if def_title is None else (def_title, title)
     )
     authors = _get_authors(default=def_authors)
     data = _Data(year, title, subtitles, authors)
-    if _confirm_data(data):
-        _rename_file_to_data(path, data)
-    else:
-        _process_file(path)
+    while True:
+        confirm = _confirm_data(data)
+        if confirm is True:
+            break
+        elif confirm == "year":
+            data = replace(data, year=_get_year(default=data.year))
+        elif confirm == "title":
+            data = replace(data, title=_get_title(default=data.title))
+        elif confirm == "subtitles":
+            data = replace(
+                data, subtitles=_get_subtitles_post(default=data.subtitles)
+            )
+        else:
+            data = replace(data, authors=_get_authors(default=data.authors))
+    _rename_file_to_data(path, data)
 
 
 @beartype
@@ -103,7 +117,7 @@ def _try_get_defaults(path: Path, /) -> tuple[int, str, list[str]] | None:
     try:
         ((year_text, title_text, authors_text),) = cast(
             tuple[str, ...],
-            findall(r"^\((\d+)\)\s+(.+)\s+\((.+)\).*.pdf$", name),
+            findall(r"^\((\d+)\)\s+(.+)\s+\((.+)\)\s+\(z-lib.org\).pdf$", name),
         )
     except ValueError:
         return None
@@ -142,7 +156,7 @@ def _get_title(*, default: str | None = None) -> str:
 
 
 @beartype
-def _get_subtitles(*, default: tuple[str, str] | None = None) -> list[str]:
+def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
     num_words: int = 0
     if default is None:
         def_title_words = []
@@ -169,7 +183,19 @@ def _get_subtitles(*, default: tuple[str, str] | None = None) -> list[str]:
 
 
 @beartype
+def _get_subtitles_post(*, default: list[str]) -> list[str]:
+    return _get_subtitles_post_or_authors(default=default, desc="subtitle")
+
+
+@beartype
 def _get_authors(*, default: list[str] | None = None) -> list[str]:
+    return _get_subtitles_post_or_authors(default=default, desc="author")
+
+
+@beartype
+def _get_subtitles_post_or_authors(
+    *, default: list[str] | None = None, desc: str
+) -> list[str]:
     @beartype
     def yield_inputs() -> Iterator[str]:
         for i in count():
@@ -181,7 +207,7 @@ def _get_authors(*, default: list[str] | None = None) -> list[str]:
                 except IndexError:
                     def_i = ""
             yield prompt(
-                "Input author(s): ",
+                f"Input {desc}(s): ",
                 default=def_i,
                 mouse_support=True,
                 vi_mode=True,
@@ -219,12 +245,14 @@ class _Data:
 
 
 @beartype
-def _confirm_data(data: _Data, /) -> bool:
-    completer = WordCompleter(["yes", "no"])
+def _confirm_data(
+    data: _Data, /
+) -> Literal[True, "year", "title", "subtitles", "authors"]:
+    completer = WordCompleter(["yes", "year", "title", "subtitles", "authors"])
 
     @beartype
     def validator(text: str, /) -> bool:
-        return bool(search(r"(yes|no)", text))
+        return bool(search(r"(yes|year|title|subtitles|authors)", text))
 
     result = prompt(
         f"{data}\nConfirm? ",
@@ -232,11 +260,12 @@ def _confirm_data(data: _Data, /) -> bool:
         default="yes",
         mouse_support=True,
         validator=Validator.from_callable(
-            validator, error_message="Enter 'yes' or 'no'"
+            validator,
+            error_message="Enter 'yes', 'year', 'title', 'subtitles' or 'authors'",
         ),
         vi_mode=True,
     ).strip()
-    return result == "yes"
+    return cast(Any, True if result == "yes" else result)
 
 
 @beartype
