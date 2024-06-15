@@ -12,12 +12,8 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator
 from tabulate import tabulate
 
-from rename_books.utilities import (
-    change_name,
-    change_suffix,
-    get_temporary_path,
-    is_non_empty,
-)
+from rename_books.constants import TEMPORARY_PATH
+from rename_books.utilities import change_name, change_suffix, is_non_empty
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -25,7 +21,6 @@ if TYPE_CHECKING:
 
 logger.remove()
 _ = logger.add(stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>")
-DIRECTORY = get_temporary_path()
 
 
 def main() -> None:
@@ -40,7 +35,7 @@ def main() -> None:
 def _get_next_file(*, skips: set[Path] | None = None) -> Path | None:
     paths = (
         path
-        for path in DIRECTORY.iterdir()
+        for path in TEMPORARY_PATH.iterdir()
         if path.is_file()
         and path.suffix in {".epub", ".pdf"}
         and not change_suffix(path, ".pdf", ".part").exists()
@@ -242,7 +237,7 @@ def _confirm_data(
 
 def _rename_file_to_data(path: Path, data: _Data, /) -> None:
     new_name = data.to_name()
-    path.rename(change_name(path, new_name))
+    _ = path.rename(change_name(path, new_name))
     logger.info("Renamed:\n    {}\n--> {}", path.name, new_name)
 
 
