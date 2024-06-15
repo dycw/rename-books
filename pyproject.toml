@@ -24,6 +24,9 @@ requires-python = ">= 3.12"
 [project.optional-dependencies]
 dev = ["dycw-utilities[test]", "hatch", "pre-commit"]
 
+[project.scripts]
+rename-books = "rename_books.cli:main"
+
 # coverage
 [tool.coverage]
 

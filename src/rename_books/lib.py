@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from itertools import count, takewhile
-from re import findall, search
-from sys import stdout
+from re import search
 from typing import TYPE_CHECKING, Any, Literal, cast, override
 
 from loguru import logger
@@ -11,40 +10,26 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator
 from tabulate import tabulate
+from utilities.iterables import one
+from utilities.re import ExtractGroupsError, extract_groups
 
-from rename_books.utilities import (
-    change_name,
-    change_suffix,
-    get_temporary_path,
-    is_non_empty,
-)
+from rename_books.constants import TEMPORARY_PATH
+from rename_books.utilities import change_name, change_suffix, is_non_empty
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
 
-logger.remove()
-_ = logger.add(stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>")
-DIRECTORY = get_temporary_path()
 
-
-def main() -> None:
-    skips: set[Path] = set()
-    while (path := _get_next_file(skips=skips)) is not None:
-        if _get_process_decision(path):
-            _process_file(path)
-        else:
-            skips.add(path)
-
-
-def _get_next_file(*, skips: set[Path] | None = None) -> Path | None:
+def get_next_file(*, skips: set[Path] | None = None) -> Path | None:
+    """Get the next file to process, if it exists."""
     paths = (
         path
-        for path in DIRECTORY.iterdir()
+        for path in TEMPORARY_PATH.iterdir()
         if path.is_file()
         and path.suffix in {".epub", ".pdf"}
         and not change_suffix(path, ".pdf", ".part").exists()
-        and not search(r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name)
+        and _file_stem_needs_processing(path.stem)
     )
     if skips is not None:
         paths = (path for path in paths if path not in skips)
@@ -54,7 +39,13 @@ def _get_next_file(*, skips: set[Path] | None = None) -> Path | None:
         return None
 
 
-def _get_process_decision(path: Path, /) -> bool:
+def _file_stem_needs_processing(stem: str, /) -> bool:
+    """Check if a file stem needs processing."""
+    return not search(r"^\d+ — .+( – .+)?(\(.+\))?$", stem)
+
+
+def get_decision(path: Path, /) -> bool:
+    """Get the decision for a given path."""
     completer = WordCompleter(["process", "skip"])
 
     def validator(text: str, /) -> bool:
@@ -73,7 +64,8 @@ def _get_process_decision(path: Path, /) -> bool:
     return result == "process"
 
 
-def _process_file(path: Path, /) -> None:
+def process_file(path: Path, /) -> None:
+    """Process a file."""
     if (defaults := _try_get_defaults(path)) is None:
         def_year = def_title = def_authors = None
     else:
@@ -84,7 +76,7 @@ def _process_file(path: Path, /) -> None:
         default=None if def_title is None else (def_title, title)
     )
     authors = _get_authors(default=def_authors)
-    data = _Data(year, title, subtitles, authors)
+    data = _Data(year=year, title=title, subtitles=subtitles, authors=authors)
     while True:
         confirm = _confirm_data(data)
         if confirm is True:
@@ -101,12 +93,13 @@ def _process_file(path: Path, /) -> None:
 
 
 def _try_get_defaults(path: Path, /) -> tuple[int, str, list[str]] | None:
+    """Try get a set of defaults for a given path."""
     name = path.name
     try:
-        ((year_text, title_text, authors_text),) = cast(
-            tuple[str, ...], findall(r"^\((\d+)\)\s+(.+)\s+\((.+)\).*.pdf$", name)
+        year_text, title_text, authors_text = extract_groups(
+            r"^\((\d+)\)\s+(.+)\s+\((.+)\).*.(?:epub|pdf)$", name
         )
-    except ValueError:
+    except ExtractGroupsError:
         return None
     year = int(year_text)
     title = title_text.capitalize()
@@ -115,6 +108,8 @@ def _try_get_defaults(path: Path, /) -> tuple[int, str, list[str]] | None:
 
 
 def _get_year(*, default: int | None = None) -> int:
+    """Get the prompt year."""
+
     def validator(text: str, /) -> bool:
         return bool(search(r"^(\d+)$", text))
 
@@ -131,6 +126,7 @@ def _get_year(*, default: int | None = None) -> int:
 
 
 def _get_title(*, default: str | None = None) -> str:
+    """Get the prompt title."""
     return prompt(
         "Input title: ",
         default="" if default is None else default,
@@ -140,6 +136,7 @@ def _get_title(*, default: str | None = None) -> str:
 
 
 def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
+    """Get the prompt subtitles (initial part)."""
     num_words: int = 0
     if default is None:
         def_title_words = []
@@ -165,16 +162,20 @@ def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
 
 
 def _get_subtitles_post(*, default: list[str]) -> list[str]:
+    """Get the prompt subtitles (post part)."""
     return _get_subtitles_post_or_authors(default=default, desc="subtitle")
 
 
 def _get_authors(*, default: list[str] | None = None) -> list[str]:
+    """Get the prompt authors."""
     return _get_subtitles_post_or_authors(default=default, desc="author")
 
 
 def _get_subtitles_post_or_authors(
     *, default: list[str] | None = None, desc: str
 ) -> list[str]:
+    """Get the prompt post-subtitles or authors."""
+
     def yield_inputs() -> Iterator[str]:
         for i in count():
             if default is None:
@@ -191,7 +192,7 @@ def _get_subtitles_post_or_authors(
     return list(takewhile(is_non_empty, yield_inputs()))
 
 
-@dataclass(repr=False)
+@dataclass(frozen=True, kw_only=True, repr=False)
 class _Data:
     year: int
     title: str
@@ -210,17 +211,22 @@ class _Data:
 
     def to_name(self) -> str:
         name = f"{self.year} — {self.title}"
-        if subtitles := self.subtitles:
-            joined = ", ".join(subtitles)
+        if len(subtitles := self.subtitles) >= 1:
+            joined = " – ".join(subtitles)
             name = f"{name} – {joined}"
-        authors = ", ".join(self.authors)
-        return f"{name} ({authors})"
+        match len(self.authors):
+            case 0:
+                return name
+            case 1:
+                return f"{name} ({one(self.authors)})"
+            case _:
+                return f"{name} ({self.authors[0]} et al)"
 
 
 def _confirm_data(
     data: _Data, /
 ) -> Literal[True, "year", "title", "subtitles", "authors"]:
-    """Confirm a set of data."""
+    """Confirm if set of data is acceptable."""
     completer = WordCompleter(["yes", "year", "title", "subtitles", "authors"])
 
     def validator(text: str, /) -> bool:
@@ -241,10 +247,7 @@ def _confirm_data(
 
 
 def _rename_file_to_data(path: Path, data: _Data, /) -> None:
+    """Rename a file given a set of confirmed data."""
     new_name = data.to_name()
-    path.rename(change_name(path, new_name))
+    _ = path.rename(change_name(path, new_name))
     logger.info("Renamed:\n    {}\n--> {}", path.name, new_name)
-
-
-if __name__ == "__main__":
-    main()
