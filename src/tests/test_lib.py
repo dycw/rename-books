@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 from pytest import mark, param
 
-from rename_books.lib import _Data, _file_stem_needs_processing
-
-if TYPE_CHECKING:
-    from pathlib import Path
+from rename_books.lib import _Data, _needs_processing
 
 
 class TestData:
@@ -78,16 +75,22 @@ class TestData:
 
 class TestFileStemNeedsProcessing:
     @mark.parametrize(
-        ("stem", "expected"),
+        ("name", "expected"),
         [
-            param("2000 — Title", False),
-            param("2000 — Title – Sub", False),
-            param("2000 — Title – Sub1 – Sub2", False),
-            param("2000 — Title (Author)", False),
-            param("2000 — Title – Sub (Author)", False),
-            param("2000 — Title – Sub1 – Sub2 (Author)", False),
-            param("foo", True),
+            param("2000 — Title.pdf", False),
+            param("2000 — Title – Sub.pdf", False),
+            param("2000 — Title – Sub1 – Sub2.pdf", False),
+            param("2000 — Title (Author).pdf", False),
+            param("2000 — Title – Sub (Author).pdf", False),
+            param("2000 — Title – Sub1 – Sub2 (Author).pdf", False),
+            param("foo.epub", True),
+            param("foo.jpg", False),
+            param("foo.pdf", True),
+            param("foo.pdf.download", False),
+            param("foo.epub.download", False),
+            param("foo.pdf.part", False),
+            param("foo.epub.part", False),
         ],
     )
-    def test_main(self, *, stem: Path, expected: bool) -> None:
-        assert _file_stem_needs_processing(stem) is expected
+    def test_main(self, *, name: str, expected: bool) -> None:
+        assert _needs_processing(Path(name)) is expected
