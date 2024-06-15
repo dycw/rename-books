@@ -185,7 +185,7 @@ def _get_subtitles_post_or_authors(
                 except IndexError:
                     def_i = ""
             yield prompt(
-                f"Input {desc}(s): ", default=def_i, mouse_support=True, vi_mode=True
+                "Input author(s): ", default=def_i, mouse_support=True, vi_mode=True
             ).strip()
 
     return list(takewhile(is_non_empty, yield_inputs()))
