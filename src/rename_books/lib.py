@@ -29,7 +29,7 @@ def get_next_file(*, skips: set[Path] | None = None) -> Path | None:
         if path.is_file()
         and path.suffix in {".epub", ".pdf"}
         and not change_suffix(path, ".pdf", ".part").exists()
-        and _file_stem_needs_processing(path.stem)
+        and _needs_processing(path)
     )
     if skips is not None:
         paths = (path for path in paths if path not in skips)
@@ -39,9 +39,11 @@ def get_next_file(*, skips: set[Path] | None = None) -> Path | None:
         return None
 
 
-def _file_stem_needs_processing(stem: str, /) -> bool:
-    """Check if a file stem needs processing."""
-    return not search(r"^\d+ — .+( – .+)?(\(.+\))?$", stem)
+def _needs_processing(path: Path, /) -> bool:
+    """Check if a file needs processing."""
+    return (not search(r"^\d+ — .+( – .+)?(\(.+\))?$", path.name)) and (
+        path.suffix in {".epub", ".pdf"}
+    )
 
 
 def get_decision(path: Path, /) -> bool:
