@@ -10,6 +10,7 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator
 from tabulate import tabulate
+from utilities.iterables import one
 from utilities.re import ExtractGroupsError, extract_groups
 
 from rename_books.constants import TEMPORARY_PATH
@@ -70,7 +71,7 @@ def process_file(path: Path, /) -> None:
         default=None if def_title is None else (def_title, title)
     )
     authors = _get_authors(default=def_authors)
-    data = _Data(year, title, subtitles, authors)
+    data = _Data(year=year, title=title, subtitles=subtitles, authors=authors)
     while True:
         confirm = _confirm_data(data)
         if confirm is True:
@@ -205,11 +206,16 @@ class _Data:
 
     def to_name(self) -> str:
         name = f"{self.year} — {self.title}"
-        if subtitles := self.subtitles:
-            joined = ", ".join(subtitles)
+        if len(subtitles := self.subtitles) >= 1:
+            joined = " – ".join(subtitles)
             name = f"{name} – {joined}"
-        authors = ", ".join(self.authors)
-        return f"{name} ({authors})"
+        match len(self.authors):
+            case 0:
+                return name
+            case 1:
+                return f"{name} ({one(self.authors)})"
+            case _:
+                return f"{name} ({self.authors[0]} et al)"
 
 
 def _confirm_data(
