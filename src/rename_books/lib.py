@@ -27,9 +27,8 @@ def get_next_file(*, skips: set[Path] | None = None) -> Path | None:
         path
         for path in TEMPORARY_PATH.iterdir()
         if path.is_file()
-        and path.suffix in {".epub", ".pdf"}
-        and not change_suffix(path, ".pdf", ".part").exists()
         and _needs_processing(path)
+        and not change_suffix(path, ".pdf", ".part").exists()
     )
     if skips is not None:
         paths = (path for path in paths if path not in skips)
