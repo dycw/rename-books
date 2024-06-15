@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from itertools import count, takewhile
-from os import rename
 from re import findall, search
 from sys import stdout
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast, override
 
 from loguru import logger
 from prompt_toolkit import prompt
@@ -186,7 +185,7 @@ def _get_subtitles_post_or_authors(
                 except IndexError:
                     def_i = ""
             yield prompt(
-                "Input author(s): ", default=def_i, mouse_support=True, vi_mode=True
+                f"Input {desc}(s): ", default=def_i, mouse_support=True, vi_mode=True
             ).strip()
 
     return list(takewhile(is_non_empty, yield_inputs()))
@@ -199,6 +198,7 @@ class _Data:
     subtitles: list[str]
     authors: list[str]
 
+    @override
     def __repr__(self) -> str:
         data = [
             ["year", self.year],
