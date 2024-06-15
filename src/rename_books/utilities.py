@@ -1,22 +1,22 @@
+from __future__ import annotations
+
 from pathlib import Path
 
-from beartype import beartype
 
-
-@beartype
 def change_name(path: Path, name: str, /) -> Path:
+    """Change the name of a file."""
     new_path = path.with_name(name)
-    suffix = "".join([new_path.suffix, path.suffix])
+    suffix = f"{new_path.suffix}{path.suffix}"
     return new_path.with_suffix(suffix)
 
 
-@beartype
 def change_suffix(path: Path, /, *suffixes: str) -> Path:
+    """Change the suffix of a path; accepts parts."""
     return path.with_suffix("".join(suffixes))
 
 
-@beartype
 def get_dropbox_path() -> Path:
+    """Get the Dropbox path."""
     return next(
         path
         for path in [
@@ -29,11 +29,11 @@ def get_dropbox_path() -> Path:
     )
 
 
-@beartype
 def get_temporary_path() -> Path:
+    """Get the Dropbox temporary folder path."""
     return get_dropbox_path().joinpath("Temporary")
 
 
-@beartype
 def is_non_empty(text: str, /) -> bool:
+    """Check if a string is the empty string."""
     return text != ""
