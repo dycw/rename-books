@@ -112,8 +112,7 @@ def _try_get_defaults(path: Path, /) -> tuple[int, str, list[str]] | None:
     name = path.name
     try:
         ((year_text, title_text, authors_text),) = cast(
-            tuple[str, ...],
-            findall(r"^\((\d+)\)\s+(.+)\s+\((.+)\)\s+\(z-lib.org\).pdf$", name),
+            tuple[str, ...], findall(r"^\((\d+)\)\s+(.+)\s+\((.+)\).*.pdf$", name)
         )
     except ValueError:
         return None
@@ -203,7 +202,7 @@ def _get_subtitles_post_or_authors(
                 except IndexError:
                     def_i = ""
             yield prompt(
-                f"Input {desc}(s): ", default=def_i, mouse_support=True, vi_mode=True
+                "Input author(s): ", default=def_i, mouse_support=True, vi_mode=True
             ).strip()
 
     return list(takewhile(is_non_empty, yield_inputs()))
