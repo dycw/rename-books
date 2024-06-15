@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from itertools import count, takewhile
+from os import rename
 from re import findall, search
 from sys import stdout
-from typing import TYPE_CHECKING, Any, Literal, cast, override
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from loguru import logger
 from prompt_toolkit import prompt
@@ -198,7 +199,6 @@ class _Data:
     subtitles: list[str]
     authors: list[str]
 
-    @override
     def __repr__(self) -> str:
         data = [
             ["year", self.year],
