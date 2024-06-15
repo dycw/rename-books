@@ -14,11 +14,7 @@ from rename_books.utilities import get_temporary_path
 @mark.parametrize(
     "path, name, expected",
     [
-        (
-            Path("dir/subdir/name.pdf"),
-            "new_name",
-            Path("dir/subdir/new_name.pdf"),
-        ),
+        (Path("dir/subdir/name.pdf"), "new_name", Path("dir/subdir/new_name.pdf")),
         (
             Path("dir/subdir/node.js 8.pdf"),
             "node.js 9",

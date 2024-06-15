@@ -1,69 +1,19 @@
 repos:
   # fixers
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.1
+  - repo: https://github.com/dycw/pre-commit-hooks
+    rev: 0.9.15
     hooks:
-      - id: pyupgrade
-        args: [--py310-plus]
-  - repo: https://github.com/asottile/yesqa
-    rev: v1.3.0
+      - id: run-hatch-version
+      - id: run-ruff-format
+      - id: run-uv-pip-compile
+        args: [--python-version=3.12]
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.13.0
     hooks:
-      - id: yesqa
-        additional_dependencies:
-          - flake8-absolute-import
-          - flake8-annotations
-          - flake8-bandit
-          - flake8-bugbear
-          - flake8-comprehensions
-          - flake8-debugger
-          - flake8-eradicate
-          - flake8-executable
-          - flake8-no-pep420
-          - flake8-pie
-          - flake8-print
-          - flake8-simplify
-          - flake8-unused-arguments
-  - repo: https://github.com/myint/autoflake
-    rev: v1.4
-    hooks:
-      - id: autoflake
-        args:
-          [
-            --in-place,
-            --remove-all-unused-imports,
-            --remove-duplicate-keys,
-            --remove-unused-variables,
-          ]
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.6.2
-    hooks:
-      - id: prettier
+      - id: pretty-format-toml
+        args: [--autofix, --trailing-commas]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
-    hooks:
-      - id: end-of-file-fixer
-      - id: mixed-line-ending
-        args: [--fix=lf]
-      - id: trailing-whitespace
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
-    hooks:
-      - id: black
-  - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
-    hooks:
-      - id: isort
-  # linters
-  - repo: https://github.com/compwa/mirrors-pyright
-    rev: "v1.1.250"
-    hooks:
-      - id: pyright
-  - repo: https://github.com/markdownlint/markdownlint
-    rev: v0.11.0
-    hooks:
-      - id: markdownlint
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.6.0
     hooks:
       - id: check-executables-have-shebangs
       - id: check-merge-conflict
@@ -71,32 +21,21 @@ repos:
       - id: check-symlinks
       - id: destroyed-symlinks
       - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
       - id: no-commit-to-branch
-  - repo: https://github.com/pycqa/flake8
-    rev: 4.0.1
+      - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
     hooks:
-      - id: flake8
-        additional_dependencies:
-          - flake8-absolute-import
-          - flake8-annotations
-          - flake8-bandit
-          - flake8-bugbear
-          - flake8-comprehensions
-          - flake8-debugger
-          - flake8-eradicate
-          - flake8-no-pep420
-          - flake8-pie
-          - flake8-print
-          - flake8-simplify
-          - flake8-unused-arguments
-  - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+      - id: prettier
+  # linters
+  - repo: https://github.com/andreoliwa/nitpick
+    rev: v0.35.0
     hooks:
-      - id: isort
-  # others
-  - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.4.24
+      - id: nitpick-check
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
     hooks:
-      - id: run-bump2version
-        args: [--setup-cfg]
-      - id: run-scan-deps
+      - id: shellcheck

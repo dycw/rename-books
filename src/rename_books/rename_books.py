@@ -26,9 +26,7 @@ from rename_books.utilities import is_non_empty
 
 
 logger.remove()
-_ = logger.add(
-    stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>"
-)
+_ = logger.add(stdout, format="<bold><red>{time:%H:%M:%S}</red>: {message}</bold>")
 DIRECTORY = get_temporary_path()
 
 
@@ -103,9 +101,7 @@ def _process_file(path: Path, /) -> None:
         elif confirm == "title":
             data = replace(data, title=_get_title(default=data.title))
         elif confirm == "subtitles":
-            data = replace(
-                data, subtitles=_get_subtitles_post(default=data.subtitles)
-            )
+            data = replace(data, subtitles=_get_subtitles_post(default=data.subtitles))
         else:
             data = replace(data, authors=_get_authors(default=data.authors))
     _rename_file_to_data(path, data)
@@ -207,10 +203,7 @@ def _get_subtitles_post_or_authors(
                 except IndexError:
                     def_i = ""
             yield prompt(
-                f"Input {desc}(s): ",
-                default=def_i,
-                mouse_support=True,
-                vi_mode=True,
+                f"Input {desc}(s): ", default=def_i, mouse_support=True, vi_mode=True
             ).strip()
 
     return list(takewhile(is_non_empty, yield_inputs()))
