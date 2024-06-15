@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from itertools import count, takewhile
-from os import rename
 from re import findall, search
 from sys import stdout
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast, override
 
 from loguru import logger
 from prompt_toolkit import prompt
@@ -43,7 +42,7 @@ def _get_next_file(*, skips: set[Path] | None = None) -> Path | None:
         path
         for path in DIRECTORY.iterdir()
         if path.is_file()
-        and path.suffix == ".pdf"
+        and path.suffix in {".epub", ".pdf"}
         and not change_suffix(path, ".pdf", ".part").exists()
         and not search(r"^\d+ — .+( – .+)?\(.+\)$", change_suffix(path).name)
     )
@@ -90,7 +89,7 @@ def _process_file(path: Path, /) -> None:
         confirm = _confirm_data(data)
         if confirm is True:
             break
-        elif confirm == "year":
+        if confirm == "year":
             data = replace(data, year=_get_year(default=data.year))
         elif confirm == "title":
             data = replace(data, title=_get_title(default=data.title))
@@ -186,7 +185,7 @@ def _get_subtitles_post_or_authors(
                 except IndexError:
                     def_i = ""
             yield prompt(
-                "Input author(s): ", default=def_i, mouse_support=True, vi_mode=True
+                f"Input {desc}(s): ", default=def_i, mouse_support=True, vi_mode=True
             ).strip()
 
     return list(takewhile(is_non_empty, yield_inputs()))
@@ -199,6 +198,7 @@ class _Data:
     subtitles: list[str]
     authors: list[str]
 
+    @override
     def __repr__(self) -> str:
         data = [
             ["year", self.year],
@@ -220,6 +220,7 @@ class _Data:
 def _confirm_data(
     data: _Data, /
 ) -> Literal[True, "year", "title", "subtitles", "authors"]:
+    """Confirm a set of data."""
     completer = WordCompleter(["yes", "year", "title", "subtitles", "authors"])
 
     def validator(text: str, /) -> bool:
@@ -241,7 +242,7 @@ def _confirm_data(
 
 def _rename_file_to_data(path: Path, data: _Data, /) -> None:
     new_name = data.to_name()
-    rename(path, change_name(path, new_name))
+    path.rename(change_name(path, new_name))
     logger.info("Renamed:\n    {}\n--> {}", path.name, new_name)
 
 

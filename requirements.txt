@@ -88,6 +88,8 @@ pluggy==1.5.0
     #   pytest
 pre-commit==3.7.1
     # via rename-books (pyproject.toml)
+prompt-toolkit==3.0.47
+    # via rename-books (pyproject.toml)
 ptyprocess==0.7.0
     # via pexpect
 pygments==2.18.0
@@ -136,5 +138,7 @@ virtualenv==20.26.2
     # via
     #   hatch
     #   pre-commit
+wcwidth==0.2.13
+    # via prompt-toolkit
 zstandard==0.22.0
     # via hatch
