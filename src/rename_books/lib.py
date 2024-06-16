@@ -10,6 +10,7 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator
 from tabulate import tabulate
+from titlecase import titlecase
 from utilities.iterables import one
 from utilities.re import ExtractGroupsError, extract_groups
 
@@ -72,7 +73,7 @@ def get_decision(path: Path, /) -> bool:
 
 def process_file(path: Path, /) -> None:
     """Process a file."""
-    if (defaults := _try_get_defaults(path)) is None:
+    if (defaults := _try_get_defaults(path.stem)) is None:
         def_year = def_title = def_authors = None
     else:
         def_year, def_title, def_authors = defaults
@@ -99,17 +100,21 @@ def process_file(path: Path, /) -> None:
                 data = replace(data, authors=_get_authors(default=data.authors))
 
 
-def _try_get_defaults(path: Path, /) -> tuple[int, str, list[str]] | None:
+def _try_get_defaults(stem: str, /) -> tuple[int, str, list[str]] | None:
     """Try get a set of defaults for a given path."""
-    name = path.name
     try:
         year_text, title_text, authors_text = extract_groups(
-            r"^\((\d+)\)\s+(.+)\s+\((.+)\).*.(?:epub|pdf)$", name
+            r"\((\d+)\)\s+(.+)\s+\((.+)\)", stem
         )
     except ExtractGroupsError:
-        return None
+        try:
+            authors_text, title_text, year_text = extract_groups(
+                r"(?:\(.+\)\s+)?(.+)\s+\-\s+(.+)\s+\((\d+)\)", stem
+            )
+        except ExtractGroupsError:
+            return None
     year = int(year_text)
-    title = title_text.capitalize()
+    title = titlecase(title_text)
     authors = [name.split(" ")[-1] for name in authors_text.split(",")]
     return year, title, authors
 
@@ -157,7 +162,7 @@ def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
 
     def yield_inputs(num_words: int, /) -> Iterator[str]:
         while True:
-            def_i = " ".join(def_title_words[num_words:]).capitalize()
+            def_i = titlecase(" ".join(def_title_words[num_words:]))
             yield (
                 subtitle := prompt(
                     "Input subtitle(s): ",

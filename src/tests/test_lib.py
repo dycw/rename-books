@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pytest import mark, param
 
-from rename_books.lib import _Data, _needs_processing
+from rename_books.lib import _Data, _needs_processing, _try_get_defaults
 
 
 class TestData:
@@ -94,3 +94,21 @@ class TestFileStemNeedsProcessing:
     )
     def test_main(self, *, name: str, expected: bool) -> None:
         assert _needs_processing(Path(name)) is expected
+
+
+class TestTryGetDefaults:
+    @mark.parametrize(
+        ("stem", "year", "title", "authors"),
+        [
+            param(
+                "(Statistics in Practice) Paolo Brandimarte - Numerical Methods in Finance and Economics_ A MATLAB-Based Introduction -Wiley-Interscience (2006)",
+                2006,
+                "Numerical Methods in Finance and Economics_ a MATLAB-Based Introduction -Wiley-Interscience",
+                ["Brandimarte"],
+            )
+        ],
+    )
+    def test_main(
+        self, *, stem: str, year: int, title: str, authors: list[str]
+    ) -> None:
+        assert _try_get_defaults(stem) == (year, title, authors)
