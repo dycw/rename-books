@@ -6,6 +6,7 @@ from re import search
 from typing import TYPE_CHECKING, Any, Literal, cast, override
 
 from loguru import logger
+from pathvalidate import is_valid_filepath
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator
@@ -79,18 +80,19 @@ def process_file(path: Path, /) -> None:
     authors = _get_authors(default=def_authors)
     data = _Data(year=year, title=title, subtitles=subtitles, authors=authors)
     while True:
-        confirm = _confirm_data(data)
-        if confirm is True:
-            break
-        if confirm == "year":
-            data = replace(data, year=_get_year(default=data.year))
-        elif confirm == "title":
-            data = replace(data, title=_get_title(default=data.title))
-        elif confirm == "subtitles":
-            data = replace(data, subtitles=_get_subtitles_post(default=data.subtitles))
-        else:
-            data = replace(data, authors=_get_authors(default=data.authors))
-    _rename_file_to_data(path, data)
+        match _confirm_data(data):
+            case True:
+                return _rename_file_to_data(path, data)
+            case "year":
+                data = replace(data, year=_get_year(default=data.year))
+            case "title":
+                data = replace(data, title=_get_title(default=data.title))
+            case "subtitles":
+                data = replace(
+                    data, subtitles=_get_subtitles_post(default=data.subtitles)
+                )
+            case "authors":
+                data = replace(data, authors=_get_authors(default=data.authors))
 
 
 def _try_get_defaults(path: Path, /) -> tuple[int, str, list[str]] | None:
@@ -132,6 +134,9 @@ def _get_title(*, default: str | None = None) -> str:
         "Input title: ",
         default="" if default is None else default,
         mouse_support=True,
+        validator=Validator.from_callable(
+            is_valid_filepath, error_message="Enter a valid file path"
+        ),
         vi_mode=True,
     ).strip()
 
@@ -154,6 +159,9 @@ def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
                     "Input subtitle(s): ",
                     default=def_i,
                     mouse_support=True,
+                    validator=Validator.from_callable(
+                        is_valid_filepath, error_message="Enter a valid file path"
+                    ),
                     vi_mode=True,
                 ).strip()
             )
@@ -187,7 +195,13 @@ def _get_subtitles_post_or_authors(
                 except IndexError:
                     def_i = ""
             yield prompt(
-                f"Input {desc}(s): ", default=def_i, mouse_support=True, vi_mode=True
+                f"Input {desc}(s): ",
+                default=def_i,
+                mouse_support=True,
+                validator=Validator.from_callable(
+                    is_valid_filepath, error_message="Enter a valid file path"
+                ),
+                vi_mode=True,
             ).strip()
 
     return list(takewhile(is_non_empty, yield_inputs()))

@@ -17,7 +17,7 @@ click==8.1.7
     #   userpath
 distlib==0.3.8
     # via virtualenv
-dycw-utilities==0.27.18
+dycw-utilities==0.27.20
     # via rename-books (pyproject.toml)
 exceptiongroup==1.2.1
     # via dycw-utilities
@@ -76,6 +76,8 @@ packaging==24.1
     #   pytest-rerunfailures
 pathspec==0.12.1
     # via hatchling
+pathvalidate==3.2.0
+    # via rename-books (pyproject.toml)
 pexpect==4.9.0
     # via hatch
 platformdirs==4.2.2
