@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pathvalidate import is_valid_filename as _is_valid_filename
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -21,3 +23,8 @@ def change_suffix(path: Path, /, *suffixes: str) -> Path:
 def is_non_empty(text: str, /) -> bool:
     """Check if a string is the empty string."""
     return text != ""
+
+
+def is_valid_filename(text: str, /) -> bool:
+    """Check if a filename is valid."""
+    return _is_valid_filename(text)
