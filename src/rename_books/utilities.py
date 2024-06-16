@@ -20,11 +20,16 @@ def change_suffix(path: Path, /, *suffixes: str) -> Path:
     return path.with_suffix("".join(suffixes))
 
 
-def is_non_empty(text: str, /) -> bool:
+def is_empty(text: str, /) -> bool:
     """Check if a string is the empty string."""
+    return text == ""
+
+
+def is_non_empty(text: str, /) -> bool:
+    """Check if a string is not the empty string."""
     return text != ""
 
 
 def is_valid_filename(text: str, /) -> bool:
     """Check if a filename is valid."""
-    return _is_valid_filename(text)
+    return is_empty(text) or _is_valid_filename(text)
