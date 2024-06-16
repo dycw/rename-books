@@ -32,4 +32,4 @@ def is_non_empty(text: str, /) -> bool:
 
 def is_valid_filename(text: str, /) -> bool:
     """Check if a filename is valid."""
-    return _is_valid_filename(text)
+    return is_empty(text) or _is_valid_filename(text)

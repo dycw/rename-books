@@ -6,7 +6,6 @@ from re import search
 from typing import TYPE_CHECKING, Any, Literal, cast, override
 
 from loguru import logger
-from pathvalidate import is_valid_filepath
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator
@@ -140,7 +139,7 @@ def _get_title(*, default: str | None = None) -> str:
         default="" if default is None else default,
         mouse_support=True,
         validator=Validator.from_callable(
-            is_valid_filepath, error_message="Enter a valid file path"
+            is_valid_filename, error_message="Enter a valid file path"
         ),
         vi_mode=True,
     ).strip()
@@ -165,7 +164,7 @@ def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
                     default=def_i,
                     mouse_support=True,
                     validator=Validator.from_callable(
-                        is_valid_filepath, error_message="Enter a valid file path"
+                        is_valid_filename, error_message="Enter a valid file path"
                     ),
                     vi_mode=True,
                 ).strip()
@@ -204,7 +203,7 @@ def _get_subtitles_post_or_authors(
                 default=def_i,
                 mouse_support=True,
                 validator=Validator.from_callable(
-                    is_valid_filepath, error_message="Enter a valid file path"
+                    is_valid_filename, error_message="Enter a valid file path"
                 ),
                 vi_mode=True,
             ).strip()

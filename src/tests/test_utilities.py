@@ -46,6 +46,8 @@ class TestChangeSuffix:
 
 
 class TestIsValidFilepath:
-    def test_main(self) -> None:
-        text = "Excel Add-in Development in C/C++"
-        assert not is_valid_filename(text)
+    @mark.parametrize(
+        ("text", "expected"), [param("C/C++", False), param("name", True)]
+    )
+    def test_main(self, *, text: str, expected: bool) -> None:
+        assert is_valid_filename(text) is expected
