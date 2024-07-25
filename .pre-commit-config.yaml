@@ -1,19 +1,19 @@
 repos:
   # fixers
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.9
+    rev: v0.5.5
     hooks:
       - id: ruff
         args: [--fix]
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.9.15
+    rev: 0.9.16
     hooks:
       - id: run-hatch-version
       - id: run-ruff-format
       - id: run-uv-pip-compile
         args: [--python-version=3.12]
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.13.0
+    rev: v2.14.0
     hooks:
       - id: pretty-format-toml
         args: [--autofix, --trailing-commas]
