@@ -9,7 +9,7 @@ requires = ["hatchling"]
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "dycw-utilities >= 0.36.5, < 0.37",
+  "dycw-utilities >= 0.40.12, < 0.41",
   "loguru >= 0.7.2, < 0.8",
   "pathvalidate >= 3.2.0, < 3.3",
   "prompt-toolkit >= 3.0.47, < 3.1",
@@ -24,7 +24,11 @@ readme = "README.md"
 requires-python = ">= 3.12"
 
 [project.optional-dependencies]
-dev = ["basedpyright", "dycw-utilities[test]", "hatch", "pre-commit"]
+dev = [
+  "basedpyright >= 1.16.0, < 1.17",
+  "dycw-utilities[test]",
+  "hatch >= 1.12.0, < 1.13",
+]
 
 [project.scripts]
 rename-books = "rename_books.cli:main"
@@ -92,7 +96,6 @@ xfail_strict = true
 
 # ruff
 [tool.ruff]
-extend-exclude = ["**/*.ipynb"]
 src = ["src"]
 target-version = "py312"
 unsafe-fixes = true
