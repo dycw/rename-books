@@ -9,7 +9,7 @@ requires = ["hatchling"]
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "dycw-utilities >= 0.40.12, < 0.41",
+  "dycw-utilities >= 0.40.19, < 0.41",
   "loguru >= 0.7.2, < 0.8",
   "pathvalidate >= 3.2.0, < 3.3",
   "prompt-toolkit >= 3.0.47, < 3.1",
@@ -123,7 +123,7 @@ ignore = [
   "D203",  # one-blank-line-before-class
   "D213",  # multi-line-summary-second-line
   "E501",  # line-too-long
-  "PD901",  # pandas-df-variable-name
+  "PD",  # pandas-vet
   "PERF203",  # try-except-in-loop
   "PLR0904",  # too-many-public-methods
   "PLR0911",  # too-many-return-statements
