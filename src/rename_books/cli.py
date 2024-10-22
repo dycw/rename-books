@@ -3,14 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.loguru import setup_loguru
 
 from rename_books.lib import get_decision, get_next_file, process_file
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-setup_loguru()
 
 
 @command()
