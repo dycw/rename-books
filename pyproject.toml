@@ -9,13 +9,13 @@ requires = ["hatchling"]
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "dycw-utilities >= 0.40.19, < 0.41",
+  "dycw-utilities >= 0.60.7, < 0.61",
   "loguru >= 0.7.2, < 0.8",
   "pathvalidate >= 3.2.0, < 3.3",
   "prompt-toolkit >= 3.0.47, < 3.1",
   "tabulate >= 0.9.0, < 0.10",
   "titlecase >= 2.4.1, < 2.5",
-  "typed-settings[click] >= 24.4.0, < 24.5",
+  "typed-settings[click] >= 24.5.0, < 24.6",
 ]
 description = "Script to rename e-books"
 dynamic = ["version"]
@@ -25,9 +25,8 @@ requires-python = ">= 3.12"
 
 [project.optional-dependencies]
 dev = [
-  "basedpyright >= 1.16.0, < 1.17",
   "dycw-utilities[test]",
-  "hatch >= 1.12.0, < 1.13",
+  "hatch >= 1.13.0, < 1.14",
 ]
 
 [project.scripts]
