@@ -33,21 +33,6 @@ dev = [
 [project.scripts]
 rename-books = "rename_books.cli:main"
 
-# basedpyright
-[tool.basedpyright]
-include = ["src"]
-pythonVersion = "3.12"
-reportAny = false
-reportMissingTypeArgument = false
-reportMissingTypeStubs = false
-reportPrivateUsage = false
-reportUnknownArgumentType = false
-reportUnknownMemberType = false
-reportUnknownParameterType = false
-reportUnknownVariableType = false
-reportUnusedImport = false
-reportUnusedVariable = false
-
 # coverage
 [tool.coverage]
 
@@ -83,6 +68,36 @@ style = [
   "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.12.toml",
   "https://raw.githubusercontent.com/dycw/nitpick/master/styles/common.toml",
 ]
+
+# pyright
+[tool.pyright]
+deprecateTypingAliases = true
+enableReachabilityAnalysis = false
+exclude = ["alembic/versions"]
+ignore = ["alembic/versions"]
+include = ["src"]
+pythonVersion = "3.12"
+reportAny = false
+reportCallInDefaultInitializer = true
+reportImplicitOverride = true
+reportImplicitStringConcatenation = true
+reportImportCycles = true
+reportMissingSuperCall = true
+reportMissingTypeArgument = false
+reportMissingTypeStubs = false
+reportPrivateUsage = false
+reportPropertyTypeMismatch = true
+reportShadowedImports = true
+reportUninitializedInstanceVariable = true
+reportUnknownArgumentType = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportUnnecessaryTypeIgnoreComment = true
+reportUnusedCallResult = true
+reportUnusedImport = false
+reportUnusedVariable = false
+typeCheckingMode = "strict"
 
 # pytest
 [tool.pytest]
