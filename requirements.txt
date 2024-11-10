@@ -10,12 +10,12 @@ certifi==2024.8.30
     #   httpx
 click==8.1.7
     # via
+    #   rename-books (pyproject.toml)
     #   hatch
-    #   typed-settings
     #   userpath
 distlib==0.3.9
     # via virtualenv
-dycw-utilities==0.60.7
+dycw-utilities==0.60.25
     # via rename-books (pyproject.toml)
 execnet==2.1.1
     # via pytest-xdist
@@ -33,7 +33,7 @@ httpx==0.27.2
     # via hatch
 hyperlink==21.0.0
     # via hatch
-hypothesis==6.115.3
+hypothesis==6.116.0
     # via dycw-utilities
 idna==3.10
     # via
@@ -48,7 +48,7 @@ jaraco-context==6.0.1
     # via keyring
 jaraco-functools==4.1.0
     # via keyring
-keyring==25.4.1
+keyring==25.5.0
     # via hatch
 loguru==0.7.2
     # via rename-books (pyproject.toml)
@@ -60,7 +60,7 @@ more-itertools==10.5.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-packaging==24.1
+packaging==24.2
     # via
     #   hatch
     #   hatchling
@@ -92,13 +92,13 @@ pytest==8.3.3
     #   pytest-randomly
     #   pytest-rerunfailures
     #   pytest-xdist
-pytest-randomly==3.15.0
+pytest-randomly==3.16.0
     # via dycw-utilities
 pytest-rerunfailures==14.0
     # via dycw-utilities
 pytest-xdist==3.6.1
     # via dycw-utilities
-rich==13.9.3
+rich==13.9.4
     # via hatch
 shellingham==1.5.4
     # via hatch
@@ -118,15 +118,13 @@ tomlkit==0.13.2
     # via hatch
 trove-classifiers==2024.10.21.16
     # via hatchling
-typed-settings==24.5.0
-    # via rename-books (pyproject.toml)
 typing-extensions==4.12.2
     # via dycw-utilities
 userpath==1.9.2
     # via hatch
-uv==0.4.25
+uv==0.5.1
     # via hatch
-virtualenv==20.27.0
+virtualenv==20.27.1
     # via hatch
 wcwidth==0.2.13
     # via prompt-toolkit
