@@ -15,7 +15,6 @@ dependencies = [
   "prompt-toolkit >= 3.0.47, < 3.1",
   "tabulate >= 0.9.0, < 0.10",
   "titlecase >= 2.4.1, < 2.5",
-  "typed-settings[click] >= 24.5.0, < 24.6",
 ]
 description = "Script to rename e-books"
 dynamic = ["version"]
