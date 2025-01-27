@@ -132,6 +132,8 @@ pyyaml==6.0.2
     # via pytest-regressions
 rich==13.9.4
     # via hatch
+setuptools==75.7.0
+    # via rename-books (pyproject.toml)
 shellingham==1.5.4
     # via hatch
 sniffio==1.3.1
