@@ -9,7 +9,6 @@ requires = ["hatchling"]
 [dependency-groups]
 dev = [
   "dycw-utilities[test]",
-  "setuptools",  # https://github.com/theY4Kman/pytest-only/issues/14
 ]
 
 # project
@@ -17,7 +16,7 @@ dev = [
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >= 8.1.7, < 8.2",
-  "dycw-utilities >= 0.92.10, < 0.93",
+  "dycw-utilities >= 0.97.2, < 0.98",
   "loguru >= 0.7.2, < 0.8",
   "pathvalidate >= 3.2.0, < 3.3",
   "prompt-toolkit >= 3.0.47, < 3.1",
