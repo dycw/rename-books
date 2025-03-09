@@ -5,6 +5,13 @@
 build-backend = "hatchling.build"
 requires = ["hatchling"]
 
+# dependency groups
+[dependency-groups]
+dev = [
+  "dycw-utilities[test]",
+  "setuptools",  # https://github.com/theY4Kman/pytest-only/issues/14
+]
+
 # project
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
@@ -18,20 +25,23 @@ dependencies = [
   "titlecase >= 2.4.1, < 2.5",
 ]
 description = "Script to rename e-books"
-dynamic = ["version"]
 name = "rename-books"
 readme = "README.md"
-requires-python = ">= 3.12"
-
-[project.optional-dependencies]
-dev = [
-  "dycw-utilities[test]",
-  "hatch >= 1.14.0, < 1.15",
-  "setuptools >= 75.8.0, < 75.9",  # https://github.com/theY4Kman/pytest-only/issues/14
-]
+requires-python = ">= 3.13"
+version = "0.5.14"
 
 [project.scripts]
 rename-books = "rename_books.cli:main"
+
+# bump-my-version
+[tool.bumpversion]
+allow_dirty = true
+current_version = "0.5.14"
+
+[[tool.bumpversion.files]]
+filename = "src/rename_books/__init__.py"
+replace = "__version__ = \"{new_version}\""
+search = "__version__ = \"{current_version}\""
 
 # coverage
 [tool.coverage]
@@ -59,13 +69,10 @@ sources = ["src"]
 [tool.hatch.build.targets.wheel]
 packages = ["src/rename_books"]
 
-[tool.hatch.version]
-path = "src/rename_books/__init__.py"
-
 # nitpick
 [tool.nitpick]
 style = [
-  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.12.toml",
+  "https://raw.githubusercontent.com/dycw/nitpick/master/styles/3.13.toml",
   "https://raw.githubusercontent.com/dycw/nitpick/master/styles/common.toml",
 ]
 
@@ -73,10 +80,7 @@ style = [
 [tool.pyright]
 deprecateTypingAliases = true
 enableReachabilityAnalysis = false
-exclude = ["alembic/versions"]
-ignore = ["alembic/versions"]
-include = ["src"]
-pythonVersion = "3.12"
+pythonVersion = "3.13"
 reportAny = false
 reportCallInDefaultInitializer = true
 reportImplicitOverride = true
@@ -112,7 +116,7 @@ xfail_strict = true
 # ruff
 [tool.ruff]
 src = ["src"]
-target-version = "py312"
+target-version = "py313"
 unsafe-fixes = true
 
 [tool.ruff.format]
