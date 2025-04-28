@@ -16,11 +16,11 @@ dev = [
 [project]
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
-  "click >= 8.1.7, < 8.2",
-  "dycw-utilities >= 0.97.2, < 0.98",
-  "loguru >= 0.7.2, < 0.8",
-  "pathvalidate >= 3.2.0, < 3.3",
-  "prompt-toolkit >= 3.0.47, < 3.1",
+  "click >= 8.1.8, < 8.2",
+  "dycw-utilities >= 0.112.7, < 0.113",
+  "loguru >= 0.7.3, < 0.8",
+  "pathvalidate >= 3.2.3, < 3.3",
+  "prompt-toolkit >= 3.0.51, < 3.1",
   "tabulate >= 0.9.0, < 0.10",
   "titlecase >= 2.4.1, < 2.5",
 ]
