@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from dataclasses import dataclass, replace
 from itertools import count, takewhile
 from re import search
@@ -23,7 +24,7 @@ from rename_books.utilities import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterable, Iterator
     from pathlib import Path
 
 
@@ -100,23 +101,33 @@ def process_file(path: Path, /) -> None:
                 data = replace(data, authors=_get_authors(default=data.authors))
 
 
-def _try_get_defaults(stem: str, /) -> tuple[int, str, list[str]] | None:
+def _try_get_defaults(stem: str, /) -> tuple[int | None, str | None, list[str]] | None:
     """Try get a set of defaults for a given path."""
-    try:
-        year_text, title_text, authors_text = extract_groups(
-            r"\((\d+)\)\s+(.+)\s+\((.+)\)", stem
+    with suppress(ExtractGroupsError):
+        year, title, authors = extract_groups(r"\((\d+)\)\s+(.+)\s+\((.+)\)", stem)
+        return _process_get_defaults(year=year, title=title, authors=authors)
+    with suppress(ExtractGroupsError):
+        authors, title, year = extract_groups(
+            r"(?:\(.+\)\s+)?(.+)\s+\-\s+(.+)\s+\((\d+)\)", stem
         )
-    except ExtractGroupsError:
-        try:
-            authors_text, title_text, year_text = extract_groups(
-                r"(?:\(.+\)\s+)?(.+)\s+\-\s+(.+)\s+\((\d+)\)", stem
-            )
-        except ExtractGroupsError:
-            return None
-    year = int(year_text)
-    title = titlecase(title_text)
-    authors = [name.split(" ")[-1] for name in authors_text.split(",")]
-    return year, title, authors
+        return _process_get_defaults(year=year, title=title, authors=authors)
+    with suppress(ExtractGroupsError):
+        title, authors = extract_groups(r"^(.+)\-(.+)$", stem)
+        return _process_get_defaults(title=title, authors=authors)
+    return None
+
+
+def _process_get_defaults(
+    *, year: str | None = None, title: str | None = None, authors: str | None = None
+) -> tuple[int | None, str | None, list[str]]:
+    year_use = None if year is None else int(year)
+    title_use = None if title is None else titlecase(_clean_text(title))
+    authors_use = (
+        []
+        if authors is None
+        else [_clean_text(name).split(" ")[-1] for name in authors.split(",")]
+    )
+    return year_use, title_use, authors_use
 
 
 def _get_year(*, default: int | None = None) -> int:
@@ -141,7 +152,7 @@ def _get_title(*, default: str | None = None) -> str:
     """Get the prompt title."""
     return prompt(
         "Input title: ",
-        default="" if default is None else default,
+        default="" if default is None else _clean_text(default),
         mouse_support=True,
         validator=Validator.from_callable(
             is_valid_filename, error_message="Enter a valid file path"
@@ -156,7 +167,7 @@ def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
     if default is None:
         def_title_words = []
     else:
-        def_title, title = default
+        def_title, title = map(_clean_text, default)
         def_title_words = def_title.split(" ")
         num_words += len(title.split(" "))
 
@@ -166,7 +177,7 @@ def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
             yield (
                 subtitle := prompt(
                     "Input subtitle(s): ",
-                    default=def_i,
+                    default=_clean_text(def_i),
                     mouse_support=True,
                     validator=Validator.from_callable(
                         is_valid_filename, error_message="Enter a valid file path"
@@ -179,18 +190,27 @@ def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
     return list(takewhile(is_non_empty, yield_inputs(num_words)))
 
 
-def _get_subtitles_post(*, default: list[str]) -> list[str]:
+def _clean_text(text: str, /) -> str:
+    """Clean the text."""
+    return text.replace("’", "'")
+
+
+def _get_subtitles_post(*, default: Iterable[str]) -> list[str]:
     """Get the prompt subtitles (post part)."""
-    return _get_subtitles_post_or_authors(default=default, desc="subtitle")
+    return _get_subtitles_post_or_authors(
+        default=map(_clean_text, default), desc="subtitle"
+    )
 
 
-def _get_authors(*, default: list[str] | None = None) -> list[str]:
+def _get_authors(*, default: Iterable[str] | None = None) -> list[str]:
     """Get the prompt authors."""
-    return _get_subtitles_post_or_authors(default=default, desc="author")
+    return _get_subtitles_post_or_authors(
+        default=None if default is None else map(_clean_text, default), desc="author"
+    )
 
 
 def _get_subtitles_post_or_authors(
-    *, default: list[str] | None = None, desc: str
+    *, default: Iterable[str] | None = None, desc: str
 ) -> list[str]:
     """Get the prompt post-subtitles or authors."""
 
@@ -199,13 +219,14 @@ def _get_subtitles_post_or_authors(
             if default is None:
                 def_i = ""
             else:
+                default_list = list(map(_clean_text, default))
                 try:
-                    def_i = default[i]
+                    def_i = default_list[i]
                 except IndexError:
                     def_i = ""
             yield prompt(
                 f"Input {desc}(s): ",
-                default=def_i,
+                default=_clean_text(def_i),
                 mouse_support=True,
                 validator=Validator.from_callable(
                     is_valid_filename, error_message="Enter a valid file path"
@@ -267,7 +288,7 @@ def _confirm_data(
         ),
         vi_mode=True,
     ).strip()
-    return cast(Any, True if result == "yes" else result)
+    return cast("Any", True if result == "yes" else result)
 
 
 def _rename_file_to_data(path: Path, data: _Data, /) -> None:
