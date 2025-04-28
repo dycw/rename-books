@@ -4,7 +4,21 @@ from pathlib import Path
 
 from pytest import mark, param
 
-from rename_books.lib import _Data, _needs_processing, _try_get_defaults
+from rename_books.lib import _clean_text, _Data, _needs_processing, _try_get_defaults
+
+
+class TestCleanText:
+    @mark.parametrize(
+        ("text", "expected"),
+        [
+            param(
+                "A Survey of the World’s Top Asset Allocation Strategies",
+                "A Survey of the World's Top Asset Allocation Strategies",
+            )
+        ],
+    )
+    def test_main(self, *, text: str, expected: str) -> None:
+        assert _clean_text(text) == expected
 
 
 class TestData:
@@ -73,7 +87,7 @@ class TestData:
         assert data.to_name() == expected
 
 
-class TestFileStemNeedsProcessing:
+class TestNeedsProcessing:
     @mark.parametrize(
         ("name", "expected"),
         [
@@ -93,7 +107,8 @@ class TestFileStemNeedsProcessing:
         ],
     )
     def test_main(self, *, name: str, expected: bool) -> None:
-        assert _needs_processing(Path(name)) is expected
+        result = _needs_processing(Path(name))
+        assert result is expected
 
 
 class TestTryGetDefaults:
@@ -105,10 +120,17 @@ class TestTryGetDefaults:
                 2006,
                 "Numerical Methods in Finance and Economics_ a MATLAB-Based Introduction -Wiley-Interscience",
                 ["Brandimarte"],
-            )
+            ),
+            param(
+                "A Survey of the World’s Top Asset Allocation Strategies (English Edition)-the Idea Farm0",
+                None,
+                "A Survey of the World's Top Asset Allocation Strategies (English Edition)",
+                ["Farm0"],
+            ),
         ],
     )
     def test_main(
         self, *, stem: str, year: int, title: str, authors: list[str]
     ) -> None:
-        assert _try_get_defaults(stem) == (year, title, authors)
+        result = _try_get_defaults(stem)
+        assert result == (year, title, authors)
