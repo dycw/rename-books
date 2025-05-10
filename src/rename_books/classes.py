@@ -62,7 +62,7 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
         """Check if a path is normalized."""
         try:
             return cls.from_path(path).to_path == path
-        except StemMetaDataFromTextError:
+        except (MetaDataFromPathError, MetaDataWithAllMetaDataError):
             return False
 
     @property
@@ -183,23 +183,43 @@ class StemMetaData(Generic[_TYear, _TTitle]):
             year, title_and_subtitles, authors = extract_groups(
                 r"^(\d+)[\s\-\—]+(.+?)[\s\-\—]?(?:\(([\s\w\-\,]+)\))?$", stem
             )
-        except ExtractGroupsError as error:
-            raise StemMetaDataFromTextError(*[f"{stem=}"]) from error
-        title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
-        authors = cls._parse_authors(authors)
-        return cls(
-            year=cast("_TYear", int(year)),
-            title=cast("_TTitle", title),
-            subtitles=subtitles,
-            authors=authors,
-        )
+        except ExtractGroupsError:
+            pass
+        else:
+            title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
+            return cls(
+                year=cast("_TYear", int(year)),
+                title=cast("_TTitle", title),
+                subtitles=subtitles,
+                authors=cls._parse_authors(authors),
+            )
+        with suppress(ExtractGroupsError):
+            authors, title_and_subtitles, year = extract_groups(
+                r"^(.+?)\s*\-\s*(.+)\s+\((\d+)\)$", stem
+            )
+            title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
+            return cls(
+                year=cast("_TYear", int(year)),
+                title=cast("_TTitle", title),
+                subtitles=subtitles,
+                authors=cls._parse_authors(authors),
+            )
+        with suppress(ExtractGroupsError):
+            title_and_subtitles, authors = extract_groups(r"^(.+?)\s*\-\s*(.+)$", stem)
+            title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
+            return cls(
+                title=cast("_TTitle", title),
+                subtitles=subtitles,
+                authors=cls._parse_authors(authors),
+            )
+        raise StemMetaDataFromTextError(*[f"{stem=}"])
 
     @classmethod
     def is_normalized(cls, text: str, /) -> bool:
         """Check if a string is normalized."""
         try:
             return cls.from_text(text).to_text == text
-        except StemMetaDataFromTextError:
+        except (StemMetaDataFromTextError, StemMetaDataWithAllMetaDataError):
             return False
 
     @classmethod

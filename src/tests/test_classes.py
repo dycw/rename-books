@@ -101,6 +101,18 @@ class TestFromText:
                 ),
                 True,
             ),
+            param(
+                "Paolo Brandimarte - Numerical Methods in Finance and Economics (2006)",
+                StemMetaData(
+                    year=2006,
+                    title="Numerical Methods in Finance and Economics",
+                    authors=("Paolo Brandimarte",),
+                ),
+                False,
+            ),
+            param(
+                "Title-Author", StemMetaData(title="Title", authors=("Author",)), False
+            ),
         ],
     )
     def test_main(self, *, text: str, expected: MetaData, is_normalized: bool) -> None:
