@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from dataclasses import dataclass, field
-from itertools import count, takewhile
+from itertools import chain, count, takewhile
 from logging import getLogger
 from pathlib import Path
 from re import search, split, sub
@@ -106,20 +106,19 @@ class MetaData(Generic[_TYear, _TSuffix]):
     def process_choice(self) -> Literal[True, "year", "title/subtitles", "authors"]:
         """Check if a set of metadata is ready or needs modification."""
         result = prompt(
-            f"{self.repr_table}\nConfirm? [y]es, y[e]ar, [t]itle/subtitles, [a]uthors: ",
+            f"{self.repr_table}\nConfirm? []yes, [y]ear, [t]itle/subtitles, [a]uthors: ",
             completer=WordCompleter(["y", "e", "t", "a"]),
-            default="y",
             mouse_support=True,
             validator=Validator.from_callable(
-                lambda text: bool(search(r"^(y|e|t|a)$", text)),
-                error_message="Enter 'y', 'e', 't' or 'a'",
+                lambda text: bool(search(r"^(|y|t|a)$", text)),
+                error_message="Enter '', 'y', 't' or 'a'",
             ),
             vi_mode=True,
         ).strip()
         match result:
-            case "y":
+            case "":
                 return True
-            case "e":
+            case "y":
                 return "year"
             case "t":
                 return "title/subtitles"
@@ -153,20 +152,17 @@ class MetaData(Generic[_TYear, _TSuffix]):
                 default = self.authors
 
         match default:
-            case tuple() as default_use:
-                ...
+            case tuple():
+                default_use = list(chain.from_iterable(t.split(" ") for t in default))
             case AuthorEtAl() as author_et_al:
                 default_use = (author_et_al.author,)
 
         def yield_inputs() -> Iterator[str]:
-            for i in count():
-                try:
-                    def_i = default_use[i]
-                except IndexError:
-                    def_i = ""
-                yield prompt(
+            n: int = 0
+            while True:
+                result = prompt(
                     f"Input {type_}: ",
-                    default=clean_text(def_i),
+                    default=clean_text(" ".join(default_use[n:])),
                     mouse_support=True,
                     validator=Validator.from_callable(
                         is_empty_or_is_valid_filename,
@@ -174,6 +170,8 @@ class MetaData(Generic[_TYear, _TSuffix]):
                     ),
                     vi_mode=True,
                 ).strip()
+                yield result
+                n += len(result.split(" "))
 
         result = tuple(takewhile(is_non_empty, yield_inputs()))
         match type_:
@@ -316,16 +314,7 @@ class StemMetaData(Generic[_TYear]):
             )
         with suppress(ExtractGroupsError):
             authors, title_and_subtitles, year = extract_groups(
-                r"^([\w\s\-\.]+)\s+\-\s+(.+?)\s+\((\d+)\)$", stem
-            )
-            return cls(
-                year=cast("_TYear", int(year)),
-                title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
-                authors=cls._parse_authors(authors),
-            )
-        with suppress(ExtractGroupsError):
-            authors, title_and_subtitles, year = extract_groups(
-                r"^(.+?)\s*\-\s*(.+)\s+\((\d+)\)$", stem
+                r"^([\w\s\-\.\,]+)\s+\-\s+(.+?)\s+\((\d+)\)$", stem
             )
             return cls(
                 year=cast("_TYear", int(year)),

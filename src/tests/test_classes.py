@@ -113,9 +113,7 @@ class TestFromText:
             param(
                 "Author - Title (2000)",
                 StemMetaData(
-                    year=2000,
-                    title_and_subtitles=("Title",),
-                    authors=("Author",),
+                    year=2000, title_and_subtitles=("Title",), authors=("Author",)
                 ),
                 False,
             ),
@@ -139,6 +137,15 @@ class TestFromText:
                     year=2000,
                     title_and_subtitles=("Title1 Title2 Title3 Title4 Title5",),
                     authors=("Author M. Sur-Name",),
+                ),
+                False,
+            ),
+            param(
+                "Author1, Author2 - Title (2000)",
+                StemMetaData(
+                    year=2000,
+                    title_and_subtitles=("Title",),
+                    authors=("Author1", "Author2"),
                 ),
                 False,
             ),
