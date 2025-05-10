@@ -17,7 +17,7 @@ dev = [
 authors = [{name = "Derek Wan", email = "d.wan@icloud.com"}]
 dependencies = [
   "click >= 8.1.8, < 8.2",
-  "dycw-utilities >= 0.112.7, < 0.113",
+  "dycw-utilities >= 0.113.3, < 0.114",
   "loguru >= 0.7.3, < 0.8",
   "pathvalidate >= 3.2.3, < 3.3",
   "prompt-toolkit >= 3.0.51, < 3.1",
