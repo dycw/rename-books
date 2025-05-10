@@ -149,6 +149,15 @@ class TestFromText:
                 ),
                 False,
             ),
+            param(
+                "2000 — Title (Sur Name et al)",
+                StemMetaData(
+                    year=2000,
+                    title_and_subtitles=("Title",),
+                    authors=AuthorEtAl(author="Sur Name"),
+                ),
+                True,
+            ),
         ],
     )
     def test_main(self, *, text: str, expected: MetaData, is_normalized: bool) -> None:

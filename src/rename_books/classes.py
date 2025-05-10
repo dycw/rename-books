@@ -466,7 +466,7 @@ class AuthorEtAl:
     def from_string(cls, text: str, /) -> Self:
         """Construct a set of metadata from a string."""
         try:
-            author = extract_group(r"^([\w\-]+) et al$", text)
+            author = extract_group(r"^([\w\s\-]+) et al$", text)
         except ExtractGroupError as error:
             raise AuthorEtAlFromStringError(*[f"{text=}"]) from error
         return cls(author=author)
