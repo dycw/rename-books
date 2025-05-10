@@ -316,7 +316,7 @@ class StemMetaData(Generic[_TYear]):
             )
         with suppress(ExtractGroupsError):
             authors, title_and_subtitles, year = extract_groups(
-                r"^([\w\s\-]+)\s+\-\s+(.+?)\s+\((\d+)\)$", stem
+                r"^([\w\s\-\.]+)\s+\-\s+(.+?)\s+\((\d+)\)$", stem
             )
             return cls(
                 year=cast("_TYear", int(year)),
