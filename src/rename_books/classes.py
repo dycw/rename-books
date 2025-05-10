@@ -302,7 +302,7 @@ class StemMetaData(Generic[_TYear]):
         """Construct a set of metadata from a string."""
         try:
             year, title_and_subtitles, authors = extract_groups(
-                r"^(\d+)[\s\-\—]+(.+?)[\s\-\—]?(?:\(([\s\w\-\,]+)\))?$", stem
+                r"^(\d+)[\s\-\—]+(.+?)[\s\-\—]?(?:\(([\s\w\-\,\'èï]+)\))?$", stem
             )
         except ExtractGroupsError:
             pass
