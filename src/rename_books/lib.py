@@ -7,8 +7,8 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator
 
+from rename_books.classes import MetaData
 from rename_books.constants import TEMPORARY_PATH
-from rename_books.utilities import change_suffix
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -16,13 +16,7 @@ if TYPE_CHECKING:
 
 def get_next_file(*, skips: set[Path] | None = None) -> Path | None:
     """Get the next file to process, if it exists."""
-    paths = (
-        path
-        for path in TEMPORARY_PATH.iterdir()
-        if path.is_file()
-        and _needs_processing(path)
-        and not change_suffix(path, ".pdf", ".part").exists()
-    )
+    paths = (path for path in TEMPORARY_PATH.iterdir() if _needs_processing(path))
     if skips is not None:
         paths = (path for path in paths if path not in skips)
     try:
@@ -33,8 +27,11 @@ def get_next_file(*, skips: set[Path] | None = None) -> Path | None:
 
 def _needs_processing(path: Path, /) -> bool:
     """Check if a file needs processing."""
-    return (not search(r"^\d+ — .+( – .+)?(\(.+\))?$", path.name)) and (
-        path.suffix in {".epub", ".pdf"}
+    return (
+        path.is_file()
+        and (path.suffix in {".epub", ".pdf"})
+        and not MetaData.is_normalized(path)
+        and not search(".part", path.stem)
     )
 
 

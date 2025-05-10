@@ -35,8 +35,8 @@ if TYPE_CHECKING:
 
 
 _LOGGER = getLogger(__name__)
-_TYear = TypeVar("_TYear", bound=int | None)
-_TSuffix = TypeVar("_TSuffix", bound=str | None)
+_TYear = TypeVar("_TYear", int, None)
+_TSuffix = TypeVar("_TSuffix", str, None)
 
 
 @dataclass(order=True, unsafe_hash=True, kw_only=True)
@@ -240,14 +240,14 @@ class MetaData(Generic[_TYear, _TSuffix]):
         return ensure_suffix(Path(meta.directory, meta.name), meta.suffix)
 
     @property
-    def with_all_metadata(self) -> MetaData[int, str, str]:
+    def with_all_metadata(self) -> MetaData[int, str]:
         """Check if the metadata is complete."""
-        if (
-            (self.year is None)
-            or (len(self.title_and_subtitles) == 0)
-            or (self.suffix is None)
-        ):
+        if (self.year is None) or (self.suffix is None):
             raise MetaDataWithAllMetaDataError(*[f"{self=}"])
+        try:
+            _ = self.stem_meta_data.with_all_metadata
+        except StemMetaDataWithAllMetaDataError as error:
+            raise MetaDataWithAllMetaDataError(*[f"{self=}"]) from error
         return cast("MetaData[int, str]", self)
 
     def yield_repr_table_parts(self) -> Iterator[tuple[str, Any]]:
@@ -397,7 +397,11 @@ class StemMetaData(Generic[_TYear]):
     @property
     def with_all_metadata(self) -> StemMetaData[int]:
         """Check if the metadata is complete."""
-        if (self.year is None) or (len(self.title_and_subtitles) == 0):
+        if (
+            (self.year is None)
+            or (len(self.title_and_subtitles) == 0)
+            or (isinstance(self.authors, tuple) and (len(self.authors) == 0))
+        ):
             raise StemMetaDataWithAllMetaDataError(*[f"{self=}"])
         return cast("StemMetaData[int]", self)
 
