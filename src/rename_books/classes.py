@@ -10,7 +10,13 @@ from tabulate import tabulate
 from utilities.dataclasses import replace_non_sentinel
 from utilities.errors import ImpossibleCaseError
 from utilities.iterables import one
-from utilities.re import ExtractGroupsError, extract_groups
+from utilities.pathlib import ensure_suffix
+from utilities.re import (
+    ExtractGroupError,
+    ExtractGroupsError,
+    extract_group,
+    extract_groups,
+)
 from utilities.sentinel import Sentinel, sentinel
 
 from rename_books.utilities import clean_text
@@ -24,7 +30,7 @@ _TTitle = TypeVar("_TTitle", bound=str | None)
 _TSuffix = TypeVar("_TSuffix", bound=str | None)
 
 
-@dataclass(repr=False, kw_only=True)
+@dataclass(order=True, unsafe_hash=True, kw_only=True)
 class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
     """A set of metadata."""
 
@@ -32,25 +38,16 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
     year: _TYear = None
     title: _TTitle = None
     subtitles: tuple[str, ...] = field(default_factory=tuple)
-    authors: tuple[str, ...] = field(default_factory=tuple)
+    authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
     suffix: _TSuffix = None
-
-    @property
-    def table(self) -> str:
-        data = [
-            ["directory", self.directory],
-            ["year", self.year],
-            ["title", self.title],
-            ["subtitles", self.subtitles],
-            ["authors", self.authors],
-            ["extension", self.suffix],
-        ]
-        return tabulate(data)
 
     @classmethod
     def from_path(cls, path: Path, /) -> MetaData[Any, Any, Any]:
         """Construct a set of metadata from a Path."""
-        stem = StemMetaData.from_string(path.stem)
+        try:
+            stem = StemMetaData.from_text(path.stem)
+        except StemMetaDataFromTextError as error:
+            raise MetaDataFromPathError(*[f"{path=}"]) from error
         return cls(
             directory=path.parent,
             year=stem.year,
@@ -60,11 +57,24 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
             suffix=cast("_TSuffix", path.suffix),
         )
 
+    @classmethod
+    def is_normalized(cls, path: Path, /) -> bool:
+        """Check if a path is normalized."""
+        try:
+            return cls.from_path(path).to_path == path
+        except StemMetaDataFromTextError:
+            return False
+
     @property
     def name(self) -> str:
         """Get the name of the file path."""
         meta = self.with_all_metadata
-        return Path(meta.stem).with_suffix(meta.suffix).stem
+        return ensure_suffix(Path(self.directory, meta.stem), meta.suffix).name
+
+    @classmethod
+    def normalize(cls, path: Path, /) -> Path:
+        """Normalize a Path."""
+        return cls.from_path(path).to_path
 
     def replace(
         self,
@@ -102,7 +112,7 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
     @property
     def stem(self) -> str:
         """Get the stem of the file path."""
-        return self.stem_meta_data.to_string
+        return self.stem_meta_data.to_text
 
     @property
     def stem_meta_data(self) -> StemMetaData:
@@ -118,14 +128,23 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
     def to_path(self) -> Path:
         """Construct a Path from the metadata."""
         meta = self.with_all_metadata
-        return Path(meta.directory, meta.name)
+        return ensure_suffix(Path(meta.directory, meta.name), meta.suffix)
 
     @property
     def with_all_metadata(self) -> MetaData[int, str, str]:
         """Check if the metadata is complete."""
         if (self.year is None) or (self.title is None) or (self.suffix is None):
-            raise ValueError(*[f"{self=}"])
+            raise MetaDataWithAllMetaDataError(*[f"{self=}"])
         return cast("MetaData[int, str, str]", self)
+
+
+class MetaDataFromPathError(Exception): ...
+
+
+class MetaDataWithAllMetaDataError(Exception): ...
+
+
+##
 
 
 @dataclass(order=True, unsafe_hash=True, kw_only=True)
@@ -135,53 +154,58 @@ class StemMetaData(Generic[_TYear, _TTitle]):
     year: _TYear = None
     title: _TTitle = None
     subtitles: tuple[str, ...] = field(default_factory=tuple)
-    authors: tuple[str, ...] = field(default_factory=tuple)
+    authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
         if self.title is not None:
             self.title = clean_text(self.title)
         self.subtitles = tuple(map(clean_text, self.subtitles))
 
+    @property
+    def author_use(self) -> str | AuthorEtAl | None:
+        """The author str/object to use."""
+        match self.authors:
+            case tuple():
+                match len(self.authors):
+                    case 0:
+                        return None
+                    case 1:
+                        return one(self.authors)
+                    case _:
+                        return AuthorEtAl(author=self.authors[0])
+            case AuthorEtAl():
+                return self.authors
+
     @classmethod
-    def from_string(cls, stem: str, /) -> Self:
+    def from_text(cls, stem: str, /) -> Self:
         """Construct a set of metadata from a string."""
         try:
             year, title_and_subtitles, authors = extract_groups(
-                r"^(\d+)[\s\-\—]+(.+?)[\s\-\—]?(?:\(([\w,]+)\))?$", stem
+                r"^(\d+)[\s\-\—]+(.+?)[\s\-\—]?(?:\(([\s\w\-\,]+)\))?$", stem
             )
-        except ExtractGroupsError:
-            pass
-        else:
-            title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
-            authors = cls._split_authors(authors)
-            return cls(
-                year=cast("_TYear", int(year)),
-                title=cast("_TTitle", title),
-                subtitles=subtitles,
-                authors=authors,
-            )
-        raise NotImplementedError
+        except ExtractGroupsError as error:
+            raise StemMetaDataFromTextError(*[f"{stem=}"]) from error
+        title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
+        authors = cls._parse_authors(authors)
+        return cls(
+            year=cast("_TYear", int(year)),
+            title=cast("_TTitle", title),
+            subtitles=subtitles,
+            authors=authors,
+        )
 
+    @classmethod
+    def is_normalized(cls, text: str, /) -> bool:
+        """Check if a string is normalized."""
         try:
-            year, title = extract_groups(r"^(\d+)[\s\-\—]+(.+)$", stem)
-        except ExtractGroupsError:
-            pass
-        else:
-            title, subtitles = cls._split_title_and_subtitles(title)
-            return cls(year=int(year), title=title, subtitles=subtitles)
-        with suppress(ExtractGroupsError):
-            year, title, authors = extract_groups(r"\((\d+)\)\s+(.+)\s+\((.+)\)", stem)
-            return _process_get_defaults(year=year, title=title, authors=authors)
-        raise NotImplementedError(stem)
-
-    @property
-    def is_formatted(self) -> bool:
-        """Check if a string is formatted."""
-        try:
-            _ = self.with_all_metadata
-        except ValueError:
+            return cls.from_text(text).to_text == text
+        except StemMetaDataFromTextError:
             return False
-        return True
+
+    @classmethod
+    def normalize(cls, text: str, /) -> str:
+        """Normalize a string."""
+        return cls.from_text(text).to_text
 
     def replace(
         self,
@@ -212,33 +236,35 @@ class StemMetaData(Generic[_TYear, _TTitle]):
         return tabulate(data)
 
     @property
-    def to_string(self) -> str:
+    def to_text(self) -> str:
         """Construct a string from the metadata."""
         meta = self.with_all_metadata
         name = f"{meta.year} — {meta.title}"
         if len(subtitles := meta.subtitles) >= 1:
             joined = " – ".join(subtitles)
             name = f"{name} – {joined}"
-        match len(meta.authors):
-            case 0:
+        match meta.author_use:
+            case None:
                 return name
-            case 1:
-                return f"{name} ({one(meta.authors)})"
-            case _:
-                return f"{name} ({meta.authors[0]} et al)"
+            case str() as author:
+                return f"{name} ({author})"
+            case AuthorEtAl() as authors:
+                return f"{name} ({authors.to_string})"
 
     @property
     def with_all_metadata(self) -> StemMetaData[int, str]:
         """Check if the metadata is complete."""
         if (self.year is None) or (self.title is None):
-            raise ValueError(*[f"{self=}"])
+            raise StemMetaDataWithAllMetaDataError(*[f"{self=}"])
         return cast("StemMetaData[int, str]", self)
 
     @classmethod
-    def _split_authors(cls, text: str, /) -> tuple[str, ...]:
+    def _parse_authors(cls, text: str, /) -> tuple[str, ...] | AuthorEtAl:
         text = cls._strip_text(text)
         if not text:
             return ()
+        with suppress(AuthorEtAlFromStringError):
+            return AuthorEtAl.from_string(text)
         return tuple(map(cls._strip_text, split(r",", text)))
 
     @classmethod
@@ -255,4 +281,37 @@ class StemMetaData(Generic[_TYear, _TTitle]):
         return sub(r"^[\s\-\—]+|[\s\-\—]+$", "", text)
 
 
-__all__ = ["MetaData", "StemMetaData"]
+class StemMetaDataFromTextError(Exception): ...
+
+
+class StemMetaDataWithAllMetaDataError(Exception): ...
+
+
+##
+
+
+@dataclass(order=True, unsafe_hash=True, kw_only=True)
+class AuthorEtAl:
+    """A set of multiple authors."""
+
+    author: str
+
+    @classmethod
+    def from_string(cls, text: str, /) -> Self:
+        """Construct a set of metadata from a string."""
+        try:
+            author = extract_group(r"^([\w\-]+) et al$", text)
+        except ExtractGroupError as error:
+            raise AuthorEtAlFromStringError(*[f"{text=}"]) from error
+        return cls(author=author)
+
+    @property
+    def to_string(self) -> str:
+        """Construct a string from the metadata."""
+        return f"{self.author} et al"
+
+
+class AuthorEtAlFromStringError(Exception): ...
+
+
+__all__ = ["AuthorEtAl", "MetaData", "StemMetaData"]

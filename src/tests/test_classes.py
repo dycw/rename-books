@@ -6,7 +6,7 @@ from hypothesis import given
 from hypothesis.strategies import DrawFn, composite, sampled_from
 from pytest import mark, param
 
-from rename_books.classes import MetaData, StemMetaData
+from rename_books.classes import AuthorEtAl, MetaData, StemMetaData
 from rename_books.constants import BOOKS
 
 if TYPE_CHECKING:
@@ -18,9 +18,9 @@ def existing_paths(draw: DrawFn, /) -> Path:
     return draw(sampled_from(list(BOOKS.rglob("**/*.pdf"))))
 
 
-class TestFromStem:
+class TestFromText:
     @mark.parametrize(
-        ("stem", "expected", "is_formatted"),
+        ("text", "expected", "is_normalized"),
         [
             param("2000 — Title", StemMetaData(year=2000, title="Title"), True),
             param(
@@ -55,22 +55,59 @@ class TestFromStem:
                 ),
                 True,
             ),
-            # param("foo.epub", True),
-            # param("foo.jpg", False),
-            # param("foo", True),
-            # param("foo.download", False),
-            # param("foo.epub.download", False),
-            # param("foo.part", False),
-            # param("foo.epub.part", False),
+            param(
+                "2000 — Title (Author et al)",
+                StemMetaData(
+                    year=2000, title="Title", authors=AuthorEtAl(author="Author")
+                ),
+                True,
+            ),
+            param(
+                "2000 —\xa0Title (Author et al)",
+                StemMetaData(
+                    year=2000, title="Title", authors=AuthorEtAl(author="Author")
+                ),
+                False,
+            ),
+            param(
+                "2000 — 401(k) Title – Subtitle (Author)",
+                StemMetaData(
+                    year=2000,
+                    title="401(k) Title",
+                    subtitles=("Subtitle",),
+                    authors=("Author",),
+                ),
+                True,
+            ),
+            param(
+                "2000 — title multi-word",
+                StemMetaData(year=2000, title="Title Multi-Word"),
+                False,
+            ),
+            param(
+                "2000 — Title – The Global-View.com Guide (Author)",
+                StemMetaData(
+                    year=2000,
+                    title="Title",
+                    subtitles=("The Global-View.com Guide",),
+                    authors=("Author",),
+                ),
+                True,
+            ),
+            param(
+                "2000 — Title (Author-Second et al)",
+                StemMetaData(
+                    year=2000, title="Title", authors=AuthorEtAl(author="Author-Second")
+                ),
+                True,
+            ),
         ],
     )
-    def test_main(self, *, stem: str, expected: MetaData, is_formatted: bool) -> None:
-        result = StemMetaData.from_string(stem)
+    def test_main(self, *, text: str, expected: MetaData, is_normalized: bool) -> None:
+        result = StemMetaData.from_text(text)
         assert result == expected
-        assert result.is_formatted is is_formatted
-        if result.is_formatted:
-            assert result.to_string == stem
+        assert result.is_normalized(text) is is_normalized
 
     @given(path=existing_paths())
     def test_on_dropbox(self, *, path: Path) -> None:
-        MetaData.from_path
+        _ = MetaData.from_path(path)

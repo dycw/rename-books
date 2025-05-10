@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pathvalidate import is_valid_filename as _is_valid_filename
+from titlecase import titlecase
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -22,7 +23,7 @@ def change_suffix(path: Path, /, *suffixes: str) -> Path:
 
 def clean_text(text: str, /) -> str:
     """Clean the text."""
-    return text.replace("’", "'")
+    return titlecase(text.replace("’", "'"))
 
 
 def is_empty(text: str, /) -> bool:

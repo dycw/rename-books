@@ -23,6 +23,8 @@ dependencies = [
   "prompt-toolkit >= 3.0.51, < 3.1",
   "tabulate >= 0.9.0, < 0.10",
   "titlecase >= 2.4.1, < 2.5",
+  "tqdm >= 4.67.1, < 4.68",
+  "tzlocal >= 5.3.1, < 5.4",
 ]
 description = "Script to rename e-books"
 name = "rename-books"
