@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from click import command
-from utilities.logging import basic_config, setup_logging
+from utilities.logging import basic_config
 
 from rename_books.classes import MetaData
 from rename_books.lib import get_decision, get_next_file

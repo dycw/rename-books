@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from dataclasses import dataclass, field
-from itertools import chain, count, takewhile
+from itertools import chain, takewhile
 from logging import getLogger
 from pathlib import Path
 from re import search, split, sub

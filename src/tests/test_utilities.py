@@ -4,27 +4,7 @@ from pathlib import Path
 
 from pytest import mark, param
 
-from rename_books.utilities import (
-    change_name,
-    change_suffix,
-    is_empty_or_is_valid_filename,
-)
-
-
-class TestChangeName:
-    @mark.parametrize(
-        ("path", "name", "expected"),
-        [
-            (Path("dir/subdir/name.pdf"), "new_name", Path("dir/subdir/new_name.pdf")),
-            (
-                Path("dir/subdir/node.js 8.pdf"),
-                "node.js 9",
-                Path("dir/subdir/node.js 9.pdf"),
-            ),
-        ],
-    )
-    def test_main(self, *, path: Path, name: str, expected: Path) -> None:
-        assert change_name(path, name) == expected
+from rename_books.utilities import change_suffix, is_empty_or_is_valid_filename
 
 
 class TestChangeSuffix:
