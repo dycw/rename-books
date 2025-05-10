@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from itertools import count, takewhile
 from re import search
 from typing import TYPE_CHECKING, Any, Literal, cast, override
@@ -15,7 +15,6 @@ from titlecase import titlecase
 from utilities.iterables import one
 from utilities.re import ExtractGroupsError, extract_groups
 
-from rename_books.classes import MetaData
 from rename_books.constants import TEMPORARY_PATH
 from rename_books.utilities import (
     change_name,

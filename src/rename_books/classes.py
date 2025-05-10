@@ -24,7 +24,12 @@ from utilities.re import (
 )
 from utilities.sentinel import Sentinel, sentinel
 
-from rename_books.utilities import clean_text, is_empty, is_empty_or_is_valid_filename
+from rename_books.utilities import (
+    clean_text,
+    is_empty,
+    is_empty_or_is_valid_filename,
+    is_non_empty,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
@@ -145,9 +150,7 @@ class MetaData(Generic[_TYear, _TSuffix]):
         return self.replace(year=int(year))
 
     def process_title_and_subtitles_or_authors(
-        self,
-        type_: Literal["title/subtitles", "authors"],
-        /,
+        self, type_: Literal["title/subtitles", "authors"], /
     ) -> Self:
         """Process the title/subtitles or authors on a set of metadata."""
         match type_:
@@ -179,7 +182,7 @@ class MetaData(Generic[_TYear, _TSuffix]):
                     vi_mode=True,
                 ).strip()
 
-        result = tuple(takewhile(is_empty, yield_inputs()))
+        result = tuple(takewhile(is_non_empty, yield_inputs()))
         match type_:
             case "title/subtitles":
                 return self.replace(title_and_subtitles=result)

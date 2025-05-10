@@ -31,6 +31,11 @@ def is_empty(text: str, /) -> bool:
     return text == ""
 
 
+def is_non_empty(text: str, /) -> bool:
+    """Check if a string is not the empty string."""
+    return text != ""
+
+
 def is_empty_or_is_valid_filename(text: str, /) -> bool:
     """Check if a filename is valid."""
     return is_empty(text) or is_valid_filename(text)
