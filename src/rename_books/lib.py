@@ -15,6 +15,7 @@ from titlecase import titlecase
 from utilities.iterables import one
 from utilities.re import ExtractGroupsError, extract_groups
 
+from rename_books.classes import MetaData
 from rename_books.constants import TEMPORARY_PATH
 from rename_books.utilities import (
     change_name,
@@ -74,17 +75,7 @@ def get_decision(path: Path, /) -> bool:
 
 def process_file(path: Path, /) -> None:
     """Process a file."""
-    if (defaults := _try_get_defaults(path.stem)) is None:
-        def_year = def_title = def_authors = None
-    else:
-        def_year, def_title, def_authors = defaults
-    year = _get_year(default=def_year)
-    title = _get_title(default=def_title)
-    subtitles = _get_subtitles_init(
-        default=None if def_title is None else (def_title, title)
-    )
-    authors = _get_authors(default=def_authors)
-    data = _Data(year=year, title=title, subtitles=subtitles, authors=authors)
+    MetaData.from_path(path)
     while True:
         match _confirm_data(data):
             case True:

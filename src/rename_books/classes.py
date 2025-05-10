@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from contextlib import suppress
 from dataclasses import dataclass, field
+from logging import getLogger
 from pathlib import Path
-from re import split, sub
-from typing import TYPE_CHECKING, Any, Generic, Self, TypeVar, cast
+from re import search, split, sub
+from typing import TYPE_CHECKING, Any, Generic, Literal, Self, TypeVar, cast
 
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.validation import Validator
 from tabulate import tabulate
 from utilities.dataclasses import replace_non_sentinel
 from utilities.errors import ImpossibleCaseError
@@ -19,25 +23,24 @@ from utilities.re import (
 )
 from utilities.sentinel import Sentinel, sentinel
 
-from rename_books.utilities import clean_text
+from rename_books.utilities import clean_text, is_valid_filename
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Iterator
 
 
+_LOGGER = getLogger(__name__)
 _TYear = TypeVar("_TYear", bound=int | None)
-_TTitle = TypeVar("_TTitle", bound=str | None)
 _TSuffix = TypeVar("_TSuffix", bound=str | None)
 
 
 @dataclass(order=True, unsafe_hash=True, kw_only=True)
-class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
+class MetaData(Generic[_TYear, _TSuffix]):
     """A set of metadata."""
 
     directory: Path = field(default_factory=Path.cwd)
     year: _TYear = None
-    title: _TTitle = None
-    subtitles: tuple[str, ...] = field(default_factory=tuple)
+    title_and_subtitles: tuple[str, ...] = field(default_factory=tuple)
     authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
     suffix: _TSuffix = None
 
@@ -51,8 +54,7 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
         return cls(
             directory=path.parent,
             year=stem.year,
-            title=stem.title,
-            subtitles=stem.subtitles,
+            title_and_subtitles=stem.title_and_subtitles,
             authors=stem.authors,
             suffix=cast("_TSuffix", path.suffix),
         )
@@ -76,13 +78,84 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
         """Normalize a Path."""
         return cls.from_path(path).to_path
 
+    @classmethod
+    def process(cls, path: Path, /) -> None:
+        """Process a path."""
+        meta = cls.from_path(path)
+        while True:
+            match cls._process_choice():
+                case True:
+                    target = meta.to_path
+                    _LOGGER.info(
+                        """Renaming
+    %r
+--> %r""",
+                        str(path),
+                        str(target),
+                    )
+                    _ = path.rename(target)
+                    return
+                case "year":
+                    meta = meta.replace(year=cls._process_year(year=meta.year))
+                case "title":
+                    meta = meta.replace(title=cls._process_title(title=meta.title))
+                case "subtitles":
+                    meta = meta.replace(
+                        subtitles=cls._process_subtitles(subtitles=meta.subtitles)
+                    )
+                case "authors":
+                    meta = meta.replace(
+                        authors=cls._process_authors(authors=meta.authors)
+                    )
+
+    @classmethod
+    def _process_choice(cls) -> Literal[True, "year", "title", "subtitles", "authors"]:
+        result = prompt(
+            f"{cls}\nConfirm? ",
+            completer=WordCompleter(["yes", "year", "title", "subtitles", "authors"]),
+            default="yes",
+            mouse_support=True,
+            validator=Validator.from_callable(
+                lambda text: bool(search(r"(yes|year|title|subtitles|authors)", text)),
+                error_message="Enter 'yes', 'year', 'title', 'subtitles' or 'authors'",
+            ),
+            vi_mode=True,
+        ).strip()
+        return cast("Any", True if result == "yes" else result)
+
+    @classmethod
+    def _process_year(cls, *, year: int | None = None) -> int:
+        text = prompt(
+            "Input year: ",
+            default="20" if year is None else str(year),
+            mouse_support=True,
+            validator=Validator.from_callable(
+                lambda text: bool(search(r"^(\d+)$", text)),
+                error_message="Enter a valid year",
+            ),
+            vi_mode=True,
+        ).strip()
+        return int(text)
+
+    @classmethod
+    def _get_title(cls, *, title: str | None = None) -> str:
+        """Get the prompt title."""
+        return prompt(
+            "Input title: ",
+            default="" if title is None else title,
+            mouse_support=True,
+            validator=Validator.from_callable(
+                is_valid_filename, error_message="Enter a valid file name"
+            ),
+            vi_mode=True,
+        ).strip()
+
     def replace(
         self,
         *,
         directory: Path | Sentinel = sentinel,
         year: int | None | Sentinel = sentinel,
-        title: str | None | Sentinel = sentinel,
-        subtitles: Iterable[str] | Sentinel = sentinel,
+        title_and_subtitles: Iterable[str] | Sentinel = sentinel,
         authors: Iterable[str] | Sentinel = sentinel,
         suffix: str | None | Sentinel = sentinel,
     ) -> Self:
@@ -90,8 +163,9 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
             self,
             directory=directory,
             year=year,
-            title=title,
-            subtitles=sentinel if isinstance(subtitles, Sentinel) else tuple(subtitles),
+            title_and_subtitles=sentinel
+            if isinstance(title_and_subtitles, Sentinel)
+            else tuple(title_and_subtitles),
             authors=sentinel if isinstance(authors, Sentinel) else tuple(authors),
             suffix=suffix,
         )
@@ -99,15 +173,7 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
     @property
     def repr_table(self) -> str:
         """The metadata as a table."""
-        data = [
-            ["directory", self.directory],
-            ["year", self.year],
-            ["title", self.title],
-            ["subtitles", self.subtitles],
-            ["authors", self.authors],
-            ["extension", self.suffix],
-        ]
-        return tabulate(data)
+        return tabulate(list(self.yield_repr_table_parts()))
 
     @property
     def stem(self) -> str:
@@ -119,10 +185,23 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
         """Get the metadata of the stem of the file path."""
         return StemMetaData(
             year=self.year,
-            title=self.title,
-            subtitles=self.subtitles,
+            title_and_subtitles=self.title_and_subtitles,
             authors=self.authors,
         )
+
+    @property
+    def subtitles(self) -> tuple[str, ...]:
+        """The subtitles, if any."""
+        if len(self.title_and_subtitles) == 0:
+            raise MetaDataTitleError(*[f"{self=}"])
+        return self.title_and_subtitles[1:]
+
+    @property
+    def title(self) -> str:
+        """The title."""
+        if len(self.title_and_subtitles) == 0:
+            raise MetaDataTitleError(*[f"{self=}"])
+        return self.title_and_subtitles[0]
 
     @property
     def to_path(self) -> Path:
@@ -133,12 +212,25 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
     @property
     def with_all_metadata(self) -> MetaData[int, str, str]:
         """Check if the metadata is complete."""
-        if (self.year is None) or (self.title is None) or (self.suffix is None):
+        if (
+            (self.year is None)
+            or (len(self.title_and_subtitles) == 0)
+            or (self.suffix is None)
+        ):
             raise MetaDataWithAllMetaDataError(*[f"{self=}"])
-        return cast("MetaData[int, str, str]", self)
+        return cast("MetaData[int, str]", self)
+
+    def yield_repr_table_parts(self) -> Iterator[tuple[str, Any]]:
+        """Yield the part for the metadata as a table."""
+        yield "directory", self.directory
+        yield from self.stem_meta_data.yield_repr_table_parts()
+        yield "suffix", self.suffix
 
 
 class MetaDataFromPathError(Exception): ...
+
+
+class MetaDataTitleError(Exception): ...
 
 
 class MetaDataWithAllMetaDataError(Exception): ...
@@ -148,18 +240,17 @@ class MetaDataWithAllMetaDataError(Exception): ...
 
 
 @dataclass(order=True, unsafe_hash=True, kw_only=True)
-class StemMetaData(Generic[_TYear, _TTitle]):
+class StemMetaData(Generic[_TYear]):
     """A set of stem metadata."""
 
     year: _TYear = None
-    title: _TTitle = None
-    subtitles: tuple[str, ...] = field(default_factory=tuple)
+    title_and_subtitles: tuple[str, ...] = field(default_factory=tuple)
     authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
-        if self.title is not None:
-            self.title = clean_text(self.title)
-        self.subtitles = tuple(map(clean_text, self.subtitles))
+        self.title_and_subtitles = tuple(map(clean_text, self.title_and_subtitles))
+        if isinstance(self.authors, tuple):
+            self.authors = tuple(map(clean_text, self.authors))
 
     @property
     def author_use(self) -> str | AuthorEtAl | None:
@@ -186,30 +277,24 @@ class StemMetaData(Generic[_TYear, _TTitle]):
         except ExtractGroupsError:
             pass
         else:
-            title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
             return cls(
                 year=cast("_TYear", int(year)),
-                title=cast("_TTitle", title),
-                subtitles=subtitles,
+                title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
                 authors=cls._parse_authors(authors),
             )
         with suppress(ExtractGroupsError):
             authors, title_and_subtitles, year = extract_groups(
                 r"^(.+?)\s*\-\s*(.+)\s+\((\d+)\)$", stem
             )
-            title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
             return cls(
                 year=cast("_TYear", int(year)),
-                title=cast("_TTitle", title),
-                subtitles=subtitles,
+                title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
                 authors=cls._parse_authors(authors),
             )
         with suppress(ExtractGroupsError):
             title_and_subtitles, authors = extract_groups(r"^(.+?)\s*\-\s*(.+)$", stem)
-            title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
             return cls(
-                title=cast("_TTitle", title),
-                subtitles=subtitles,
+                title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
                 authors=cls._parse_authors(authors),
             )
         raise StemMetaDataFromTextError(*[f"{stem=}"])
@@ -231,29 +316,37 @@ class StemMetaData(Generic[_TYear, _TTitle]):
         self,
         *,
         year: int | None | Sentinel = sentinel,
-        title: str | None | Sentinel = sentinel,
-        subtitles: Iterable[str] | Sentinel = sentinel,
+        title_and_subtitles: Iterable[str] | Sentinel = sentinel,
         authors: Iterable[str] | Sentinel = sentinel,
     ) -> Self:
         """Replace elements of the metadata."""
         return replace_non_sentinel(
             self,
             year=year,
-            title=title,
-            subtitles=sentinel if isinstance(subtitles, Sentinel) else tuple(subtitles),
+            title_and_subtitles=sentinel
+            if isinstance(title_and_subtitles, Sentinel)
+            else tuple(title_and_subtitles),
             authors=sentinel if isinstance(authors, Sentinel) else tuple(authors),
         )
 
     @property
     def repr_table(self) -> str:
         """The metadata as a table."""
-        data = [
-            ["year", self.year],
-            ["title", self.title],
-            ["subtitles", self.subtitles],
-            ["authors", self.authors],
-        ]
-        return tabulate(data)
+        return tabulate(list(self.yield_repr_table_parts()))
+
+    @property
+    def subtitles(self) -> tuple[str, ...]:
+        """The subtitles, if any."""
+        if len(self.title_and_subtitles) == 0:
+            raise StemMetaDataTitleError(*[f"{self=}"])
+        return self.title_and_subtitles[1:]
+
+    @property
+    def title(self) -> str:
+        """The title."""
+        if len(self.title_and_subtitles) == 0:
+            raise StemMetaDataTitleError(*[f"{self=}"])
+        return self.title_and_subtitles[0]
 
     @property
     def to_text(self) -> str:
@@ -272,11 +365,26 @@ class StemMetaData(Generic[_TYear, _TTitle]):
                 return f"{name} ({authors.to_string})"
 
     @property
-    def with_all_metadata(self) -> StemMetaData[int, str]:
+    def with_all_metadata(self) -> StemMetaData[int]:
         """Check if the metadata is complete."""
-        if (self.year is None) or (self.title is None):
+        if (self.year is None) or (len(self.title_and_subtitles) == 0):
             raise StemMetaDataWithAllMetaDataError(*[f"{self=}"])
-        return cast("StemMetaData[int, str]", self)
+        return cast("StemMetaData[int]", self)
+
+    def yield_repr_table_parts(self) -> Iterator[tuple[str, Any]]:
+        """Yield the part for the metadata as a table."""
+        yield ("year", self.year)
+        for i, ts in enumerate(self.title_and_subtitles):
+            if i == 0:
+                yield ("title", ts)
+            else:
+                yield (f"subtitle {i}", ts)
+        match self.authors:
+            case tuple():
+                for i, a in enumerate(self.authors, start=1):
+                    yield f"author {i}", a
+            case AuthorEtAl() as a:
+                yield "author et al", a.author
 
     @classmethod
     def _parse_authors(cls, text: str, /) -> tuple[str, ...] | AuthorEtAl:
@@ -288,13 +396,11 @@ class StemMetaData(Generic[_TYear, _TTitle]):
         return tuple(map(cls._strip_text, split(r",", text)))
 
     @classmethod
-    def _split_title_and_subtitles(cls, text: str, /) -> tuple[str, tuple[str, ...]]:
+    def _parse_title_and_subtitles(cls, text: str, /) -> tuple[str, ...]:
         text = cls._strip_text(text)
         if not text:
             raise ImpossibleCaseError(case=[f"{text=}"])
-        splits = list(map(cls._strip_text, split(r"[–—]", text)))
-        title, *subtitles = splits
-        return title, tuple(subtitles)
+        return tuple(map(cls._strip_text, split(r"[–—]", text)))
 
     @classmethod
     def _strip_text(cls, text: str, /) -> str:
@@ -302,6 +408,9 @@ class StemMetaData(Generic[_TYear, _TTitle]):
 
 
 class StemMetaDataFromTextError(Exception): ...
+
+
+class StemMetaDataTitleError(Exception): ...
 
 
 class StemMetaDataWithAllMetaDataError(Exception): ...
@@ -315,6 +424,9 @@ class AuthorEtAl:
     """A set of multiple authors."""
 
     author: str
+
+    def __post_init__(self) -> None:
+        self.author = clean_text(self.author)
 
     @classmethod
     def from_string(cls, text: str, /) -> Self:

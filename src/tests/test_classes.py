@@ -22,26 +22,32 @@ class TestFromText:
     @mark.parametrize(
         ("text", "expected", "is_normalized"),
         [
-            param("2000 — Title", StemMetaData(year=2000, title="Title"), True),
+            param(
+                "2000 — Title",
+                StemMetaData(year=2000, title_and_subtitles=("Title",)),
+                True,
+            ),
             param(
                 "2000 — Title – Sub",
-                StemMetaData(year=2000, title="Title", subtitles=("Sub",)),
+                StemMetaData(year=2000, title_and_subtitles=("Title", "Sub")),
                 True,
             ),
             param(
                 "2000 — Title – Sub1 – Sub2",
-                StemMetaData(year=2000, title="Title", subtitles=("Sub1", "Sub2")),
+                StemMetaData(year=2000, title_and_subtitles=("Title", "Sub1", "Sub2")),
                 True,
             ),
             param(
                 "2000 — Title (Author)",
-                StemMetaData(year=2000, title="Title", authors=("Author",)),
+                StemMetaData(
+                    year=2000, title_and_subtitles=("Title",), authors=("Author",)
+                ),
                 True,
             ),
             param(
                 "2000 — Title – Sub (Author)",
                 StemMetaData(
-                    year=2000, title="Title", subtitles=("Sub",), authors=("Author",)
+                    year=2000, title_and_subtitles=("Title", "Sub"), authors=("Author",)
                 ),
                 True,
             ),
@@ -49,8 +55,7 @@ class TestFromText:
                 "2000 — Title – Sub1 – Sub2 (Author)",
                 StemMetaData(
                     year=2000,
-                    title="Title",
-                    subtitles=("Sub1", "Sub2"),
+                    title_and_subtitles=("Title", "Sub1", "Sub2"),
                     authors=("Author",),
                 ),
                 True,
@@ -58,14 +63,18 @@ class TestFromText:
             param(
                 "2000 — Title (Author et al)",
                 StemMetaData(
-                    year=2000, title="Title", authors=AuthorEtAl(author="Author")
+                    year=2000,
+                    title_and_subtitles=("Title",),
+                    authors=AuthorEtAl(author="Author"),
                 ),
                 True,
             ),
             param(
                 "2000 —\xa0Title (Author et al)",
                 StemMetaData(
-                    year=2000, title="Title", authors=AuthorEtAl(author="Author")
+                    year=2000,
+                    title_and_subtitles=("Title",),
+                    authors=AuthorEtAl(author="Author"),
                 ),
                 False,
             ),
@@ -73,23 +82,21 @@ class TestFromText:
                 "2000 — 401(k) Title – Subtitle (Author)",
                 StemMetaData(
                     year=2000,
-                    title="401(k) Title",
-                    subtitles=("Subtitle",),
+                    title_and_subtitles=("401(k) Title", "Subtitle"),
                     authors=("Author",),
                 ),
                 True,
             ),
             param(
                 "2000 — title multi-word",
-                StemMetaData(year=2000, title="Title Multi-Word"),
+                StemMetaData(year=2000, title_and_subtitles=("Title Multi-Word",)),
                 False,
             ),
             param(
                 "2000 — Title – The Global-View.com Guide (Author)",
                 StemMetaData(
                     year=2000,
-                    title="Title",
-                    subtitles=("The Global-View.com Guide",),
+                    title_and_subtitles=("Title", "The Global-View.com Guide"),
                     authors=("Author",),
                 ),
                 True,
@@ -97,7 +104,9 @@ class TestFromText:
             param(
                 "2000 — Title (Author-Second et al)",
                 StemMetaData(
-                    year=2000, title="Title", authors=AuthorEtAl(author="Author-Second")
+                    year=2000,
+                    title_and_subtitles=("Title",),
+                    authors=AuthorEtAl(author="Author-Second"),
                 ),
                 True,
             ),
@@ -105,13 +114,15 @@ class TestFromText:
                 "Paolo Brandimarte - Numerical Methods in Finance and Economics (2006)",
                 StemMetaData(
                     year=2006,
-                    title="Numerical Methods in Finance and Economics",
+                    title_and_subtitles=("Numerical Methods in Finance and Economics",),
                     authors=("Paolo Brandimarte",),
                 ),
                 False,
             ),
             param(
-                "Title-Author", StemMetaData(title="Title", authors=("Author",)), False
+                "Title-Author",
+                StemMetaData(title_and_subtitles=("Title",), authors=("Author",)),
+                False,
             ),
         ],
     )

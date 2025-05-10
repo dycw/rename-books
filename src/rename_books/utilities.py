@@ -26,11 +26,6 @@ def clean_text(text: str, /) -> str:
     return titlecase(text.replace("’", "'"))
 
 
-def is_empty(text: str, /) -> bool:
-    """Check if a string is the empty string."""
-    return text == ""
-
-
 def is_non_empty(text: str, /) -> bool:
     """Check if a string is not the empty string."""
     return text != ""
@@ -38,4 +33,4 @@ def is_non_empty(text: str, /) -> bool:
 
 def is_valid_filename(text: str, /) -> bool:
     """Check if a filename is valid."""
-    return is_empty(text) or _is_valid_filename(text)
+    return is_non_empty(text) or _is_valid_filename(text)

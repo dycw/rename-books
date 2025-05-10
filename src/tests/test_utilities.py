@@ -45,9 +45,10 @@ class TestChangeSuffix:
         assert change_suffix(path, *suffixes) == expected
 
 
-class TestIsValidFilepath:
+class TestIsValidFileName:
     @mark.parametrize(
-        ("text", "expected"), [param("C/C++", False), param("name", True)]
+        ("text", "expected"),
+        [param("", False), param("C/C++", False), param("name", True)],
     )
     def test_main(self, *, text: str, expected: bool) -> None:
         assert is_valid_filename(text) is expected
