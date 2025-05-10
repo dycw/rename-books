@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING
 
 from click import command
 
-from rename_books.lib import get_decision, get_next_file, process_file
+from rename_books.classes import MetaData
+from rename_books.lib import get_decision, get_next_file
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -15,7 +16,7 @@ def main() -> None:
     skips: set[Path] = set()
     while (path := get_next_file(skips=skips)) is not None:
         if get_decision(path):
-            process_file(path)
+            MetaData.process(path)
         else:
             skips.add(path)
 

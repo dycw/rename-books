@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pathvalidate import is_valid_filename as _is_valid_filename
+from pathvalidate import is_valid_filename
 from titlecase import titlecase
 
 if TYPE_CHECKING:
@@ -26,11 +26,11 @@ def clean_text(text: str, /) -> str:
     return titlecase(text.replace("’", "'"))
 
 
-def is_non_empty(text: str, /) -> bool:
-    """Check if a string is not the empty string."""
-    return text != ""
+def is_empty(text: str, /) -> bool:
+    """Check if a string is the empty string."""
+    return text == ""
 
 
-def is_valid_filename(text: str, /) -> bool:
+def is_empty_or_is_valid_filename(text: str, /) -> bool:
     """Check if a filename is valid."""
-    return is_non_empty(text) or _is_valid_filename(text)
+    return is_empty(text) or is_valid_filename(text)

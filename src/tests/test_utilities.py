@@ -4,7 +4,11 @@ from pathlib import Path
 
 from pytest import mark, param
 
-from rename_books.utilities import change_name, change_suffix, is_valid_filename
+from rename_books.utilities import (
+    change_name,
+    change_suffix,
+    is_empty_or_is_valid_filename,
+)
 
 
 class TestChangeName:
@@ -48,7 +52,11 @@ class TestChangeSuffix:
 class TestIsValidFileName:
     @mark.parametrize(
         ("text", "expected"),
-        [param("", False), param("C/C++", False), param("name", True)],
+        [
+            param("", False),
+            param("C/C++", False),
+            param("name", True),
+        ],
     )
     def test_main(self, *, text: str, expected: bool) -> None:
-        assert is_valid_filename(text) is expected
+        assert is_empty_or_is_valid_filename(text) is expected

@@ -20,8 +20,8 @@ from rename_books.constants import TEMPORARY_PATH
 from rename_books.utilities import (
     change_name,
     change_suffix,
-    is_non_empty,
-    is_valid_filename,
+    is_empty,
+    is_empty_or_is_valid_filename,
 )
 
 if TYPE_CHECKING:
@@ -55,41 +55,18 @@ def _needs_processing(path: Path, /) -> bool:
 
 def get_decision(path: Path, /) -> bool:
     """Get the decision for a given path."""
-    completer = WordCompleter(["process", "skip"])
-
-    def validator(text: str, /) -> bool:
-        return bool(search(r"(process|skip)", text))
-
     result = prompt(
         f"File = {path.name}\nProcess or skip? ",
-        completer=completer,
+        completer=WordCompleter(["process", "skip"]),
         default="process",
         mouse_support=True,
         validator=Validator.from_callable(
-            validator, error_message="Enter 'process' or 'skip'"
+            lambda text: bool(search(r"(process|skip)", text)),
+            error_message="Enter 'process' or 'skip'",
         ),
         vi_mode=True,
     ).strip()
     return result == "process"
-
-
-def process_file(path: Path, /) -> None:
-    """Process a file."""
-    MetaData.from_path(path)
-    while True:
-        match _confirm_data(data):
-            case True:
-                return _rename_file_to_data(path, data)
-            case "year":
-                data = replace(data, year=_get_year(default=data.year))
-            case "title":
-                data = replace(data, title=_get_title(default=data.title))
-            case "subtitles":
-                data = replace(
-                    data, subtitles=_get_subtitles_post(default=data.subtitles)
-                )
-            case "authors":
-                data = replace(data, authors=_get_authors(default=data.authors))
 
 
 def _try_get_defaults(stem: str, /) -> tuple[int | None, str | None, list[str]] | None:
@@ -146,7 +123,7 @@ def _get_title(*, default: str | None = None) -> str:
         default="" if default is None else _clean_text(default),
         mouse_support=True,
         validator=Validator.from_callable(
-            is_valid_filename, error_message="Enter a valid file path"
+            is_empty_or_is_valid_filename, error_message="Enter a valid file path"
         ),
         vi_mode=True,
     ).strip()
@@ -171,14 +148,15 @@ def _get_subtitles_init(*, default: tuple[str, str] | None = None) -> list[str]:
                     default=_clean_text(def_i),
                     mouse_support=True,
                     validator=Validator.from_callable(
-                        is_valid_filename, error_message="Enter a valid file path"
+                        is_empty_or_is_valid_filename,
+                        error_message="Enter a valid file path",
                     ),
                     vi_mode=True,
                 ).strip()
             )
             num_words += len(subtitle.split(" "))
 
-    return list(takewhile(is_non_empty, yield_inputs(num_words)))
+    return list(takewhile(is_empty, yield_inputs(num_words)))
 
 
 def _clean_text(text: str, /) -> str:
@@ -220,12 +198,13 @@ def _get_subtitles_post_or_authors(
                 default=_clean_text(def_i),
                 mouse_support=True,
                 validator=Validator.from_callable(
-                    is_valid_filename, error_message="Enter a valid file path"
+                    is_empty_or_is_valid_filename,
+                    error_message="Enter a valid file path",
                 ),
                 vi_mode=True,
             ).strip()
 
-    return list(takewhile(is_non_empty, yield_inputs()))
+    return list(takewhile(is_empty, yield_inputs()))
 
 
 @dataclass(frozen=True, kw_only=True, repr=False)

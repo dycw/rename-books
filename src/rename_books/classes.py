@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from dataclasses import dataclass, field
+from itertools import count, takewhile
 from logging import getLogger
 from pathlib import Path
 from re import search, split, sub
@@ -23,7 +24,7 @@ from utilities.re import (
 )
 from utilities.sentinel import Sentinel, sentinel
 
-from rename_books.utilities import clean_text, is_valid_filename
+from rename_books.utilities import clean_text, is_empty, is_empty_or_is_valid_filename
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
@@ -45,7 +46,7 @@ class MetaData(Generic[_TYear, _TSuffix]):
     suffix: _TSuffix = None
 
     @classmethod
-    def from_path(cls, path: Path, /) -> MetaData[Any, Any, Any]:
+    def from_path(cls, path: Path, /) -> MetaData[Any, Any]:
         """Construct a set of metadata from a Path."""
         try:
             stem = StemMetaData.from_text(path.stem)
@@ -83,7 +84,7 @@ class MetaData(Generic[_TYear, _TSuffix]):
         """Process a path."""
         meta = cls.from_path(path)
         while True:
-            match cls._process_choice():
+            match meta.process_choice():
                 case True:
                     target = meta.to_path
                     _LOGGER.info(
@@ -96,38 +97,44 @@ class MetaData(Generic[_TYear, _TSuffix]):
                     _ = path.rename(target)
                     return
                 case "year":
-                    meta = meta.replace(year=cls._process_year(year=meta.year))
+                    meta = meta.process_year()
                 case "title":
-                    meta = meta.replace(title=cls._process_title(title=meta.title))
-                case "subtitles":
-                    meta = meta.replace(
-                        subtitles=cls._process_subtitles(subtitles=meta.subtitles)
+                    meta = meta.process_title_and_subtitles_or_authors(
+                        "title/subtitles"
                     )
                 case "authors":
-                    meta = meta.replace(
-                        authors=cls._process_authors(authors=meta.authors)
-                    )
+                    meta = meta.process_title_and_subtitles_or_authors("authors")
 
-    @classmethod
-    def _process_choice(cls) -> Literal[True, "year", "title", "subtitles", "authors"]:
+    def process_choice(self) -> Literal[True, "year", "title/subtitles", "authors"]:
+        """Check if a set of metadata is ready or needs modification."""
         result = prompt(
-            f"{cls}\nConfirm? ",
-            completer=WordCompleter(["yes", "year", "title", "subtitles", "authors"]),
-            default="yes",
+            f"{self.repr_table}\nConfirm? [y]es, y[e]ar, [t]itle/subtitles, [a]uthors: ",
+            completer=WordCompleter(["y", "e", "t", "a"]),
+            default="y",
             mouse_support=True,
             validator=Validator.from_callable(
-                lambda text: bool(search(r"(yes|year|title|subtitles|authors)", text)),
-                error_message="Enter 'yes', 'year', 'title', 'subtitles' or 'authors'",
+                lambda text: bool(search(r"(y|e|t|a)", text)),
+                error_message="Enter 'y', 'e', 't' or 'a'",
             ),
             vi_mode=True,
         ).strip()
-        return cast("Any", True if result == "yes" else result)
+        match result:
+            case "y":
+                return True
+            case "e":
+                return "year"
+            case "t":
+                return "title/subtitles"
+            case "a":
+                return "authors"
+            case _:
+                raise ImpossibleCaseError(case=[f"{result=}"])
 
-    @classmethod
-    def _process_year(cls, *, year: int | None = None) -> int:
-        text = prompt(
+    def process_year(self) -> Self:
+        """Process the year on a set of metadata."""
+        year = prompt(
             "Input year: ",
-            default="20" if year is None else str(year),
+            default="20" if self.year is None else str(self.year),
             mouse_support=True,
             validator=Validator.from_callable(
                 lambda text: bool(search(r"^(\d+)$", text)),
@@ -135,20 +142,49 @@ class MetaData(Generic[_TYear, _TSuffix]):
             ),
             vi_mode=True,
         ).strip()
-        return int(text)
+        return self.replace(year=int(year))
 
-    @classmethod
-    def _get_title(cls, *, title: str | None = None) -> str:
-        """Get the prompt title."""
-        return prompt(
-            "Input title: ",
-            default="" if title is None else title,
-            mouse_support=True,
-            validator=Validator.from_callable(
-                is_valid_filename, error_message="Enter a valid file name"
-            ),
-            vi_mode=True,
-        ).strip()
+    def process_title_and_subtitles_or_authors(
+        self,
+        type_: Literal["title/subtitles", "authors"],
+        /,
+    ) -> Self:
+        """Process the title/subtitles or authors on a set of metadata."""
+        match type_:
+            case "title/subtitles":
+                default = self.title_and_subtitles
+            case "authors":
+                default = self.authors
+
+        match default:
+            case tuple() as default_use:
+                ...
+            case AuthorEtAl() as author_et_al:
+                default_use = (author_et_al.author,)
+
+        def yield_inputs() -> Iterator[str]:
+            for i in count():
+                try:
+                    def_i = default_use[i]
+                except IndexError:
+                    def_i = ""
+                yield prompt(
+                    f"Input {type_}: ",
+                    default=clean_text(def_i),
+                    mouse_support=True,
+                    validator=Validator.from_callable(
+                        is_empty_or_is_valid_filename,
+                        error_message="Enter the empty string, or a valid file name",
+                    ),
+                    vi_mode=True,
+                ).strip()
+
+        result = tuple(takewhile(is_empty, yield_inputs()))
+        match type_:
+            case "title/subtitles":
+                return self.replace(title_and_subtitles=result)
+            case "authors":
+                return self.replace(authors=result)
 
     def replace(
         self,
