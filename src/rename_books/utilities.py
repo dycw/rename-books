@@ -20,6 +20,11 @@ def change_suffix(path: Path, /, *suffixes: str) -> Path:
     return path.with_suffix("".join(suffixes))
 
 
+def clean_text(text: str, /) -> str:
+    """Clean the text."""
+    return text.replace("’", "'")
+
+
 def is_empty(text: str, /) -> bool:
     """Check if a string is the empty string."""
     return text == ""
