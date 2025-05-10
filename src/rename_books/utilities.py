@@ -1,17 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from pathvalidate import is_valid_filename
 from titlecase import titlecase
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
-
-def change_suffix(path: Path, /, *suffixes: str) -> Path:
-    """Change the suffix of a path; accepts parts."""
-    return path.with_suffix("".join(suffixes))
 
 
 def clean_text(text: str, /) -> str:
@@ -34,10 +24,4 @@ def is_empty_or_is_valid_filename(text: str, /) -> bool:
     return is_empty(text) or is_valid_filename(text)
 
 
-__all__ = [
-    "change_suffix",
-    "clean_text",
-    "is_empty",
-    "is_empty_or_is_valid_filename",
-    "is_non_empty",
-]
+__all__ = ["clean_text", "is_empty", "is_empty_or_is_valid_filename", "is_non_empty"]
