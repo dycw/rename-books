@@ -26,7 +26,6 @@ from utilities.sentinel import Sentinel, sentinel
 
 from rename_books.utilities import (
     clean_text,
-    is_empty,
     is_empty_or_is_valid_filename,
     is_non_empty,
 )
@@ -92,18 +91,12 @@ class MetaData(Generic[_TYear, _TSuffix]):
             match meta.process_choice():
                 case True:
                     target = meta.to_path
-                    _LOGGER.info(
-                        """Renaming
-    %r
---> %r""",
-                        str(path),
-                        str(target),
-                    )
+                    _LOGGER.info("Renaming\n    %r\n--> %r", str(path), str(target))
                     _ = path.rename(target)
                     return
                 case "year":
                     meta = meta.process_year()
-                case "title":
+                case "title/subtitles":
                     meta = meta.process_title_and_subtitles_or_authors(
                         "title/subtitles"
                     )
@@ -118,7 +111,7 @@ class MetaData(Generic[_TYear, _TSuffix]):
             default="y",
             mouse_support=True,
             validator=Validator.from_callable(
-                lambda text: bool(search(r"(y|e|t|a)", text)),
+                lambda text: bool(search(r"^(y|e|t|a)$", text)),
                 error_message="Enter 'y', 'e', 't' or 'a'",
             ),
             vi_mode=True,
@@ -316,6 +309,15 @@ class StemMetaData(Generic[_TYear]):
         except ExtractGroupsError:
             pass
         else:
+            return cls(
+                year=cast("_TYear", int(year)),
+                title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
+                authors=cls._parse_authors(authors),
+            )
+        with suppress(ExtractGroupsError):
+            authors, title_and_subtitles, year = extract_groups(
+                r"^([\w\s\-]+)\s+\-\s+(.+?)\s+\((\d+)\)$", stem
+            )
             return cls(
                 year=cast("_TYear", int(year)),
                 title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),

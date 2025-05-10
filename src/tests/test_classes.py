@@ -111,17 +111,26 @@ class TestFromText:
                 True,
             ),
             param(
-                "Paolo Brandimarte - Numerical Methods in Finance and Economics (2006)",
+                "Author - Title (2000)",
                 StemMetaData(
-                    year=2006,
-                    title_and_subtitles=("Numerical Methods in Finance and Economics",),
-                    authors=("Paolo Brandimarte",),
+                    year=2000,
+                    title_and_subtitles=("Title",),
+                    authors=("Author",),
                 ),
                 False,
             ),
             param(
                 "Title-Author",
                 StemMetaData(title_and_subtitles=("Title",), authors=("Author",)),
+                False,
+            ),
+            param(
+                "Author Sur-Name - Title1 Title2 Title3 Title4 Title5 (2000)",
+                StemMetaData(
+                    year=2000,
+                    title_and_subtitles=("Title1 Title2 Title3 Title4 Title5",),
+                    authors=("Author Sur-Name",),
+                ),
                 False,
             ),
         ],
