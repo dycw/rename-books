@@ -3,16 +3,21 @@ from __future__ import annotations
 from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
-from re import sub
-from typing import Generic, Self, TypeVar, cast
+from re import split, sub
+from typing import TYPE_CHECKING, Any, Generic, Self, TypeVar, cast
 
 from tabulate import tabulate
 from utilities.dataclasses import replace_non_sentinel
+from utilities.errors import ImpossibleCaseError
 from utilities.iterables import one
 from utilities.re import ExtractGroupsError, extract_groups
 from utilities.sentinel import Sentinel, sentinel
 
 from rename_books.utilities import clean_text
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
 
 _TYear = TypeVar("_TYear", bound=int | None)
 _TTitle = TypeVar("_TTitle", bound=str | None)
@@ -43,15 +48,16 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
         return tabulate(data)
 
     @classmethod
-    def from_file(cls, path: Path, /) -> MetaData[Any, Any, Any]:
-        stem = StemMetaData.from_stem(path.stem)
+    def from_path(cls, path: Path, /) -> MetaData[Any, Any, Any]:
+        """Construct a set of metadata from a Path."""
+        stem = StemMetaData.from_string(path.stem)
         return cls(
             directory=path.parent,
             year=stem.year,
             title=stem.title,
             subtitles=stem.subtitles,
             authors=stem.authors,
-            suffix=path.suffix,
+            suffix=cast("_TSuffix", path.suffix),
         )
 
     @property
@@ -60,20 +66,14 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
         meta = self.with_all_metadata
         return Path(meta.stem).with_suffix(meta.suffix).stem
 
-    @property
-    def path(self) -> Path:
-        """Get the file path."""
-        meta = self.with_all_metadata
-        return Path(meta.directory, meta.name)
-
     def replace(
         self,
         *,
         directory: Path | Sentinel = sentinel,
         year: int | None | Sentinel = sentinel,
         title: str | None | Sentinel = sentinel,
-        subtitles: list[str] | Sentinel = sentinel,
-        authors: list[str] | Sentinel = sentinel,
+        subtitles: Iterable[str] | Sentinel = sentinel,
+        authors: Iterable[str] | Sentinel = sentinel,
         suffix: str | None | Sentinel = sentinel,
     ) -> Self:
         return replace_non_sentinel(
@@ -81,14 +81,14 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
             directory=directory,
             year=year,
             title=title,
-            subtitles=subtitles,
-            authors=authors,
+            subtitles=sentinel if isinstance(subtitles, Sentinel) else tuple(subtitles),
+            authors=sentinel if isinstance(authors, Sentinel) else tuple(authors),
             suffix=suffix,
         )
 
     @property
     def repr_table(self) -> str:
-        """The repr as a table."""
+        """The metadata as a table."""
         data = [
             ["directory", self.directory],
             ["year", self.year],
@@ -102,7 +102,7 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
     @property
     def stem(self) -> str:
         """Get the stem of the file path."""
-        return self.stem_meta_data.stem
+        return self.stem_meta_data.to_string
 
     @property
     def stem_meta_data(self) -> StemMetaData:
@@ -115,6 +115,12 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
         )
 
     @property
+    def to_path(self) -> Path:
+        """Construct a Path from the metadata."""
+        meta = self.with_all_metadata
+        return Path(meta.directory, meta.name)
+
+    @property
     def with_all_metadata(self) -> MetaData[int, str, str]:
         """Check if the metadata is complete."""
         if (self.year is None) or (self.title is None) or (self.suffix is None):
@@ -124,7 +130,7 @@ class MetaData(Generic[_TYear, _TTitle, _TSuffix]):
 
 @dataclass(order=True, unsafe_hash=True, kw_only=True)
 class StemMetaData(Generic[_TYear, _TTitle]):
-    """The."""
+    """A set of stem metadata."""
 
     year: _TYear = None
     title: _TTitle = None
@@ -137,41 +143,66 @@ class StemMetaData(Generic[_TYear, _TTitle]):
         self.subtitles = tuple(map(clean_text, self.subtitles))
 
     @classmethod
-    def from_stem(cls, stem: str, /) -> Self:
+    def from_string(cls, stem: str, /) -> Self:
+        """Construct a set of metadata from a string."""
         try:
-            year, title = extract_groups(r"^(\d+)\s+(.+)$", stem)
+            year, title_and_subtitles, authors = extract_groups(
+                r"^(\d+)[\s\-\—]+(.+?)[\s\-\—]?(?:\(([\w,]+)\))?$", stem
+            )
         except ExtractGroupsError:
             pass
         else:
-            return cls(year=int(year), title=cls._strip_text(title))
+            title, subtitles = cls._split_title_and_subtitles(title_and_subtitles)
+            authors = cls._split_authors(authors)
+            return cls(
+                year=cast("_TYear", int(year)),
+                title=cast("_TTitle", title),
+                subtitles=subtitles,
+                authors=authors,
+            )
+        raise NotImplementedError
+
+        try:
+            year, title = extract_groups(r"^(\d+)[\s\-\—]+(.+)$", stem)
+        except ExtractGroupsError:
+            pass
+        else:
+            title, subtitles = cls._split_title_and_subtitles(title)
+            return cls(year=int(year), title=title, subtitles=subtitles)
         with suppress(ExtractGroupsError):
             year, title, authors = extract_groups(r"\((\d+)\)\s+(.+)\s+\((.+)\)", stem)
             return _process_get_defaults(year=year, title=title, authors=authors)
         raise NotImplementedError(stem)
 
+    @property
+    def is_formatted(self) -> bool:
+        """Check if a string is formatted."""
+        try:
+            _ = self.with_all_metadata
+        except ValueError:
+            return False
+        return True
+
     def replace(
         self,
         *,
-        directory: Path | Sentinel = sentinel,
         year: int | None | Sentinel = sentinel,
         title: str | None | Sentinel = sentinel,
-        subtitles: list[str] | Sentinel = sentinel,
-        authors: list[str] | Sentinel = sentinel,
-        suffix: str | None | Sentinel = sentinel,
+        subtitles: Iterable[str] | Sentinel = sentinel,
+        authors: Iterable[str] | Sentinel = sentinel,
     ) -> Self:
+        """Replace elements of the metadata."""
         return replace_non_sentinel(
             self,
-            directory=directory,
             year=year,
             title=title,
-            subtitles=subtitles,
-            authors=authors,
-            suffix=suffix,
+            subtitles=sentinel if isinstance(subtitles, Sentinel) else tuple(subtitles),
+            authors=sentinel if isinstance(authors, Sentinel) else tuple(authors),
         )
 
     @property
     def repr_table(self) -> str:
-        """The repr as a table."""
+        """The metadata as a table."""
         data = [
             ["year", self.year],
             ["title", self.title],
@@ -181,8 +212,8 @@ class StemMetaData(Generic[_TYear, _TTitle]):
         return tabulate(data)
 
     @property
-    def stem(self) -> str:
-        """Get the stem of the file path."""
+    def to_string(self) -> str:
+        """Construct a string from the metadata."""
         meta = self.with_all_metadata
         name = f"{meta.year} — {meta.title}"
         if len(subtitles := meta.subtitles) >= 1:
@@ -202,6 +233,22 @@ class StemMetaData(Generic[_TYear, _TTitle]):
         if (self.year is None) or (self.title is None):
             raise ValueError(*[f"{self=}"])
         return cast("StemMetaData[int, str]", self)
+
+    @classmethod
+    def _split_authors(cls, text: str, /) -> tuple[str, ...]:
+        text = cls._strip_text(text)
+        if not text:
+            return ()
+        return tuple(map(cls._strip_text, split(r",", text)))
+
+    @classmethod
+    def _split_title_and_subtitles(cls, text: str, /) -> tuple[str, tuple[str, ...]]:
+        text = cls._strip_text(text)
+        if not text:
+            raise ImpossibleCaseError(case=[f"{text=}"])
+        splits = list(map(cls._strip_text, split(r"[–—]", text)))
+        title, *subtitles = splits
+        return title, tuple(subtitles)
 
     @classmethod
     def _strip_text(cls, text: str, /) -> str:
