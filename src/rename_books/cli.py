@@ -3,8 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from click import command
+from utilities.logging import basic_config
 
-from rename_books.lib import get_decision, get_next_file, process_file
+from rename_books.classes import MetaData
+from rename_books.lib import get_decision, get_next_file
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -12,10 +14,11 @@ if TYPE_CHECKING:
 
 @command()
 def main() -> None:
+    basic_config()
     skips: set[Path] = set()
     while (path := get_next_file(skips=skips)) is not None:
         if get_decision(path):
-            process_file(path)
+            MetaData.process(path)
         else:
             skips.add(path)
 
