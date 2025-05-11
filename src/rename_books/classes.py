@@ -322,7 +322,24 @@ class StemMetaData(Generic[_TYear]):
                 authors=cls._parse_authors(authors),
             )
         with suppress(ExtractGroupsError):
-            title_and_subtitles, authors = extract_groups(r"^(.+?)\s*\-\s*(.+)$", stem)
+            first, second = extract_groups(r"^(.+?)\-(.+)$", stem)
+            lfirst, lsecond = map(len, [first, second])
+            if max(lfirst, lsecond) <= 20:
+                title_and_subtitles, authors = first, second
+            elif len(first) <= len(second):
+                authors, title_and_subtitles = first, second
+            else:
+                title_and_subtitles, authors = first, second
+            return cls(
+                title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
+                authors=cls._parse_authors(authors),
+            )
+        with suppress(ExtractGroupsError):
+            first, second = extract_groups(r"^(.+?)\s*\-\s*(.+)$", stem)
+            if len(first) <= len(second):
+                authors, title_and_subtitles = first, second
+            else:
+                title_and_subtitles, authors = first, second
             return cls(
                 title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
                 authors=cls._parse_authors(authors),
