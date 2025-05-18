@@ -44,10 +44,10 @@ class MetaData(Generic[_TYear, _TSuffix]):
     """A set of metadata."""
 
     directory: Path = field(default_factory=Path.cwd)
-    year: _TYear = None
+    year: _TYear = cast("_TYear", None)  #  noqa: RUF009
     title_and_subtitles: tuple[str, ...] = field(default_factory=tuple)
     authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
-    suffix: _TSuffix = None
+    suffix: _TSuffix = cast("_TSuffix", None)  #  noqa: RUF009
 
     @classmethod
     def from_path(cls, path: Path, /) -> MetaData[Any, Any]:
@@ -273,7 +273,7 @@ class MetaDataWithAllMetaDataError(Exception): ...
 class StemMetaData(Generic[_TYear]):
     """A set of stem metadata."""
 
-    year: _TYear = None
+    year: _TYear = cast("_TYear", None)  #  noqa: RUF009
     title_and_subtitles: tuple[str, ...] = field(default_factory=tuple)
     authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
 
