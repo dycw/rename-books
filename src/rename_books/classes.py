@@ -6,7 +6,7 @@ from itertools import chain, takewhile
 from logging import getLogger
 from pathlib import Path
 from re import search, split, sub
-from typing import TYPE_CHECKING, Any, Generic, Literal, Self, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Literal, Self, TypeVar, cast
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
@@ -40,7 +40,7 @@ _TSuffix = TypeVar("_TSuffix", str, None)
 
 
 @dataclass(order=True, unsafe_hash=True, kw_only=True)
-class MetaData(Generic[_TYear, _TSuffix]):
+class MetaData[TYear: (int, None), TSuffix: (str, None)]:
     """A set of metadata."""
 
     directory: Path = field(default_factory=Path.cwd)
@@ -270,7 +270,7 @@ class MetaDataWithAllMetaDataError(Exception): ...
 
 
 @dataclass(order=True, unsafe_hash=True, kw_only=True)
-class StemMetaData(Generic[_TYear]):
+class StemMetaData[TYear: (int, None)]:
     """A set of stem metadata."""
 
     year: _TYear = cast("_TYear", None)  #  noqa: RUF009
