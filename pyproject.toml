@@ -115,6 +115,9 @@ addopts = [
   "--pdbcls=pudb.debugger:Debugger",
   "--strict-markers",
 ]
+asyncio_default_fixture_loop_scope = "function"
+asyncio_mode = "auto"
+collect_imported_tests = false
 filterwarnings = ["error"]
 minversion = "8.0"
 testpaths = ["src/tests"]
@@ -148,6 +151,7 @@ ignore = [
   "D107",  # undocumented-public-init
   "D203",  # one-blank-line-before-class
   "D213",  # multi-line-summary-second-line
+  "DOC",  # pydoclint
   "E501",  # line-too-long
   "PD",  # pandas-vet
   "PERF203",  # try-except-in-loop
