@@ -83,7 +83,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.140.2"
+version = "0.146.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atomicwrites" },
@@ -91,9 +91,9 @@ dependencies = [
     { name = "tzlocal" },
     { name = "whenever" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/04/3a/73195029cc0adf6eef01084de08deb7ab48bdbd8c8b400f4b50793d8bb77/dycw_utilities-0.140.2.tar.gz", hash = "sha256:969a38a263f215bc602383c9c5589be970b04b9a74e508143181114fdc4df345", size = 294072, upload-time = "2025-07-09T03:55:46.017Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/66/3d/a9d1e8cd9fd75d944d66991334e8546d969802dce42e62f55cc53cd16d03/dycw_utilities-0.146.3.tar.gz", hash = "sha256:a30c94c8cada8920d7fa9ff6ef9a6c046e4a1b85850d5ddfb5eb1e46b751006b", size = 281681, upload-time = "2025-07-12T12:29:16.96Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b4/dd/e21b68720b3e0153f80d5d3066a58911fdb7fe3bf9d468c3975c695aaaba/dycw_utilities-0.140.2-py3-none-any.whl", hash = "sha256:4064219f7b75c36a4aaae7190a9c503d81f98e75b6aaeab6846ba8fe8d97217e", size = 190891, upload-time = "2025-07-09T03:55:43.168Z" },
+    { url = "https://files.pythonhosted.org/packages/31/a8/747d8378e55a6ad5f73ae961c32ff3f561249b0a5f7f6b214b06876c88a0/dycw_utilities-0.146.3-py3-none-any.whl", hash = "sha256:4a3316dc371bde5258bedc0d3c215f41c1581b22ca6b52d5d49f5fe5b61cb478", size = 183949, upload-time = "2025-07-12T12:29:14.173Z" },
 ]
 
 [package.optional-dependencies]
@@ -126,15 +126,15 @@ wheels = [
 
 [[package]]
 name = "hypothesis"
-version = "6.135.26"
+version = "6.135.29"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "sortedcontainers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/da/83/15c4e30561a0d8c8d076c88cb159187823d877118f34c851ada3b9b02a7b/hypothesis-6.135.26.tar.gz", hash = "sha256:73af0e46cd5039c6806f514fed6a3c185d91ef88b5a1577477099ddbd1a2e300", size = 454523, upload-time = "2025-07-05T04:59:45.443Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/5e/0313a89bae4bc6b28dc4afcc72e9ee0fe15c86ead45b4ea14996c7a85ea9/hypothesis-6.135.29.tar.gz", hash = "sha256:871acb38ff61346a420267f81f4ba05ad9a85d08965211edf9b29bc0c1ad9d7b", size = 455112, upload-time = "2025-07-12T18:18:00.125Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3c/78/db4fdc464219455f8dde90074660c3faf8429101b2d1299cac7d219e3176/hypothesis-6.135.26-py3-none-any.whl", hash = "sha256:fa237cbe2ae2c31d65f7230dcb866139ace635dcfec6c30dddf25974dd8ff4b9", size = 521517, upload-time = "2025-07-05T04:59:42.061Z" },
+    { url = "https://files.pythonhosted.org/packages/c1/55/1032721d92aa755ffc1c5ee252c9b60a24b4dbd047763df45c983aa19e35/hypothesis-6.135.29-py3-none-any.whl", hash = "sha256:db4e08bcc19235d2cf37801d6ccdaca757f86dc34a64e09c85fced15bb7e836a", size = 522075, upload-time = "2025-07-12T18:17:55.966Z" },
 ]
 
 [[package]]
@@ -156,19 +156,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/72/3a/79a912fbd4d8dd6fbb02bf69afd3bb72cf0c729bb3063c6f4498603db17a/jedi-0.19.2.tar.gz", hash = "sha256:4770dc3de41bde3966b02eb84fbcf557fb33cce26ad23da12c742fb50ecb11f0", size = 1231287, upload-time = "2024-11-11T01:41:42.873Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c0/5a/9cac0c82afec3d09ccd97c8b6502d48f165f9124db81b4bcb90b4af974ee/jedi-0.19.2-py2.py3-none-any.whl", hash = "sha256:a8ef22bde8490f57fe5c7681a3c83cb58874daf72b4784de3cce5b6ef6edb5b9", size = 1572278, upload-time = "2024-11-11T01:41:40.175Z" },
-]
-
-[[package]]
-name = "loguru"
-version = "0.7.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
-    { name = "win32-setctime", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/3a/05/a1dae3dffd1116099471c643b8924f5aa6524411dc6c63fdae648c4f1aca/loguru-0.7.3.tar.gz", hash = "sha256:19480589e77d47b8d85b2c827ad95d49bf31b0dcde16593892eb51dd18706eb6", size = 63559, upload-time = "2024-12-06T11:20:56.608Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/0c/29/0348de65b8cc732daa3e33e67806420b2ae89bdce2b04af740289c5c6c8c/loguru-0.7.3-py3-none-any.whl", hash = "sha256:31a33c10c8e1e10422bfd431aeb5d351c7cf7fa671e3c4df004162264b28220c", size = 61595, upload-time = "2024-12-06T11:20:54.538Z" },
 ]
 
 [[package]]
@@ -481,12 +468,11 @@ wheels = [
 
 [[package]]
 name = "rename-books"
-version = "0.6.4"
+version = "0.6.5"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
     { name = "dycw-utilities" },
-    { name = "loguru" },
     { name = "pathvalidate" },
     { name = "prompt-toolkit" },
     { name = "tabulate" },
@@ -503,8 +489,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.2.0,<8.3" },
-    { name = "dycw-utilities", specifier = ">=0.140.2,<0.141" },
-    { name = "loguru", specifier = ">=0.7.3,<0.8" },
+    { name = "dycw-utilities", specifier = ">=0.146.3,<0.147" },
     { name = "pathvalidate", specifier = ">=3.3.1,<3.4" },
     { name = "prompt-toolkit", specifier = ">=3.0.51,<3.1" },
     { name = "tabulate", specifier = ">=0.9.0,<0.10" },
@@ -650,13 +635,4 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ff/4a/fcfe2059fbf99c5d1064d58c4302d280b49776b1e78e2deabe824391f42d/whenever-0.8.6-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:c61b7036da21d3ed047710ac9ffff2ebd36dfcbb24ab32f37a675b850b781da7", size = 606056, upload-time = "2025-06-23T21:08:43.587Z" },
     { url = "https://files.pythonhosted.org/packages/a4/42/db87cf1a1e4776528cd97b3d9832dac6ece3fb7db7ba8561769fcb99af3c/whenever-0.8.6-cp313-cp313-win32.whl", hash = "sha256:afd70e71cc8ae2e83a4182bcce9afa5d8c11c29ba948c15afc1387d6c01e4693", size = 349426, upload-time = "2025-06-23T21:09:03.146Z" },
     { url = "https://files.pythonhosted.org/packages/3d/87/e6b2f7b8c5b3cf8184958501c100b4b0d7e4da174729f24663171023406c/whenever-0.8.6-cp313-cp313-win_amd64.whl", hash = "sha256:2ab4d90ba06173e8eba438b752e21172f5854e33ef65ac0f26a62a2d95487cce", size = 342494, upload-time = "2025-06-23T21:09:10.587Z" },
-]
-
-[[package]]
-name = "win32-setctime"
-version = "1.2.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b3/8f/705086c9d734d3b663af0e9bb3d4de6578d08f46b1b101c2442fd9aecaa2/win32_setctime-1.2.0.tar.gz", hash = "sha256:ae1fdf948f5640aae05c511ade119313fb6a30d7eabe25fef9764dca5873c4c0", size = 4867, upload-time = "2024-12-07T15:28:28.314Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e1/07/c6fe3ad3e685340704d314d765b7912993bcb8dc198f0e7a89382d37974b/win32_setctime-1.2.0-py3-none-any.whl", hash = "sha256:95d644c4e708aba81dc3704a116d8cbc974d70b3bdb8be1d150e36be6e9d1390", size = 4083, upload-time = "2024-12-07T15:28:26.465Z" },
 ]
