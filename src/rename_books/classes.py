@@ -6,7 +6,7 @@ from itertools import chain, takewhile
 from logging import getLogger
 from pathlib import Path
 from re import search, split, sub
-from typing import TYPE_CHECKING, Any, Literal, Self, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Literal, Self, cast
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
@@ -35,19 +35,17 @@ if TYPE_CHECKING:
 
 
 _LOGGER = getLogger(__name__)
-_TYear = TypeVar("_TYear", int, None)
-_TSuffix = TypeVar("_TSuffix", str, None)
 
 
 @dataclass(order=True, unsafe_hash=True, kw_only=True)
-class MetaData[TYear: (int, None), TSuffix: (str, None)]:
+class MetaData[Year: (int, None), Suffix: (str, None)]:
     """A set of metadata."""
 
     directory: Path = field(default_factory=Path.cwd)
-    year: _TYear = cast("_TYear", None)  #  noqa: RUF009
+    year: Year = cast("Year", None)  #  noqa: RUF009
     title_and_subtitles: tuple[str, ...] = field(default_factory=tuple)
     authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
-    suffix: _TSuffix = cast("_TSuffix", None)  #  noqa: RUF009
+    suffix: Suffix = cast("Suffix", None)  #  noqa: RUF009
 
     @classmethod
     def from_path(cls, path: Path, /) -> MetaData[Any, Any]:
@@ -61,7 +59,7 @@ class MetaData[TYear: (int, None), TSuffix: (str, None)]:
             year=stem.year,
             title_and_subtitles=stem.title_and_subtitles,
             authors=stem.authors,
-            suffix=cast("_TSuffix", path.suffix),
+            suffix=cast("Suffix", path.suffix),
         )
 
     @classmethod
@@ -270,10 +268,10 @@ class MetaDataWithAllMetaDataError(Exception): ...
 
 
 @dataclass(order=True, unsafe_hash=True, kw_only=True)
-class StemMetaData[TYear: (int, None)]:
+class StemMetaData[Year: (int, None)]:
     """A set of stem metadata."""
 
-    year: _TYear = cast("_TYear", None)  #  noqa: RUF009
+    year: Year = cast("Year", None)  #  noqa: RUF009
     title_and_subtitles: tuple[str, ...] = field(default_factory=tuple)
     authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
 
@@ -308,7 +306,7 @@ class StemMetaData[TYear: (int, None)]:
             pass
         else:
             return cls(
-                year=cast("_TYear", int(year)),
+                year=cast("Year", int(year)),
                 title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
                 authors=cls._parse_authors(authors),
             )
@@ -317,7 +315,7 @@ class StemMetaData[TYear: (int, None)]:
                 r"^([\w\s\-\.\,]+)\s+\-\s+(.+?)\s+\((\d+)\)$", stem
             )
             return cls(
-                year=cast("_TYear", int(year)),
+                year=cast("Year", int(year)),
                 title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
                 authors=cls._parse_authors(authors),
             )
