@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 @command()
 def main() -> None:
-    basic_config()
+    basic_config(obj="rename_books")
     skips: set[Path] = set()
     while (path := get_next_file(skips=skips)) is not None:
         if get_decision(path):
