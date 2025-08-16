@@ -206,7 +206,7 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title",), authors=("O'Author",)
                 ),
                 True,
-                id="Year, Title, Author with <'>",
+                id="Year — Title (O'Author) (with `'`)",
             ),
             param(
                 "Author - Title Sub1 Sub2 Sub3 Sub4 Sub5",
