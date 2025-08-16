@@ -298,13 +298,13 @@ class StemMetaData[Year: (int, None)]:
     @classmethod
     def from_text(cls, stem: str, /) -> Self:
         """Construct a set of metadata from a string."""
-        try:
+        with suppress(ExtractGroupError):
+            pre = extract_group(r"^(.+) \(Z-Library\)$", stem)
+            return cls.from_text(pre)
+        with suppress(ExtractGroupsError):
             year, title_and_subtitles, authors = extract_groups(
                 r"^(\d+)[\s\-\—]+(.+?)[\s\-\—]?(?:\(([\s\w\-\,\'èï]+)\))?$", stem
             )
-        except ExtractGroupsError:
-            pass
-        else:
             return cls(
                 year=cast("Year", int(year)),
                 title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
@@ -313,6 +313,15 @@ class StemMetaData[Year: (int, None)]:
         with suppress(ExtractGroupsError):
             authors, title_and_subtitles, year = extract_groups(
                 r"^([\w\s\-\.\,]+)\s+\-\s+(.+?)\s+\((\d+)\)$", stem
+            )
+            return cls(
+                year=cast("Year", int(year)),
+                title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
+                authors=cls._parse_authors(authors),
+            )
+        with suppress(ExtractGroupsError):
+            year, title_and_subtitles, authors = extract_groups(
+                r"^\((\d+)\) ([\w\s\-\.\,]+)\.?\(([\w\s]+)\)$", stem
             )
             return cls(
                 year=cast("Year", int(year)),
@@ -449,7 +458,8 @@ class StemMetaData[Year: (int, None)]:
         text = cls._strip_text(text)
         if not text:
             raise ImpossibleCaseError(case=[f"{text=}"])
-        return tuple(map(cls._strip_text, split(r"[–—]", text)))
+        splits = tuple(map(cls._strip_text, split(r"–|—| - ", text)))
+        return tuple(s for s in splits if len(s) >= 1)
 
     @classmethod
     def _strip_text(cls, text: str, /) -> str:

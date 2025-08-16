@@ -29,7 +29,7 @@ description = "Script to rename e-books"
 name = "rename-books"
 readme = "README.md"
 requires-python = ">= 3.13"
-version = "0.6.7"
+version = "0.6.8"
 
 [project.scripts]
 rename-books = "rename_books.cli:main"
@@ -37,7 +37,7 @@ rename-books = "rename_books.cli:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.6.7"
+current_version = "0.6.8"
 
 [[tool.bumpversion.files]]
 filename = "src/rename_books/__init__.py"
@@ -112,7 +112,6 @@ addopts = [
   "-ra",
   "-vv",
   "--color=auto",
-  "--pdbcls=pudb.debugger:Debugger",
   "--strict-markers",
 ]
 asyncio_default_fixture_loop_scope = "function"
@@ -196,7 +195,8 @@ select = [
 
 [tool.ruff.lint.extend-per-file-ignores]
 "src/tests/**/*.py" = [
-  "S101",  # assert-used
+  "S101",  # assert
+  "SLF001",  # private-member-access
 ]
 
 [tool.ruff.lint.flake8-tidy-imports]
