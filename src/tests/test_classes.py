@@ -26,19 +26,19 @@ class TestFromText:
                 "2000 — Title",
                 StemMetaData(year=2000, title_and_subtitles=("Title",)),
                 False,
-                id="Year, Title",
+                id="Year — Title",
             ),
             param(
                 "2000 — Title – Sub",
                 StemMetaData(year=2000, title_and_subtitles=("Title", "Sub")),
                 False,
-                id="Year, Title, Subtitle",
+                id="Year — Title – Sub",
             ),
             param(
                 "2000 — Title – Sub1 – Sub2",
                 StemMetaData(year=2000, title_and_subtitles=("Title", "Sub1", "Sub2")),
                 False,
-                id="Year, Title, Subtitle1, Subtitle2",
+                id="Year — Title – Sub1 – Sub2",
             ),
             param(
                 "2000 — Title (Author)",
@@ -46,7 +46,7 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title",), authors=("Author",)
                 ),
                 True,
-                id="Year, Title, Author",
+                id="Year — Title (Author)",
             ),
             param(
                 "2000 — Title – Sub (Author)",
@@ -54,7 +54,7 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title", "Sub"), authors=("Author",)
                 ),
                 True,
-                id="Year, Title, Subtitle, Author",
+                id="Year — Title – Sub (Author)",
             ),
             param(
                 "2000 — Title – Sub1 – Sub2 (Author)",
@@ -64,7 +64,7 @@ class TestFromText:
                     authors=("Author",),
                 ),
                 True,
-                id="Year, Title, Subtitle1, Subtitle2, Author",
+                id="Year — Title – Sub1 – Sub2 (Author)",
             ),
             param(
                 "2000 — Title (Author et al)",
@@ -74,7 +74,15 @@ class TestFromText:
                     authors=AuthorEtAl(author="Author"),
                 ),
                 True,
-                id="Year, Title, Author et al",
+                id="Year — Title (Author et al)",
+            ),
+            param(
+                "(2000) Title - Sub (Author)",
+                StemMetaData(
+                    year=2000, title_and_subtitles=("Title", "Sub"), authors=("Author",)
+                ),
+                False,
+                id="(Year) Title - Sub, (Author)",
             ),
             param(
                 "2000 —\xa0Title (Author et al)",
@@ -84,17 +92,17 @@ class TestFromText:
                     authors=AuthorEtAl(author="Author"),
                 ),
                 False,
-                id="Year, Weird Dash, Title, Author et al",
+                id="Year —\xa0 (weird dash) Title (Author et al)",
             ),
             param(
-                "2000 — 401(k) Title – Subtitle (Author)",
+                "2000 — 401(k) Title – Sub (Author)",
                 StemMetaData(
                     year=2000,
-                    title_and_subtitles=("401(k) Title", "Subtitle"),
+                    title_and_subtitles=("401(k) Title", "Sub"),
                     authors=("Author",),
                 ),
                 True,
-                id="Year, Title with (), Subtitle, Author",
+                id="Year — 401(k) Title (with '()') – Sub (Author)",
             ),
             param(
                 "2000 — title multi-word",
@@ -128,33 +136,33 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title",), authors=("Author",)
                 ),
                 False,
-                id="Author, Title, Year",
+                id="Author - Title (Year)",
             ),
             param(
                 "Title-Author",
                 StemMetaData(title_and_subtitles=("Title",), authors=("Author",)),
                 False,
-                id="Title, Author",
+                id="Title-Author",
             ),
             param(
-                "Author Sur-Name - Title1 Title2 Title3 Title4 (2000)",
+                "Author Sur-Name - Title Sub1 Sub2 (2000)",
                 StemMetaData(
                     year=2000,
-                    title_and_subtitles=("Title1 Title2 Title3 Title4",),
+                    title_and_subtitles=("Title Sub1 Sub2",),
                     authors=("Author Sur-Name",),
                 ),
                 False,
-                id="Author with '-', Long Title, Year",
+                id="Author Sur-Name (with '-') - Title Sub2 Sub3 (Year)",
             ),
             param(
-                "Author M. Sur-Name - Title1 Title2 Title3 Title4 Title5 (2000)",
+                "Author M. Sur-Name - Title1 Sub1 Sub2 (2000)",
                 StemMetaData(
                     year=2000,
-                    title_and_subtitles=("Title1 Title2 Title3 Title4 Title5",),
+                    title_and_subtitles=("Title1 Sub1 Sub2",),
                     authors=("Author M. Sur-Name",),
                 ),
                 False,
-                id="Author with '.' and '-', Long Title, Year",
+                id="Author M. Sur-Name (with '.' and '-') - Title Sub1 Sub2 (Year)",
             ),
             param(
                 "Author1, Author2 - Title (2000)",
@@ -164,7 +172,7 @@ class TestFromText:
                     authors=("Author1", "Author2"),
                 ),
                 False,
-                id="Author1, Author2, Title, Year",
+                id="Author1, Author2 - Title (Year)",
             ),
             param(
                 "2000 — Title (Sur Name et al)",
@@ -174,7 +182,7 @@ class TestFromText:
                     authors=AuthorEtAl(author="Sur Name"),
                 ),
                 True,
-                id="Year, Title, Author with ' ' et al",
+                id="Year — Title (Sur Name et al) (with ' ' and et al)",
             ),
             param(
                 "2000 — Title (Authorè)",
@@ -182,7 +190,7 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title",), authors=("Authorè",)
                 ),
                 True,
-                id="Year, Title, Author with 'è'",
+                id="Year — Title (Authorè) (with 'è')",
             ),
             param(
                 "2000 — Title (Authorï)",
@@ -190,7 +198,7 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title",), authors=("Authorï",)
                 ),
                 True,
-                id="Year, Title, Author with 'ï'",
+                id="Year — Title (Authorï) (with 'ï')",
             ),
             param(
                 "2000 — Title (O'Author)",
@@ -198,16 +206,24 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title",), authors=("O'Author",)
                 ),
                 True,
-                id="Year, Title, Author with <'>",
+                id="Year — Title (O'Author) (with `'`)",
             ),
             param(
-                "Author - Title1 Title2 Title3 Title4",
+                "Author - Title Sub1 Sub2 Sub3 Sub4 Sub5",
                 StemMetaData(
-                    title_and_subtitles=("Title1 Title2 Title3 Title4",),
+                    title_and_subtitles=("Title Sub1 Sub2 Sub3 Sub4 Sub5",),
                     authors=("Author",),
                 ),
                 False,
-                id="Author, Long Title",
+                id="Author - Title Sub1 Sub2 Sub3 Sub4 Sub5",
+            ),
+            param(
+                "(2000) Title - Sub (Author) (Z-Library)",
+                StemMetaData(
+                    year=2000, title_and_subtitles=("Title", "Sub"), authors=("Author",)
+                ),
+                False,
+                id="(Year) Title - Sub (Author) (Z-Library)",
             ),
         ],
     )
@@ -219,3 +235,20 @@ class TestFromText:
     @given(path=existing_paths())
     def test_on_dropbox(self, *, path: Path) -> None:
         _ = MetaData.from_path(path)
+
+
+class TestParseTitleAndSubtitles:
+    @mark.parametrize(
+        ("text", "expected"),
+        [
+            param("Title", ("Title",)),
+            param("Title — Sub", ("Title", "Sub")),
+            param("Title – Sub", ("Title", "Sub")),
+            param("Title - Sub", ("Title", "Sub")),
+            param("Title Multi-Word", ("Title Multi-Word",)),
+            param("Title Multi-Word - Sub", ("Title Multi-Word", "Sub")),
+        ],
+    )
+    def test_main(self, *, text: str, expected: tuple[str, ...]) -> None:
+        result = StemMetaData._parse_title_and_subtitles(text)
+        assert result == expected
