@@ -338,6 +338,14 @@ class StemMetaData[Year: (int, None)]:
                 authors=cls._parse_authors(authors),
             )
         with suppress(ExtractGroupsError):
+            title_and_subtitles, authors = extract_groups(
+                r"^\(—\) ([\w\s\-\.\,]+)\.?\(([\w\s]+)\)$", stem
+            )
+            return cls(
+                title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
+                authors=cls._parse_authors(authors),
+            )
+        with suppress(ExtractGroupsError):
             first, second = extract_groups(r"^(.+?)\-(.+)$", stem)
             lfirst, lsecond = map(len, [first, second])
             if max(lfirst, lsecond) <= 20:

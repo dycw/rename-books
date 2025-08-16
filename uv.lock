@@ -515,7 +515,7 @@ wheels = [
 
 [[package]]
 name = "rename-books"
-version = "0.6.9"
+version = "0.6.10"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
