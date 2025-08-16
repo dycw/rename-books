@@ -136,33 +136,33 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title",), authors=("Author",)
                 ),
                 False,
-                id="Author, Title, Year",
+                id="Author - Title (Year)",
             ),
             param(
                 "Title-Author",
                 StemMetaData(title_and_subtitles=("Title",), authors=("Author",)),
                 False,
-                id="Title, Author",
+                id="Title-Author",
             ),
             param(
-                "Author Sur-Name - Title1 Title2 Title3 Title4 (2000)",
+                "Author Sur-Name - Title Sub1 Sub2 (2000)",
                 StemMetaData(
                     year=2000,
-                    title_and_subtitles=("Title1 Title2 Title3 Title4",),
+                    title_and_subtitles=("Title Sub1 Sub2",),
                     authors=("Author Sur-Name",),
                 ),
                 False,
-                id="Author with '-', Long Title, Year",
+                id="Author Sur-Name (with '-') - Title Sub2 Sub3 (Year)",
             ),
             param(
-                "Author M. Sur-Name - Title1 Title2 Title3 Title4 Title5 (2000)",
+                "Author M. Sur-Name - Title1 Sub1 Sub2 (2000)",
                 StemMetaData(
                     year=2000,
-                    title_and_subtitles=("Title1 Title2 Title3 Title4 Title5",),
+                    title_and_subtitles=("Title1 Sub1 Sub2",),
                     authors=("Author M. Sur-Name",),
                 ),
                 False,
-                id="Author with '.' and '-', Long Title, Year",
+                id="Author M. Sur-Name (with '.' and '-') - Title Sub1 Sub2 (Year)",
             ),
             param(
                 "Author1, Author2 - Title (2000)",
@@ -172,7 +172,7 @@ class TestFromText:
                     authors=("Author1", "Author2"),
                 ),
                 False,
-                id="Author1, Author2, Title, Year",
+                id="Author1, Author2 - Title (Year)",
             ),
             param(
                 "2000 — Title (Sur Name et al)",
@@ -182,7 +182,7 @@ class TestFromText:
                     authors=AuthorEtAl(author="Sur Name"),
                 ),
                 True,
-                id="Year, Title, Author with ' ' et al",
+                id="Year — Title (Sur Name et al) (with ' ' and et al)",
             ),
             param(
                 "2000 — Title (Authorè)",
@@ -190,7 +190,7 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title",), authors=("Authorè",)
                 ),
                 True,
-                id="Year, Title, Author with 'è'",
+                id="Year — Title (Authorè) (with 'è')",
             ),
             param(
                 "2000 — Title (Authorï)",
@@ -198,7 +198,7 @@ class TestFromText:
                     year=2000, title_and_subtitles=("Title",), authors=("Authorï",)
                 ),
                 True,
-                id="Year, Title, Author with 'ï'",
+                id="Year — Title (Authorï) (with 'ï')",
             ),
             param(
                 "2000 — Title (O'Author)",
@@ -209,13 +209,13 @@ class TestFromText:
                 id="Year, Title, Author with <'>",
             ),
             param(
-                "Author - Title1 Title2 Title3 Title4",
+                "Author - Title Sub1 Sub2 Sub3 Sub4 Sub5",
                 StemMetaData(
-                    title_and_subtitles=("Title1 Title2 Title3 Title4",),
+                    title_and_subtitles=("Title Sub1 Sub2 Sub3 Sub4 Sub5",),
                     authors=("Author",),
                 ),
                 False,
-                id="Author, Long Title",
+                id="Author - Title Sub1 Sub2 Sub3 Sub4 Sub5",
             ),
             param(
                 "(2000) Title - Sub (Author) (Z-Library)",
