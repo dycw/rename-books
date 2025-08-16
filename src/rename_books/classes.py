@@ -311,6 +311,15 @@ class StemMetaData[Year: (int, None)]:
                 authors=cls._parse_authors(authors),
             )
         with suppress(ExtractGroupsError):
+            year, title_and_subtitles, authors = extract_groups(
+                r"^\((\d+)\)[\s\-\—]+(.+)[\s\-\—]+\(([\s\w\,]+)\)?$", stem
+            )
+            return cls(
+                year=cast("Year", int(year)),
+                title_and_subtitles=cls._parse_title_and_subtitles(title_and_subtitles),
+                authors=cls._parse_authors(authors),
+            )
+        with suppress(ExtractGroupsError):
             authors, title_and_subtitles, year = extract_groups(
                 r"^([\w\s\-\.\,]+)\s+\-\s+(.+?)\s+\((\d+)\)$", stem
             )
