@@ -74,7 +74,7 @@ class TestFromText:
                     authors=AuthorEtAl(author="Author"),
                 ),
                 True,
-                id="2000 — Title (Author et al)",
+                id="Year — Title (Author et al)",
             ),
             param(
                 "(2000) Title - Sub (Author)",
@@ -92,7 +92,7 @@ class TestFromText:
                     authors=AuthorEtAl(author="Author"),
                 ),
                 False,
-                id="Year, Weird Dash, Title, Author et al",
+                id="Year —\xa0 (weird dash) Title (Author et al)",
             ),
             param(
                 "2000 — 401(k) Title – Sub (Author)",
@@ -102,7 +102,7 @@ class TestFromText:
                     authors=("Author",),
                 ),
                 True,
-                id="Year, Title with (), Sub, Author",
+                id="Year — 401(k) Title (with '()') – Sub (Author)",
             ),
             param(
                 "2000 — title multi-word",
