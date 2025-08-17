@@ -250,7 +250,16 @@ class TestFromText:
                 ),
                 False,
                 id="(2000) Title (Author A. Sur Name)",
-                marks=mark.only,
+            ),
+            param(
+                "(2000) Title (Author1 [Surname, Author2]) (Z-Library)",
+                StemMetaData(
+                    year=2000,
+                    title_and_subtitles=("Title",),
+                    authors=("Author1 [Surname", "Author2]"),
+                ),
+                False,
+                id="asdf",
             ),
         ],
     )
