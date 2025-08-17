@@ -29,7 +29,7 @@ description = "Script to rename e-books"
 name = "rename-books"
 readme = "README.md"
 requires-python = ">= 3.13"
-version = "0.6.10"
+version = "0.6.11"
 
 [project.scripts]
 rename-books = "rename_books.cli:main"
@@ -37,7 +37,7 @@ rename-books = "rename_books.cli:main"
 # bump-my-version
 [tool.bumpversion]
 allow_dirty = true
-current_version = "0.6.10"
+current_version = "0.6.11"
 
 [[tool.bumpversion.files]]
 filename = "src/rename_books/__init__.py"
