@@ -241,6 +241,17 @@ class TestFromText:
                 False,
                 id="(—) Title (Author)",
             ),
+            param(
+                "(2000) Title (Author A. Sur Name)",
+                StemMetaData(
+                    year=2000,
+                    title_and_subtitles=("Title",),
+                    authors=("Author A. Sur Name",),
+                ),
+                False,
+                id="(2000) Title (Author A. Sur Name)",
+                marks=mark.only,
+            ),
         ],
     )
     def test_main(self, *, text: str, expected: MetaData, is_normalized: bool) -> None:
