@@ -67,7 +67,7 @@ class MetaData[Year: (int, None), Suffix: (str, None)]:
         """Check if a path is normalized."""
         try:
             return cls.from_path(path).to_path == path
-        except (MetaDataFromPathError, MetaDataWithAllMetaDataError):
+        except MetaDataFromPathError, MetaDataWithAllMetaDataError:
             return False
 
     @property
@@ -375,7 +375,7 @@ class StemMetaData[Year: (int, None)]:
         """Check if a string is normalized."""
         try:
             return cls.from_text(text).to_text == text
-        except (StemMetaDataFromTextError, StemMetaDataWithAllMetaDataError):
+        except StemMetaDataFromTextError, StemMetaDataWithAllMetaDataError:
             return False
 
     @classmethod
