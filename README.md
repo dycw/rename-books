@@ -1,3 +1,3 @@
-# rename-books
+# `rename-books`
 
-Script to rename e-books
+Library to rename e-books

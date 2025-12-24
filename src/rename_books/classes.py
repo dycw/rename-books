@@ -42,10 +42,10 @@ class MetaData[Year: (int, None), Suffix: (str, None)]:
     """A set of metadata."""
 
     directory: Path = field(default_factory=Path.cwd)
-    year: Year = cast("Year", None)  #  noqa: RUF009
+    year: Year = cast("Year", None)
     title_and_subtitles: tuple[str, ...] = field(default_factory=tuple)
     authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
-    suffix: Suffix = cast("Suffix", None)  #  noqa: RUF009
+    suffix: Suffix = cast("Suffix", None)
 
     @classmethod
     def from_path(cls, path: Path, /) -> MetaData[Any, Any]:
@@ -271,7 +271,7 @@ class MetaDataWithAllMetaDataError(Exception): ...
 class StemMetaData[Year: (int, None)]:
     """A set of stem metadata."""
 
-    year: Year = cast("Year", None)  #  noqa: RUF009
+    year: Year = cast("Year", None)
     title_and_subtitles: tuple[str, ...] = field(default_factory=tuple)
     authors: tuple[str, ...] | AuthorEtAl = field(default_factory=tuple)
 
