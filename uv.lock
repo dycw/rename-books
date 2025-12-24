@@ -120,7 +120,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.172.6"
+version = "0.172.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atomicwrites" },
@@ -128,9 +128,9 @@ dependencies = [
     { name = "tzlocal" },
     { name = "whenever" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f3/9a/899407cdb622f23a33c877c872a9d404215a3c87870bc92f547377dca7e3/dycw_utilities-0.172.6.tar.gz", hash = "sha256:73e8bbdf242a36a98931433277822c1e7b65278273608388d7fcffada94f50af", size = 163066, upload-time = "2025-12-23T23:26:38.239Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/48/c424a073fa819d339be60079106595be154faf82efed573ce2e9f58b24ab/dycw_utilities-0.172.7.tar.gz", hash = "sha256:4897e15357372701af215b99e79c081909ec1bae3cf788d4ffd60e2a8e581f6e", size = 163169, upload-time = "2025-12-24T01:03:16.861Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7a/66/e0f507542e1bac886e49b67c5b7c4f599649f32e3318fdc4d51e79047c14/dycw_utilities-0.172.6-py3-none-any.whl", hash = "sha256:8f7e9f7a914a6c164adfe6220a080a1b6acf0b04e378d4d72a07f4222be55f98", size = 197181, upload-time = "2025-12-23T23:26:36.175Z" },
+    { url = "https://files.pythonhosted.org/packages/af/85/fcbfdc9faff63b1752bb1997ec0ce8d3dd63994e82595c48ebb68dc93f0b/dycw_utilities-0.172.7-py3-none-any.whl", hash = "sha256:f61c661bf291563c9f28a924ceac72fdefb06417931e928c1b445dbe47504f5b", size = 197273, upload-time = "2025-12-24T01:03:15.256Z" },
 ]
 
 [package.optional-dependencies]
@@ -688,7 +688,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.0,<8.4" },
-    { name = "dycw-utilities", specifier = ">=0.172.6,<0.173" },
+    { name = "dycw-utilities", specifier = ">=0.172.7,<0.173" },
     { name = "pathvalidate", specifier = ">=3.3.1,<3.4" },
     { name = "prompt-toolkit", specifier = ">=3.0.52,<3.1" },
     { name = "tabulate", specifier = ">=0.9.0,<0.10" },

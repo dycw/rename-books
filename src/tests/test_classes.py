@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from hypothesis import given
 from hypothesis.strategies import DrawFn, composite, sampled_from
 from pytest import mark, param
+from utilities.pytest import skipif_ci
 
 from rename_books.classes import AuthorEtAl, MetaData, StemMetaData
 from rename_books.constants import BOOKS
@@ -269,6 +270,7 @@ class TestFromText:
         assert result.is_normalized(text) is is_normalized
 
     @given(path=existing_paths())
+    @skipif_ci
     def test_on_dropbox(self, *, path: Path) -> None:
         _ = MetaData.from_path(path)
 
