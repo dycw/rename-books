@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hook-nitpick
-    rev: 0.7.3
+    rev: 0.7.6
     hooks:
       - args:
           - --description=Library to rename e-books
