@@ -8,6 +8,8 @@ jobs:
           python-version: "3.14"
           token: ${{ secrets.GITHUB_TOKEN }}
   pytest:
+    env:
+      CI: "1"
     name:
       pytest (${{ matrix.os }}, ${{ matrix.python-version }}, ${{ matrix.resolution
       }})

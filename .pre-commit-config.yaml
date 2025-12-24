@@ -45,7 +45,7 @@ repos:
           - --ruff
         id: nitpick
     repo: https://github.com/dycw/pre-commit-hook-nitpick
-    rev: 0.6.13
+    rev: 0.6.15
   - hooks:
       - id: format-requirements
       - id: replace-sequence-str
