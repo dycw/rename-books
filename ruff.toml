@@ -42,6 +42,8 @@ unsafe-fixes = true
     "COM819",
     "ISC001",
     "ISC002",
+    # custom
+    "RUF001",
   ]
   preview = true
   select = ["ALL", "RUF022", "RUF029"]
