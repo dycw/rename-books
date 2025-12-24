@@ -1,0 +1,25 @@
+name: push
+true:
+  push:
+    branches:
+      - master
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: butlerlogic/action-autotag@1.1.2
+        with:
+          regex_pattern: current_version = "(?<version>\d+\.\d+\.\d+)"
+          root: pyproject.toml
+          strategy: regex
+      - name: Tag latest commit
+        uses: dycw/action-tag@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+"on":
+  push:
+    branches:
+      - master
