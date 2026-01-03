@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/conformalize
-    rev: 0.12.0
+    rev: 0.12.1
     hooks:
       - args:
           - --description=Library to rename e-books
@@ -8,9 +8,9 @@ repos:
           - --envrc--uv
           - --github--pull-request--pre-commit
           - --github--pull-request--pyright
+          - --github--pull-request--pytest--all-versions
           - --github--pull-request--pytest--os--macos
           - --github--pull-request--pytest--os--ubuntu
-          - --github--pull-request--pytest--all-versions
           - --github--pull-request--pytest--resolution--highest
           - --github--pull-request--ruff
           - --github--push--tag
