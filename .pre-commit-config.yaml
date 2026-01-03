@@ -1,6 +1,6 @@
 repos:
-  - repo: https://github.com/dycw/pre-commit-hook-nitpick
-    rev: 0.7.6
+  - repo: https://github.com/dycw/conformalize
+    rev: 0.10.10
     hooks:
       - args:
           - --description=Library to rename e-books
@@ -22,7 +22,7 @@ repos:
           - --readme
           - --repo-name=rename-books
           - --ruff
-        id: nitpick
+        id: conformalize
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -68,8 +68,12 @@ repos:
           - --option
           - reorder_keys=true
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.18
+    rev: 0.9.21
     hooks:
       - id: uv-lock
         args:
           - --upgrade
+          - --resolution
+          - highest
+          - --prerelease
+          - disallow

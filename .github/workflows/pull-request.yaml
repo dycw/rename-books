@@ -14,7 +14,7 @@ jobs:
         with:
           token: ${{secrets.GITHUB_TOKEN}}
           repos: |-
-            dycw/pre-commit-hook-nitpick
+            dycw/conformalize
             pre-commit/pre-commit-hooks
   pyright:
     runs-on: ubuntu-latest
