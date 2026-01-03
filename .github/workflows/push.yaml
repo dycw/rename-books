@@ -10,4 +10,5 @@ jobs:
       - name: Tag latest commit
         uses: dycw/action-tag@latest
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
+          token-checkout: ${{secrets.GITHUB_TOKEN}}
+          token-uv: ${{secrets.GITHUB_TOKEN}}
