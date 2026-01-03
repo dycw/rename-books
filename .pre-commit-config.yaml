@@ -4,6 +4,8 @@ repos:
     hooks:
       - args:
           - --description=Library to rename e-books
+          - --envrc
+          - --envrc--uv
           - --github--pull-request--pre-commit
           - --github--pull-request--pyright
           - --github--pull-request--pytest--os--macos
@@ -12,6 +14,7 @@ repos:
           - --github--pull-request--pytest--resolution--highest
           - --github--pull-request--ruff
           - --github--push--tag
+          - --pre-commit--dycw
           - --pre-commit--prettier
           - --pre-commit--ruff
           - --pre-commit--taplo
@@ -77,3 +80,8 @@ repos:
           - highest
           - --prerelease
           - disallow
+  - repo: https://github.com/dycw/actions
+    rev: master
+    hooks:
+      - id: format-requirements
+      - id: replace-sequence-strs
