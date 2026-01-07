@@ -175,14 +175,14 @@ wheels = [
 
 [[package]]
 name = "hypothesis"
-version = "6.148.11"
+version = "6.148.13"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sortedcontainers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d2/98/ccbc8a02b4e2c27e40e61718419aa0195b55bcd69260e81270b9ff39d61e/hypothesis-6.148.11.tar.gz", hash = "sha256:4f3c38030d0f0b38c8b7153d6907892e6fcac9ecb0410e627d6af2cea677f92c", size = 471909, upload-time = "2026-01-03T21:10:45.114Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/13/19/e21b48bcfd048dae16476890e7cf697349aa62045fbb983c6a12bb847401/hypothesis-6.148.13.tar.gz", hash = "sha256:490912e6201a1acce037cd1357431de18e717d8f1f5d17bc1b704789dadaebb5", size = 472902, upload-time = "2026-01-05T05:20:26.053Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/da/cf5888306ed6cfd76b50c736e996400b5ede43f28da967986b9f1138fabd/hypothesis-6.148.11-py3-none-any.whl", hash = "sha256:397b3fd13d0906cf5ece76f5da340a0fbb07bd18ab61ac41a7982ceb080312f0", size = 538838, upload-time = "2026-01-03T21:10:42.843Z" },
+    { url = "https://files.pythonhosted.org/packages/08/c6/0db1433a008f9a4bb946c7e90be70fe7b761f42439c4a4c7c853002791d2/hypothesis-6.148.13-py3-none-any.whl", hash = "sha256:ab3ad77ffc4fdbcdecee225f68ff4893f9f83cfaae35f0a00b6797097a0e14d2", size = 540183, upload-time = "2026-01-05T05:20:24.156Z" },
 ]
 
 [[package]]
@@ -669,7 +669,7 @@ wheels = [
 
 [[package]]
 name = "rename-books"
-version = "0.7.5"
+version = "0.7.6"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
