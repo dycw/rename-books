@@ -123,7 +123,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.172.7"
+version = "0.178.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atomicwrites" },
@@ -131,9 +131,8 @@ dependencies = [
     { name = "tzlocal" },
     { name = "whenever" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1e/48/c424a073fa819d339be60079106595be154faf82efed573ce2e9f58b24ab/dycw_utilities-0.172.7.tar.gz", hash = "sha256:4897e15357372701af215b99e79c081909ec1bae3cf788d4ffd60e2a8e581f6e", size = 163169, upload-time = "2025-12-24T01:03:16.861Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/af/85/fcbfdc9faff63b1752bb1997ec0ce8d3dd63994e82595c48ebb68dc93f0b/dycw_utilities-0.172.7-py3-none-any.whl", hash = "sha256:f61c661bf291563c9f28a924ceac72fdefb06417931e928c1b445dbe47504f5b", size = 197273, upload-time = "2025-12-24T01:03:15.256Z" },
+    { url = "https://files.pythonhosted.org/packages/87/f2/2027a4273cd736baef6072db9998b9edbbb5e502eac2c8f6e164ac340bab/dycw_utilities-0.178.0-py3-none-any.whl", hash = "sha256:34c3f23afc82ada3cdb47d22f8481b55d46bef51d1eb884188d2db3cf7d424d3", size = 207168, upload-time = "2026-01-08T12:13:03.719Z" },
 ]
 
 [package.optional-dependencies]
@@ -175,14 +174,14 @@ wheels = [
 
 [[package]]
 name = "hypothesis"
-version = "6.148.13"
+version = "6.150.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sortedcontainers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/19/e21b48bcfd048dae16476890e7cf697349aa62045fbb983c6a12bb847401/hypothesis-6.148.13.tar.gz", hash = "sha256:490912e6201a1acce037cd1357431de18e717d8f1f5d17bc1b704789dadaebb5", size = 472902, upload-time = "2026-01-05T05:20:26.053Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ab/20/37805e8871ffd4bf4958c2e13d608fe1fc914d00f3707b35744ab62751a4/hypothesis-6.150.0.tar.gz", hash = "sha256:ac263bdaf338f4899a9a56e8224304e29b3ad91799e0274783c49abd91ea35ac", size = 474629, upload-time = "2026-01-06T17:08:27.582Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/08/c6/0db1433a008f9a4bb946c7e90be70fe7b761f42439c4a4c7c853002791d2/hypothesis-6.148.13-py3-none-any.whl", hash = "sha256:ab3ad77ffc4fdbcdecee225f68ff4893f9f83cfaae35f0a00b6797097a0e14d2", size = 540183, upload-time = "2026-01-05T05:20:24.156Z" },
+    { url = "https://files.pythonhosted.org/packages/0f/6c/49e29a0b856be17048fa4a216cc21bf914623f66305f6327b7a9bcec6871/hypothesis-6.150.0-py3-none-any.whl", hash = "sha256:caf1f752418c49ac805f11d909c5831aaceb96762aa3895e0c702468dedbe3fe", size = 542064, upload-time = "2026-01-06T17:08:25.643Z" },
 ]
 
 [[package]]
@@ -690,20 +689,20 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "click", specifier = ">=8.3.0,<8.4" },
-    { name = "dycw-utilities", specifier = ">=0.172.7,<0.173" },
-    { name = "pathvalidate", specifier = ">=3.3.1,<3.4" },
-    { name = "prompt-toolkit", specifier = ">=3.0.52,<3.1" },
-    { name = "tabulate", specifier = ">=0.9.0,<0.10" },
-    { name = "titlecase", specifier = ">=2.4.1,<2.5" },
-    { name = "tqdm", specifier = ">=4.67.1,<4.68" },
+    { name = "click", specifier = ">=8.3.1,<9" },
+    { name = "dycw-utilities", specifier = ">=0.178.0,<1" },
+    { name = "pathvalidate", specifier = ">=3.3.1,<4" },
+    { name = "prompt-toolkit", specifier = ">=3.0.52,<4" },
+    { name = "tabulate", specifier = ">=0.9.0,<1" },
+    { name = "titlecase", specifier = ">=2.4.1,<3" },
+    { name = "tqdm", specifier = ">=4.67.1,<5" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"] },
-    { name = "pyright", specifier = ">=1,<200" },
-    { name = "rich", specifier = ">=1,<200" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.178.0,<1" },
+    { name = "pyright", specifier = ">=1.1.408,<2" },
+    { name = "rich", specifier = ">=14.2.0,<15" },
 ]
 
 [[package]]
