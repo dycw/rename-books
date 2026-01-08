@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/actions
-    rev: 0.6.3
+    rev: 0.7.3
     hooks:
       - id: conformalize-repo
         args:
@@ -26,6 +26,8 @@ repos:
           - --ruff
       - id: format-requirements
       - id: replace-sequence-strs
+      - id: touch-empty-py
+      - id: touch-py-typed
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
