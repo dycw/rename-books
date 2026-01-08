@@ -123,7 +123,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.172.7"
+version = "0.178.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atomicwrites" },
@@ -131,9 +131,8 @@ dependencies = [
     { name = "tzlocal" },
     { name = "whenever" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1e/48/c424a073fa819d339be60079106595be154faf82efed573ce2e9f58b24ab/dycw_utilities-0.172.7.tar.gz", hash = "sha256:4897e15357372701af215b99e79c081909ec1bae3cf788d4ffd60e2a8e581f6e", size = 163169, upload-time = "2025-12-24T01:03:16.861Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/af/85/fcbfdc9faff63b1752bb1997ec0ce8d3dd63994e82595c48ebb68dc93f0b/dycw_utilities-0.172.7-py3-none-any.whl", hash = "sha256:f61c661bf291563c9f28a924ceac72fdefb06417931e928c1b445dbe47504f5b", size = 197273, upload-time = "2025-12-24T01:03:15.256Z" },
+    { url = "https://files.pythonhosted.org/packages/87/f2/2027a4273cd736baef6072db9998b9edbbb5e502eac2c8f6e164ac340bab/dycw_utilities-0.178.0-py3-none-any.whl", hash = "sha256:34c3f23afc82ada3cdb47d22f8481b55d46bef51d1eb884188d2db3cf7d424d3", size = 207168, upload-time = "2026-01-08T12:13:03.719Z" },
 ]
 
 [package.optional-dependencies]
@@ -175,14 +174,14 @@ wheels = [
 
 [[package]]
 name = "hypothesis"
-version = "6.148.13"
+version = "6.150.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sortedcontainers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/19/e21b48bcfd048dae16476890e7cf697349aa62045fbb983c6a12bb847401/hypothesis-6.148.13.tar.gz", hash = "sha256:490912e6201a1acce037cd1357431de18e717d8f1f5d17bc1b704789dadaebb5", size = 472902, upload-time = "2026-01-05T05:20:26.053Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ab/20/37805e8871ffd4bf4958c2e13d608fe1fc914d00f3707b35744ab62751a4/hypothesis-6.150.0.tar.gz", hash = "sha256:ac263bdaf338f4899a9a56e8224304e29b3ad91799e0274783c49abd91ea35ac", size = 474629, upload-time = "2026-01-06T17:08:27.582Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/08/c6/0db1433a008f9a4bb946c7e90be70fe7b761f42439c4a4c7c853002791d2/hypothesis-6.148.13-py3-none-any.whl", hash = "sha256:ab3ad77ffc4fdbcdecee225f68ff4893f9f83cfaae35f0a00b6797097a0e14d2", size = 540183, upload-time = "2026-01-05T05:20:24.156Z" },
+    { url = "https://files.pythonhosted.org/packages/0f/6c/49e29a0b856be17048fa4a216cc21bf914623f66305f6327b7a9bcec6871/hypothesis-6.150.0-py3-none-any.whl", hash = "sha256:caf1f752418c49ac805f11d909c5831aaceb96762aa3895e0c702468dedbe3fe", size = 542064, upload-time = "2026-01-06T17:08:25.643Z" },
 ]
 
 [[package]]
@@ -196,7 +195,7 @@ wheels = [
 
 [[package]]
 name = "jsonschema"
-version = "4.25.1"
+version = "4.26.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -204,9 +203,9 @@ dependencies = [
     { name = "referencing" },
     { name = "rpds-py" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/74/69/f7185de793a29082a9f3c7728268ffb31cb5095131a9c139a74078e27336/jsonschema-4.25.1.tar.gz", hash = "sha256:e4a9655ce0da0c0b67a085847e00a3a51449e1157f4f75e9fb5aa545e122eb85", size = 357342, upload-time = "2025-08-18T17:03:50.038Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/fc/e067678238fa451312d4c62bf6e6cf5ec56375422aee02f9cb5f909b3047/jsonschema-4.26.0.tar.gz", hash = "sha256:0c26707e2efad8aa1bfc5b7ce170f3fccc2e4918ff85989ba9ffa9facb2be326", size = 366583, upload-time = "2026-01-07T13:41:07.246Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bf/9c/8c95d856233c1f82500c2450b8c68576b4cf1c871db3afac5c34ff84e6fd/jsonschema-4.25.1-py3-none-any.whl", hash = "sha256:3fba0169e345c7175110351d456342c364814cfcf3b964ba4587f22915230a63", size = 90040, upload-time = "2025-08-18T17:03:48.373Z" },
+    { url = "https://files.pythonhosted.org/packages/69/90/f63fb5873511e014207a475e2bb4e8b2e570d655b00ac19a9a0ca0a385ee/jsonschema-4.26.0-py3-none-any.whl", hash = "sha256:d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce", size = 90630, upload-time = "2026-01-07T13:41:05.306Z" },
 ]
 
 [[package]]
@@ -407,15 +406,15 @@ wheels = [
 
 [[package]]
 name = "pyright"
-version = "1.1.407"
+version = "1.1.408"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nodeenv" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/1b/0aa08ee42948b61745ac5b5b5ccaec4669e8884b53d31c8ec20b2fcd6b6f/pyright-1.1.407.tar.gz", hash = "sha256:099674dba5c10489832d4a4b2d302636152a9a42d317986c38474c76fe562262", size = 4122872, upload-time = "2025-10-24T23:17:15.145Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/74/b2/5db700e52554b8f025faa9c3c624c59f1f6c8841ba81ab97641b54322f16/pyright-1.1.408.tar.gz", hash = "sha256:f28f2321f96852fa50b5829ea492f6adb0e6954568d1caa3f3af3a5f555eb684", size = 4400578, upload-time = "2026-01-08T08:07:38.795Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/dc/93/b69052907d032b00c40cb656d21438ec00b3a471733de137a3f65a49a0a0/pyright-1.1.407-py3-none-any.whl", hash = "sha256:6dd419f54fcc13f03b52285796d65e639786373f433e243f8b94cf93a7444d21", size = 5997008, upload-time = "2025-10-24T23:17:13.159Z" },
+    { url = "https://files.pythonhosted.org/packages/0c/82/a2c93e32800940d9573fb28c346772a14778b84ba7524e691b324620ab89/pyright-1.1.408-py3-none-any.whl", hash = "sha256:090b32865f4fdb1e0e6cd82bf5618480d48eecd2eb2e70f960982a3d9a4c17c1", size = 6399144, upload-time = "2026-01-08T08:07:37.082Z" },
 ]
 
 [[package]]
@@ -669,7 +668,7 @@ wheels = [
 
 [[package]]
 name = "rename-books"
-version = "0.7.6"
+version = "0.7.7"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -690,20 +689,20 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "click", specifier = ">=8.3.0,<8.4" },
-    { name = "dycw-utilities", specifier = ">=0.172.7,<0.173" },
-    { name = "pathvalidate", specifier = ">=3.3.1,<3.4" },
-    { name = "prompt-toolkit", specifier = ">=3.0.52,<3.1" },
-    { name = "tabulate", specifier = ">=0.9.0,<0.10" },
-    { name = "titlecase", specifier = ">=2.4.1,<2.5" },
-    { name = "tqdm", specifier = ">=4.67.1,<4.68" },
+    { name = "click", specifier = ">=8.3.1,<9" },
+    { name = "dycw-utilities", specifier = ">=0.178.0,<1" },
+    { name = "pathvalidate", specifier = ">=3.3.1,<4" },
+    { name = "prompt-toolkit", specifier = ">=3.0.52,<4" },
+    { name = "tabulate", specifier = ">=0.9.0,<1" },
+    { name = "titlecase", specifier = ">=2.4.1,<3" },
+    { name = "tqdm", specifier = ">=4.67.1,<5" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"] },
-    { name = "pyright" },
-    { name = "rich" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.178.0,<1" },
+    { name = "pyright", specifier = ">=1.1.408,<2" },
+    { name = "rich", specifier = ">=14.2.0,<15" },
 ]
 
 [[package]]
