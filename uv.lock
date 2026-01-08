@@ -123,7 +123,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.178.0"
+version = "0.178.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "atomicwrites" },
@@ -132,7 +132,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/87/f2/2027a4273cd736baef6072db9998b9edbbb5e502eac2c8f6e164ac340bab/dycw_utilities-0.178.0-py3-none-any.whl", hash = "sha256:34c3f23afc82ada3cdb47d22f8481b55d46bef51d1eb884188d2db3cf7d424d3", size = 207168, upload-time = "2026-01-08T12:13:03.719Z" },
+    { url = "https://files.pythonhosted.org/packages/29/df/da6485e27715e206c9dcb14e7726c116bdb446af8e9f26c9bfcde981e70e/dycw_utilities-0.178.1-py3-none-any.whl", hash = "sha256:e5a7d5a7263094dcc977e8d23313c20d806994dbb77ecec301a96c864d1a3c34", size = 207168, upload-time = "2026-01-08T13:20:30.674Z" },
 ]
 
 [package.optional-dependencies]
@@ -222,7 +222,7 @@ wheels = [
 
 [[package]]
 name = "jupyter-client"
-version = "8.7.0"
+version = "8.8.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jupyter-core" },
@@ -231,9 +231,9 @@ dependencies = [
     { name = "tornado" },
     { name = "traitlets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/27/d10de45e8ad4ce872372c4a3a37b7b35b6b064f6f023a5c14ffcced4d59d/jupyter_client-8.7.0.tar.gz", hash = "sha256:3357212d9cbe01209e59190f67a3a7e1f387a4f4e88d1e0433ad84d7b262531d", size = 344691, upload-time = "2025-12-09T18:37:01.953Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/05/e4/ba649102a3bc3fbca54e7239fb924fd434c766f855693d86de0b1f2bec81/jupyter_client-8.8.0.tar.gz", hash = "sha256:d556811419a4f2d96c869af34e854e3f059b7cc2d6d01a9cd9c85c267691be3e", size = 348020, upload-time = "2026-01-08T13:55:47.938Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bb/f5/fddaec430367be9d62a7ed125530e133bfd4a1c0350fe221149ee0f2b526/jupyter_client-8.7.0-py3-none-any.whl", hash = "sha256:3671a94fd25e62f5f2f554f5e95389c2294d89822378a5f2dd24353e1494a9e0", size = 106215, upload-time = "2025-12-09T18:37:00.024Z" },
+    { url = "https://files.pythonhosted.org/packages/2d/0b/ceb7694d864abc0a047649aec263878acb9f792e1fec3e676f22dc9015e3/jupyter_client-8.8.0-py3-none-any.whl", hash = "sha256:f93a5b99c5e23a507b773d3a1136bd6e16c67883ccdbd9a829b0bbdb98cd7d7a", size = 107371, upload-time = "2026-01-08T13:55:45.562Z" },
 ]
 
 [[package]]
@@ -509,16 +509,16 @@ wheels = [
 
 [[package]]
 name = "pytest-regressions"
-version = "2.8.3"
+version = "2.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
     { name = "pytest-datadir" },
     { name = "pyyaml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3a/63/cdb0ee15012a538fa07de21ec0a5c8eb113db9f28378f67b538d1c0b6d04/pytest_regressions-2.8.3.tar.gz", hash = "sha256:1ad90708bee02a3d36c78ef0b6f9692a9a30d312dd828680fd6d2a7235fcd221", size = 117168, upload-time = "2025-09-05T12:51:32.319Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e6/6d/4faab6263977ef16892f0cfa9d9677ee2fb29582fd4ec305849db78478ae/pytest_regressions-2.9.0.tar.gz", hash = "sha256:9ea6fa8d875b50869d4652d6391035935e04a90274d9aa583f374ff2b2125775", size = 115110, upload-time = "2026-01-08T14:40:19.897Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/55/b9/7b2fe8407744cc37a74e29bed833256a305133505ea4979564911a98338b/pytest_regressions-2.8.3-py3-none-any.whl", hash = "sha256:72500dd95bde418c850f290a3108dacb56427067f364f7112cb5b16f6d6cc29c", size = 24894, upload-time = "2025-09-05T12:51:31.1Z" },
+    { url = "https://files.pythonhosted.org/packages/ce/f3/003bc4d51e9b98277f40d5676c62f310071bc26f496eb6bf7d1230501fe7/pytest_regressions-2.9.0-py3-none-any.whl", hash = "sha256:5317b56cf2af7190f40fde10151c3cebfa04307d7810f82d9584cd7bfa102998", size = 24988, upload-time = "2026-01-08T14:40:18.658Z" },
 ]
 
 [[package]]
@@ -690,7 +690,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.1,<9" },
-    { name = "dycw-utilities", specifier = ">=0.178.0,<1" },
+    { name = "dycw-utilities", specifier = ">=0.178.1,<1" },
     { name = "pathvalidate", specifier = ">=3.3.1,<4" },
     { name = "prompt-toolkit", specifier = ">=3.0.52,<4" },
     { name = "tabulate", specifier = ">=0.9.0,<1" },
@@ -700,7 +700,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.178.0,<1" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.178.1,<1" },
     { name = "pyright", specifier = ">=1.1.408,<2" },
     { name = "rich", specifier = ">=14.2.0,<15" },
 ]
