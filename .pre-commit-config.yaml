@@ -1,18 +1,19 @@
 repos:
   - repo: https://github.com/dycw/actions
-    rev: 0.7.8
+    rev: 0.10.4
     hooks:
       - id: conformalize-repo
         args:
+          - --ci--pull-request--pre-commit
+          - --ci--pull-request--pyright
+          - --ci--pull-request--pytest--all-versions
+          - --ci--pull-request--pytest--macos
+          - --ci--pull-request--pytest--ubuntu
+          - --ci--pull-request--ruff
+          - --ci--push--tag
           - --description=Library to rename e-books
           - --envrc
           - --envrc--uv
-          - --github--pull-request--pre-commit
-          - --github--pull-request--pyright
-          - --github--pull-request--pytest--macos
-          - --github--pull-request--pytest--ubuntu
-          - --github--pull-request--ruff
-          - --github--push--tag
           - --pre-commit--prettier
           - --pre-commit--python
           - --pre-commit--ruff
