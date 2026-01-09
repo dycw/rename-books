@@ -4,7 +4,7 @@
 
 [dependency-groups]
   dev = [
-    "dycw-utilities[test]>=0.178.1, <1",
+    "dycw-utilities[test]>=0.179.1, <1",
     "pyright>=1.1.408, <2",
     "rich>=14.2.0, <15",
   ]
@@ -13,7 +13,7 @@
   authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
   dependencies = [
     "click>=8.3.1, <9",
-    "dycw-utilities>=0.178.1, <1",
+    "dycw-utilities>=0.179.1, <1",
     "pathvalidate>=3.3.1, <4",
     "prompt-toolkit>=3.0.52, <4",
     "tabulate>=0.9.0, <1",
@@ -24,7 +24,7 @@
   name = "rename-books"
   readme = "README.md"
   requires-python = ">= 3.14"
-  version = "0.7.8"
+  version = "0.7.9"
 
   [project.scripts]
     rename-books = "rename_books.cli:main"

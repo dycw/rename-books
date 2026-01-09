@@ -9,7 +9,3 @@ jobs:
     steps:
       - name: Tag the latest commit
         uses: dycw/action-tag-commit@latest
-        with:
-          token: ${{github.token}}
-          user-name: github-actions-bot
-          user-email: noreply@github.com
