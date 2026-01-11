@@ -1,4 +1,0 @@
-# file: /Users/derekwan/personal/rename-books/src/rename_books/lib.py
-# hypothesis_version: 6.148.8
-
-['(process|skip)', '.epub', '.part', '.pdf', 'process', 'skip']
