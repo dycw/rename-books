@@ -1,0 +1,4 @@
+# file: /Users/derekwan/personal/rename-books/src/rename_books/classes.py
+# hypothesis_version: 6.148.8
+
+[' – ', ',', '20', 'AuthorEtAl', 'Enter a valid year', 'Input year: ', 'MetaData', 'MetaData[int, str]', 'StemMetaData', 'StemMetaData[int]', 'Suffix', 'Year', '^(.+) \\(Z-Library\\)$', '^(.+?)\\-(.+)$', '^(.+?)\\s*\\-\\s*(.+)$', '^([\\w\\s\\-]+) et al$', '^(\\d+)$', '^(|y|t|a)$', 'a', 'author et al', 'authors', 'directory', 'e', 'suffix', 't', 'title', 'title/subtitles', 'y', 'year', '–|—| - ']
