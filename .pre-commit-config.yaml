@@ -1,10 +1,9 @@
 repos:
   - repo: https://github.com/dycw/actions
-    rev: 0.10.10
+    rev: 0.15.1
     hooks:
       - id: conformalize-repo
         args:
-          - --ci--pull-request--pre-commit
           - --ci--pull-request--pyright
           - --ci--pull-request--pytest--all-versions
           - --ci--pull-request--pytest--macos
@@ -60,12 +59,20 @@ repos:
           - markdown
           - yaml
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.11
+    rev: v0.14.13
     hooks:
       - id: ruff-check
         args:
           - --fix
       - id: ruff-format
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.12.0-2
+    hooks:
+      - id: shfmt
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.11.0
+    hooks:
+      - id: shellcheck
   - repo: https://github.com/compwa/taplo-pre-commit
     rev: v0.9.3
     hooks:
@@ -78,7 +85,7 @@ repos:
           - --option
           - reorder_keys=true
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.24
+    rev: 0.9.26
     hooks:
       - id: uv-lock
         args:
@@ -87,11 +94,3 @@ repos:
           - highest
           - --prerelease
           - disallow
-  - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.12.0-2
-    hooks:
-      - id: shfmt
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.11.0
-    hooks:
-      - id: shellcheck
