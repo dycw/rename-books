@@ -12,6 +12,7 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator
 from tabulate import tabulate
+from utilities.constants import Sentinel, sentinel
 from utilities.dataclasses import replace_non_sentinel
 from utilities.errors import ImpossibleCaseError
 from utilities.iterables import one
@@ -22,7 +23,6 @@ from utilities.re import (
     extract_group,
     extract_groups,
 )
-from utilities.sentinel import Sentinel, sentinel
 
 from rename_books.utilities import (
     clean_text,
