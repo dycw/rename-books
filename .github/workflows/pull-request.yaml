@@ -6,15 +6,6 @@ on:
   schedule:
     - cron: 53 11 * * *
 jobs:
-  pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - if: github.event_name == 'pull_request'
-        name: Run 'pre-commit' hooks
-        uses: dycw/action-run-hooks@latest
-        with:
-          repos: |-
-            pre-commit/pre-commit-hooks
   pyright:
     runs-on: ubuntu-latest
     steps:
