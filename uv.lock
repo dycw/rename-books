@@ -560,6 +560,17 @@ dependencies = [
     { name = "tqdm" },
 ]
 
+[package.optional-dependencies]
+cli = [
+    { name = "click" },
+    { name = "dycw-utilities" },
+    { name = "pathvalidate" },
+    { name = "prompt-toolkit" },
+    { name = "tabulate" },
+    { name = "titlecase" },
+    { name = "tqdm" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "dycw-utilities", extra = ["test"] },
@@ -570,12 +581,19 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
+    { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
     { name = "dycw-utilities", specifier = ">=0.184.4" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.184.4" },
     { name = "pathvalidate", specifier = ">=3.3.1" },
+    { name = "pathvalidate", marker = "extra == 'cli'", specifier = "==3.3.1" },
     { name = "prompt-toolkit", specifier = ">=3.0.52" },
+    { name = "prompt-toolkit", marker = "extra == 'cli'", specifier = "==3.0.52" },
     { name = "tabulate", specifier = ">=0.9.0" },
+    { name = "tabulate", marker = "extra == 'cli'", specifier = "==0.9.0" },
     { name = "titlecase", specifier = ">=2.4.1" },
+    { name = "titlecase", marker = "extra == 'cli'", specifier = "==2.4.1" },
     { name = "tqdm", specifier = ">=4.67.1" },
+    { name = "tqdm", marker = "extra == 'cli'", specifier = "==4.67.1" },
 ]
 provides-extras = ["cli"]
 

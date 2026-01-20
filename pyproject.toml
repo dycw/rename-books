@@ -26,7 +26,15 @@
     cli = "rename_books.cli:main"
 
   [project.optional-dependencies]
-    cli = []
+    cli = [
+      "click==8.3.1",
+      "dycw-utilities==0.184.4",
+      "pathvalidate==3.3.1",
+      "prompt-toolkit==3.0.52",
+      "tabulate==0.9.0",
+      "titlecase==2.4.1",
+      "tqdm==4.67.1",
+    ]
 
 [tool.uv.build-backend]
   module-name = "rename_books"
