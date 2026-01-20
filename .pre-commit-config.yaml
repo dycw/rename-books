@@ -165,7 +165,7 @@ repos:
           - reorder_keys=true
         priority: 20
   - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: master
+    rev: v0.11.0
     hooks:
       - id: shellcheck
         priority: 20
