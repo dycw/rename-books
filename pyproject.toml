@@ -3,13 +3,13 @@
   requires = ["uv_build"]
 
 [dependency-groups]
-  dev = ["dycw-utilities[test]>=0.183.4", "pyright>=1.1.408", "rich>=14.2.0"]
+  dev = ["dycw-utilities[test]>=0.184.4", "pyright>=1.1.408", "rich>=14.2.0"]
 
 [project]
   authors = [{ email = "d.wan@icloud.com", name = "Derek Wan" }]
   dependencies = [
     "click>=8.3.1",
-    "dycw-utilities>=0.183.4",
+    "dycw-utilities>=0.184.4",
     "pathvalidate>=3.3.1",
     "prompt-toolkit>=3.0.52",
     "tabulate>=0.9.0",
@@ -19,8 +19,8 @@
   description = "Library to rename e-books"
   name = "rename-books"
   readme = "README.md"
-  requires-python = ">= 3.14"
-  version = "0.8.0"
+  requires-python = ">= 3.12"
+  version = "0.8.1"
 
   [project.scripts]
     cli = "rename_books.cli:main"
@@ -28,10 +28,16 @@
   [project.optional-dependencies]
     cli = [
       "click==8.3.1",
-      "dycw-utilities==0.183.4",
+      "dycw-utilities==0.184.4",
       "pathvalidate==3.3.1",
       "prompt-toolkit==3.0.52",
       "tabulate==0.9.0",
       "titlecase==2.4.1",
       "tqdm==4.67.1",
     ]
+
+[tool]
+  [tool.uv]
+    [tool.uv.build-backend]
+      module-name = "rename_books"
+      module-root = "src"
