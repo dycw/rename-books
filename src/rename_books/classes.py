@@ -19,8 +19,8 @@ from utilities.core import (
     extract_group,
     extract_groups,
     one,
+    replace_non_sentinel,
 )
-from utilities.dataclasses import replace_non_sentinel
 from utilities.errors import ImpossibleCaseError
 from utilities.pathlib import ensure_suffix
 
