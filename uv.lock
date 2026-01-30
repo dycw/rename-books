@@ -139,7 +139,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.188.0"
+version = "0.188.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "coloredlogs" },
@@ -150,7 +150,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/bd/76725e0594382f7438fe30425eab83863b257ee051ce862840363bed2242/dycw_utilities-0.188.0-py3-none-any.whl", hash = "sha256:81525501df9e852f2dc4bb7fd1b5c251170cc4eb0b5731aa1cb67db47a8ae64b", size = 207771, upload-time = "2026-01-30T09:59:50.823Z" },
+    { url = "https://files.pythonhosted.org/packages/c6/91/18bba7a1ffe926ee42d5eb7697ee542e561b8885d05182094af067a45c7c/dycw_utilities-0.188.2-py3-none-any.whl", hash = "sha256:734216d0c294d04d63abaa74ad693f943d16ad89ff448416c5f19b5c0d0e77bb", size = 207825, upload-time = "2026-01-30T11:28:41.95Z" },
 ]
 
 [package.optional-dependencies]
@@ -612,7 +612,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.188.0" },
+    { name = "dycw-utilities", specifier = ">=0.188.2" },
     { name = "pathvalidate", specifier = ">=3.3.1" },
     { name = "prompt-toolkit", specifier = ">=3.0.52" },
     { name = "tabulate", specifier = ">=0.9.0" },
@@ -623,7 +623,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.188.0" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.188.2" },
     { name = "pyright", specifier = ">=1.1.408" },
 ]
 
