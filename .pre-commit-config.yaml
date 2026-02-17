@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/dycw/pre-commit-hooks
-    rev: 0.14.127
+    rev: 0.14.143
     hooks:
       - id: add-hooks
         args:
@@ -19,6 +19,8 @@ repos:
       - id: check-versions-consistent
         priority: 40
       - id: format-pre-commit-config
+        priority: 30
+      - id: format-pytest
         priority: 30
       - id: format-requirements
         priority: 30
@@ -68,8 +70,8 @@ repos:
         priority: 20
       - id: setup-readme
         args:
-          - --repo-name=rename-books
           - --description=Library to rename e-books
+          - --repo-name=rename-books
         priority: 20
       - id: setup-ruff
         priority: 20
@@ -116,7 +118,7 @@ repos:
       - id: trailing-whitespace
         priority: 20
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.14
+    rev: v0.15.1
     hooks:
       - id: ruff-check
         args:
@@ -129,13 +131,10 @@ repos:
     hooks:
       - id: taplo-format
         args:
-          - --option
-          - indent_tables=true
-          - --option
-          - indent_entries=true
-          - --option
-          - reorder_keys=true
-        priority: 40
+          - --option=indent_entries=true
+          - --option=indent_tables=true
+          - --option=reorder_keys=true
+        priority: 30
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.11.0
     hooks:
