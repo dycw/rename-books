@@ -644,7 +644,7 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.191.4" },
+    { name = "dycw-utilities", specifier = ">=0.191.10" },
     { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.10" },
     { name = "pathvalidate", specifier = ">=3.3.1" },
     { name = "pathvalidate", marker = "extra == 'cli'", specifier = "==3.3.1" },
@@ -661,7 +661,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.4" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.10" },
     { name = "pyright", specifier = ">=1.1.408" },
 ]
 
