@@ -149,7 +149,7 @@ wheels = [
 
 [[package]]
 name = "dycw-utilities"
-version = "0.191.4"
+version = "0.191.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "coloredlogs" },
@@ -161,7 +161,7 @@ dependencies = [
     { name = "whenever" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9c/e3/73cf14eae08913c2197531b0f012ac221a137b4fb183897f734415aca308/dycw_utilities-0.191.4-py3-none-any.whl", hash = "sha256:7b6b85338702b62c38e2ea56f187f9c3a1eaed5bd44556b69cbfc28da8af0cd2", size = 213069, upload-time = "2026-02-17T06:48:09.352Z" },
+    { url = "https://files.pythonhosted.org/packages/0e/1d/0626b0cb714ebf4f17ccb5ee22427cd0d6b2a50eb8c54843e69bd2535541/dycw_utilities-0.191.10-py3-none-any.whl", hash = "sha256:d0245da7703ad77da80c6bcba1664ca3f76f2ec4322030294bf0bb56e1f0defd", size = 215191, upload-time = "2026-02-18T13:56:32.167Z" },
 ]
 
 [package.optional-dependencies]
@@ -611,7 +611,7 @@ wheels = [
 
 [[package]]
 name = "rename-books"
-version = "0.8.5"
+version = "0.8.6"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -644,8 +644,8 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "click", marker = "extra == 'cli'", specifier = "==8.3.1" },
-    { name = "dycw-utilities", specifier = ">=0.191.4" },
-    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.4" },
+    { name = "dycw-utilities", specifier = ">=0.191.10" },
+    { name = "dycw-utilities", marker = "extra == 'cli'", specifier = "==0.191.10" },
     { name = "pathvalidate", specifier = ">=3.3.1" },
     { name = "pathvalidate", marker = "extra == 'cli'", specifier = "==3.3.1" },
     { name = "prompt-toolkit", specifier = ">=3.0.52" },
@@ -661,7 +661,7 @@ provides-extras = ["cli"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.4" },
+    { name = "dycw-utilities", extras = ["test"], specifier = ">=0.191.10" },
     { name = "pyright", specifier = ">=1.1.408" },
 ]
 
